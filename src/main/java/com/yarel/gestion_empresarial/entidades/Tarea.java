@@ -1,0 +1,63 @@
+package com.yarel.gestion_empresarial.entidades;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
+
+@Entity
+@Table(name = "tareas")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Tarea {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
+    private String titulo;
+
+    // Se almacena como tipo TEXT en la base de datos, lo que permite grandes cantidades de texto.
+    @Column(columnDefinition = "TEXT")
+    private String descripcion;
+
+
+    // Eager indica que la relación se cargará inmediatamente con la tarea
+    @ManyToOne(fetch = FetchType.EAGER)
+    // indica la columna que almacenará la referencia al empleado
+    @JoinColumn(name = "empleado_id")
+    private Empleado empleado;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "jefe_id")
+    private Jefe jefe;
+
+    @Column(name = "fecha_creacion")
+    // Se inicializa automáticamente con la fecha y hora actual
+    private LocalDateTime fechaCreacion = LocalDateTime.now();
+
+    @Column(name = "fecha_vencimiento")
+    private LocalDate fechaVencimiento;
+
+    @Column
+    private boolean completada = false;
+
+    // Guarda la fecha en que la tarea fue completada
+    @Column(name = "fecha_completada")
+    private LocalDateTime fechaCompletada;
+
+    @Column
+    private String prioridad;
+                                                        // permite que cualquier cambio en Tarea afecte también a RegistroTiempo
+                                                        // (por ejemplo, si se elimina una tarea, también se eliminan sus registros de tiempo)
+    @OneToMany(mappedBy = "tarea", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<RegistroTiempo> registrosTiempo = new HashSet<>();
+}
+
