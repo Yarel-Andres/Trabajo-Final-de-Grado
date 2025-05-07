@@ -1,24 +1,27 @@
 package com.yarel.gestion_empresarial.dto.tarea;
 
 import com.yarel.gestion_empresarial.entidades.Tarea;
-import org.mapstruct.CollectionMappingStrategy;
+import com.yarel.gestion_empresarial.dto.tarea.TareaDTO;
+import com.yarel.gestion_empresarial.entidades.RegistroTiempo;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import org.mapstruct.Mapping; // ✅ correcto
 
 import java.util.List;
-import java.util.Set;
 
 
-@Mapper(
-        componentModel = "spring",
-        collectionMappingStrategy = CollectionMappingStrategy.ADDER_PREFERRED
-)
+@Mapper(componentModel = "spring")
 public interface TareaMapper {
 
-    TareaDTO toDto(Tarea entity);
+    @Mapping(source = "empleado.id", target = "empleadoId")
+    @Mapping(source = "jefe.id", target = "jefeId")
+    TareaDTO toDto(Tarea tarea);
+
+    List<TareaDTO> toDtoList(List<Tarea> tareas);
+
+    @Mapping(source = "empleadoId", target = "empleado.id")
+    @Mapping(source = "jefeId", target = "jefe.id")
+    @Mapping(target = "registrosTiempo", ignore = true)
     Tarea toEntity(TareaDTO dto);
-
-    List<TareaDTO> toDtoList(List<Tarea> list);
-    List<Tarea> toEntityList(List<TareaDTO> list);
-
 }
+
+

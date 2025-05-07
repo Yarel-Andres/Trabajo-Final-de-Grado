@@ -1,18 +1,15 @@
 package com.yarel.gestion_empresarial.dto.empleado;
 
 import com.yarel.gestion_empresarial.entidades.Empleado;
-
-import org.mapstruct.CollectionMappingStrategy;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+
 
 import java.util.List;
 import java.util.Set;
 
 
 @Mapper(
-        componentModel = "spring",
-        collectionMappingStrategy = CollectionMappingStrategy.ADDER_PREFERRED
+        componentModel = "spring"
 )
 public interface EmpleadoMapper {
 
