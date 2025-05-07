@@ -1,9 +1,13 @@
 package com.yarel.gestion_empresarial.servicios;
 
 import com.yarel.gestion_empresarial.dto.empleado.EmpleadoDTO;
+import com.yarel.gestion_empresarial.dto.empleado.EmpleadoConTareasDTO;
 import com.yarel.gestion_empresarial.dto.empleado.EmpleadoMapper;
 import com.yarel.gestion_empresarial.entidades.Empleado;
 import com.yarel.gestion_empresarial.repositorios.EmpleadoRepository;
+import com.yarel.gestion_empresarial.entidades.Tarea;
+import com.yarel.gestion_empresarial.dto.tarea.TareaMapper;
+import com.yarel.gestion_empresarial.repositorios.TareaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,14 +24,19 @@ public class EmpleadoService {
     // Convierte entre Empleado (entidad) y EmpleadoDTO (DTO)
     private final EmpleadoMapper empleadoMapper;
 
+    private final TareaRepository tareaRepository;
+    private final TareaMapper tareaMapper;
+
     // Inyecta las dependencias automáticamente en el constructor. Con esto los asignamos como parámetro
     // a este constructor
     @Autowired
-    public EmpleadoService(EmpleadoRepository empleadoRepository, EmpleadoMapper empleadoMapper) {
+    public EmpleadoService(EmpleadoRepository empleadoRepository, EmpleadoMapper empleadoMapper, TareaRepository tareaRepository, TareaMapper tareaMapper) {
         // Los valores de los parámetros se asignan a las variables de instancia para que estén disponibles en los
         // métodos de la clase EmpleadoService
         this.empleadoRepository = empleadoRepository;
         this.empleadoMapper = empleadoMapper;
+        this.tareaRepository = tareaRepository;
+        this.tareaMapper = tareaMapper;
     }
 
 
@@ -49,6 +58,30 @@ public class EmpleadoService {
         // Si encuentra un empleado, usa empleadoMapper.toDto para convertirlo a EmpleadoDTO
         return empleadoRepository.findById(id)
                 .map(empleadoMapper::toDto);
+    }
+
+
+    @Transactional(readOnly = true)
+    public Optional<EmpleadoConTareasDTO> findByIdWithTareas(Long id) {
+        return empleadoRepository.findById(id)
+                .map(empleado -> {
+                    EmpleadoConTareasDTO dto = new EmpleadoConTareasDTO();
+                    // Copiar propiedades básicas
+                    dto.setId(empleado.getId());
+                    dto.setNombreUsuario(empleado.getNombreUsuario());
+                    dto.setCorreo(empleado.getCorreo());
+                    dto.setNombreCompleto(empleado.getNombreCompleto());
+                    dto.setFechaContratacion(empleado.getFechaContratacion());
+                    dto.setPuesto(empleado.getPuesto());
+                    dto.setTelefono(empleado.getTelefono());
+                    dto.setSalario(empleado.getSalario());
+
+                    // Obtener y mapear tareas
+                    List<Tarea> tareas = tareaRepository.findByEmpleado(empleado);
+                    dto.setTareas(tareaMapper.toDtoList(tareas));
+
+                    return dto;
+                });
     }
 
 

@@ -1,6 +1,7 @@
 package com.yarel.gestion_empresarial.controller;
 
 import com.yarel.gestion_empresarial.dto.empleado.EmpleadoDTO;
+import com.yarel.gestion_empresarial.dto.empleado.EmpleadoConTareasDTO;
 import com.yarel.gestion_empresarial.servicios.EmpleadoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,15 @@ public class EmpleadoController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    // Obtener empleado con sus tareas
+    @GetMapping("/{id}/tareas")
+    public ResponseEntity<EmpleadoConTareasDTO> getEmpleadoConTareas(@PathVariable Long id) {
+        return empleadoService.findByIdWithTareas(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
 
     // Crea un nuevo empleado
     @PostMapping                                  // Valida que el DTO cumple con las restricciones definidas
