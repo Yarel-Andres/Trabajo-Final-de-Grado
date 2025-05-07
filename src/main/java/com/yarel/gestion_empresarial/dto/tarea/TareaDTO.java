@@ -18,4 +18,5 @@ public class TareaDTO {
     private LocalDateTime fechaCompletada;
     private String prioridad;
     private Set<Long> registrosTiempoIds;
+
 }

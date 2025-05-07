@@ -31,6 +31,7 @@ public class Empleado extends Usuario {
     @Column
     private Double salario;
 
+
     // Define una relacion de 1 a n entre empleado y tarea, un empleado puede tener muchas tareas
                                     // las tareas del empleado no se cargarán inmediatamente, sino solo cuando sean necesarias
     @OneToMany(mappedBy = "empleado", fetch = FetchType.LAZY)
