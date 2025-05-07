@@ -1,40 +1,53 @@
 package com.yarel.gestion_empresarial.controller;
 
-import com.yarel.gestion_empresarial.dto.empleado.EmpleadoDTO;
 import com.yarel.gestion_empresarial.dto.tarea.TareaDTO;
-import com.yarel.gestion_empresarial.servicios.EmpleadoService;
 import com.yarel.gestion_empresarial.servicios.TareaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.validation.annotation.Validated;
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/tareas")
+@Validated // Para que @Valid funcione a nivel de clase
 public class TareaController {
 
     private final TareaService tareaService;
-    // Inyecta el servicio EmpleadoService, que contiene la lógica de negocio relacionada con los empl
 
-    // Devuelve una lista de todos los empleados
+    // Metodo para obtener todas las tareas
     @GetMapping
-    public ResponseEntity<List<TareaDTO>> getAllEmpleados() {
+    public ResponseEntity<List<TareaDTO>> getAllTareas() {
         List<TareaDTO> tareas = tareaService.findAll();
-        // Envuelve la respuesta en un objeto HTTP con estado 200 OK
         return ResponseEntity.ok(tareas);
     }
-    // Crea un nuevo empleado
-    @PostMapping                                  // Valida que el DTO cumple con las restricciones definidas
-    // Permite recibir el JSON del usuario y mapearlo al objeto EmpleadoDTO
-    public ResponseEntity<TareaDTO> createEmpleado(@Valid @RequestBody TareaDTO tareaDTO) {
+
+    // Metodo para crear una nueva tarea
+    @PostMapping
+    public ResponseEntity<TareaDTO> createTarea(@Valid @RequestBody TareaDTO tareaDTO) {
         TareaDTO createdTarea = tareaService.save(tareaDTO);
-        // Construye una respuesta HTTP con el estado 201 CREATED. Este estado indica que el recurso (empleado) se
-        // creó correctamente en el servidor.           // Incluye el empleado creado en la respuesta
         return ResponseEntity.status(HttpStatus.CREATED).body(createdTarea);
     }
+
+    // Metodo para crear una nueva tarea asignada por un jefe
+    @PostMapping("/jefe")
+    public ResponseEntity<TareaDTO> crearTareaAsignada(@Valid @RequestBody TareaDTO tareaDTO) {
+        // 1. Obtener el nombre de usuario del jefe autenticado
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String jefeNombreUsuario = userDetails.getUsername();
+
+        // 2. Llamar al servicio para guardar la tarea, pasando el nombre del jefe
+        TareaDTO nuevaTarea = tareaService.saveTareaForJefe(tareaDTO, jefeNombreUsuario);
+
+        // 3. Devolver la respuesta
+        return new ResponseEntity<>(nuevaTarea, HttpStatus.CREATED);
+    }
 }
+
