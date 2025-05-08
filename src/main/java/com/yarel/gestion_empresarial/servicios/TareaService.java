@@ -51,7 +51,7 @@ public class TareaService {
         return tareaMapper.toDto(tarea);
     }
 
-    // Nuevo método para guardar una tarea asignada por un jefe
+    // Metodo para guardar una tarea asignada por un jefe
     @Transactional
     public TareaDTO saveTareaForJefe(TareaDTO tareaDTO, String jefeNombreUsuario) {
         Tarea tarea = tareaMapper.toEntity(tareaDTO);
@@ -70,6 +70,17 @@ public class TareaService {
 
         tarea = tareaRepository.save(tarea);
         return tareaMapper.toDto(tarea);
+    }
+
+
+    // Metodo para buscar tareas de un empleado
+    @Transactional(readOnly = true)
+    public List<TareaDTO> findByEmpleadoId(Long empleadoId) {
+        Empleado empleado = empleadoRepository.findById(empleadoId)
+                .orElseThrow(() -> new RuntimeException("Empleado no encontrado con ID: " + empleadoId));
+
+        List<Tarea> tareas = tareaRepository.findByEmpleado(empleado);
+        return tareaMapper.toDtoList(tareas);
     }
 }
 

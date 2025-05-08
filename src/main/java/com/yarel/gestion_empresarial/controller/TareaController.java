@@ -1,17 +1,21 @@
 package com.yarel.gestion_empresarial.controller;
 
 import com.yarel.gestion_empresarial.dto.tarea.TareaDTO;
+import com.yarel.gestion_empresarial.entidades.Empleado;
+import com.yarel.gestion_empresarial.repositorios.EmpleadoRepository;
 import com.yarel.gestion_empresarial.servicios.TareaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.annotation.Validated;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,6 +24,7 @@ import java.util.List;
 public class TareaController {
 
     private final TareaService tareaService;
+    private final EmpleadoRepository empleadoRepository;
 
     // Metodo para obtener todas las tareas
     @GetMapping
@@ -48,6 +53,37 @@ public class TareaController {
 
         // 3. Devolver la respuesta
         return new ResponseEntity<>(nuevaTarea, HttpStatus.CREATED);
+    }
+
+
+    // Metodo para que un empleado pueda ver sus tareas
+    @GetMapping("/empleado/{empleadoId}")
+    public ResponseEntity<List<TareaDTO>> getTareasByEmpleadoId(@PathVariable Long empleadoId) {
+        // Obtener el usuario autenticado
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        // Verificar que el empleado solo pueda ver sus propias tareas
+        Optional<Empleado> empleadoOpt = empleadoRepository.findById(empleadoId);
+        if (empleadoOpt.isEmpty()) {
+            // Si no se encuentra el empleado, se devuelve un código 404 Not Found, indicando que el empleado no existe
+            return ResponseEntity.notFound().build();
+        }
+
+        // Si el usuario autenticado no es el mismo empleado (empleado.getNombreUsuario().equals(username)), se verifica
+        //si tiene un rol de jefe o rrhh que tambien tienen acceso a ver las tareas de los empleados
+        Empleado empleado = empleadoOpt.get();
+        if (!empleado.getNombreUsuario().equals(username) &&
+                !authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_JEFE")) &&
+                !authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_RRHH"))) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        // Usar el servicio para obtener las tareas
+        List<TareaDTO> tareasDTO = tareaService.findByEmpleadoId(empleadoId);
+
+        // Retorna la lista de tareas con código 200 OK
+        return ResponseEntity.ok(tareasDTO);
     }
 }
 
