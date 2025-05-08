@@ -66,7 +66,7 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/h2-console/**")).hasRole("ADMIN")
 
 
-                        // Restringir acceso a tareas según el r ol
+                        // Restringir acceso a tareas según el rol
                         .requestMatchers(new AntPathRequestMatcher("/tareas/jefe")).hasRole("JEFE") // Jefe crea tareas
                         .requestMatchers(new AntPathRequestMatcher("/tareas/**")).hasAnyRole("JEFE", "EMPLEADO", "RRHH") //Acceso a todos
 

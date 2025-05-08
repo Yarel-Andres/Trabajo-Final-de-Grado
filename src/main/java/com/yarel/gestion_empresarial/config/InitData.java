@@ -4,6 +4,7 @@ import com.yarel.gestion_empresarial.entidades.*;
 import com.yarel.gestion_empresarial.repositorios.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +17,9 @@ import java.util.HashSet;
 import java.util.HashMap;
 import java.util.Map;
 
+// ** Esta anotación hace que InitData solo se active con el perfil "dev-init", al crear la base de datos
+// para la aplicacion debemos inhabilitar el initdata para evitar problemas de datos duplicados**
+@Profile("dev-init")
 // Marca esta clase para que Spring la registre como un componente del contexto de la aplicación
 @Component
 // Es parte de Lombok y genera un constructor para todas las propiedades declaradas como final
