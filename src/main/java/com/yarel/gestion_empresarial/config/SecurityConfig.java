@@ -28,11 +28,18 @@ public class SecurityConfig {
     // Se busca el usuario en usuarioRepository y, si existe, se transforma en un usuario de Spring Security
     public UserDetailsService userDetailsService(UsuarioRepository usuarioRepository) {
         return username -> {
+            // Primero intentamos buscar por nombre de usuario
             Optional<Usuario> usuario = usuarioRepository.findByNombreUsuario(username);
-            // Si el usuario se encuentra, se crea una instancia de User con su nombre de usuario, contraseña yrol
+
+            // Si no encontramos por nombre de usuario, intentamos por nombre completo
+            if (usuario.isEmpty()) {
+                usuario = usuarioRepository.findByNombreCompleto(username);
+            }
+
+            // Si el usuario se encuentra, se crea una instancia de User con su nombre de usuario, contraseña y rol
             if (usuario.isPresent()) {
                 return org.springframework.security.core.userdetails.User.builder()
-                        .username(usuario.get().getNombreUsuario())
+                        .username(usuario.get().getNombreCompleto()) // Usamos nombre completo como username
                         .password(usuario.get().getContraseña())
                         .roles(usuario.get().getRol().name())
                         .build();

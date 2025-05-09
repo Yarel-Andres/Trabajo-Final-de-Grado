@@ -2,10 +2,8 @@ package com.yarel.gestion_empresarial.repositorios;
 
 import com.yarel.gestion_empresarial.entidades.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
-
 // Importa la anotación @Repository, que marca la clase como un repositorio
 import org.springframework.stereotype.Repository;
-
 // Importa Optional, que se usa para manejar valores que pueden ser null
 import java.util.Optional;
 
@@ -20,7 +18,11 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     Optional<Usuario> findByNombreUsuario(String nombreUsuario);
     Optional<Usuario> findByCorreo(String correo);
 
+    // Añadimos metodo para buscar por nombre completo
+    Optional<Usuario> findByNombreCompleto(String nombreCompleto);
+
     // Devuelven true o false si el usuario buscado existe o no
     boolean existsByNombreUsuario(String nombreUsuario);
     boolean existsByCorreo(String correo);
+    boolean existsByNombreCompleto(String nombreCompleto);
 }

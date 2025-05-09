@@ -21,6 +21,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.HashSet;
+import java.util.Optional;
 
 @Controller
 public class VistasController {
@@ -87,8 +88,19 @@ public class VistasController {
         }
 
         try {
+            // Buscar el nombre de usuario del jefe por su nombre completo
+            String nombreCompleto = auth.getName();
+            Optional<UsuarioDTO> usuarioOpt = usuarioService.findByNombreCompleto(nombreCompleto);
+
+            if (usuarioOpt.isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "No se pudo encontrar el usuario");
+                return "redirect:/tareas/asignar";
+            }
+
+            String nombreUsuario = usuarioOpt.get().getNombreUsuario();
+
             // Asignar la tarea usando el servicio existente
-            TareaDTO nuevaTarea = tareaService.saveTareaForJefe(tarea, auth.getName());
+            TareaDTO nuevaTarea = tareaService.saveTareaForJefe(tarea, nombreUsuario);
             redirectAttributes.addFlashAttribute("mensaje", "Tarea asignada correctamente");
             return "redirect:/tareas/confirmacion";
         } catch (Exception e) {
@@ -105,13 +117,13 @@ public class VistasController {
     @GetMapping("/tareas/ver")
     public String verTareas(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = auth.getName();
+        String nombreCompleto = auth.getName();
 
-        // Obtener el ID del empleado actual
+        // Obtener el ID del empleado actual por su nombre completo
         Long empleadoId = null;
         List<EmpleadoDTO> empleados = empleadoService.findAll();
         for (EmpleadoDTO empleado : empleados) {
-            if (empleado.getNombreUsuario().equals(username)) {
+            if (empleado.getNombreCompleto().equals(nombreCompleto)) {
                 empleadoId = empleado.getId();
                 break;
             }
@@ -151,7 +163,6 @@ public class VistasController {
         return "reuniones/crear";
     }
 
-
     @PostMapping("/reuniones/crear")
     public String crearReunion(@ModelAttribute ReunionDTO reunion, @RequestParam(value = "participantesIds", required = false) List<Long> participantesIds, RedirectAttributes redirectAttributes) {
         // Verificar que el usuario es un jefe
@@ -161,11 +172,16 @@ public class VistasController {
         }
 
         try {
-            // Debug - imprimir valores recibidos
-            System.out.println("Título: " + reunion.getTitulo());
-            System.out.println("Fecha y hora: " + reunion.getFechaHora());
-            System.out.println("Sala: " + reunion.getSala());
-            System.out.println("Participantes IDs: " + participantesIds);
+            // Buscar el nombre de usuario del jefe por su nombre completo
+            String nombreCompleto = auth.getName();
+            Optional<UsuarioDTO> usuarioOpt = usuarioService.findByNombreCompleto(nombreCompleto);
+
+            if (usuarioOpt.isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "No se pudo encontrar el usuario");
+                return "redirect:/reuniones/crear";
+            }
+
+            String nombreUsuario = usuarioOpt.get().getNombreUsuario();
 
             // Verificar que los datos necesarios estén presentes
             if (reunion.getTitulo() == null || reunion.getTitulo().trim().isEmpty()) {
@@ -186,14 +202,12 @@ public class VistasController {
             // Asignar los participantes seleccionados
             if (participantesIds != null && !participantesIds.isEmpty()) {
                 reunion.setParticipantesIds(new HashSet<>(participantesIds));
-                System.out.println("Participantes asignados: " + reunion.getParticipantesIds());
             } else {
-                System.out.println("No se seleccionaron participantes");
                 reunion.setParticipantesIds(new HashSet<>());
             }
 
             // Asignar la reunión usando el servicio
-            ReunionDTO nuevaReunion = reunionService.saveReunionForJefe(reunion, auth.getName());
+            ReunionDTO nuevaReunion = reunionService.saveReunionForJefe(reunion, nombreUsuario);
             redirectAttributes.addFlashAttribute("mensaje", "Reunión programada correctamente");
             return "redirect:/reuniones/confirmacion";
         } catch (Exception e) {
@@ -211,13 +225,13 @@ public class VistasController {
     @GetMapping("/reuniones/ver")
     public String verReuniones(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = auth.getName();
+        String nombreCompleto = auth.getName();
 
-        // Obtener el ID del usuario actual
+        // Obtener el ID del usuario actual por su nombre completo
         Long usuarioId = null;
         List<UsuarioDTO> usuarios = usuarioService.findAll();
         for (UsuarioDTO usuario : usuarios) {
-            if (usuario.getNombreUsuario().equals(username)) {
+            if (usuario.getNombreCompleto().equals(nombreCompleto)) {
                 usuarioId = usuario.getId();
                 break;
             }
@@ -234,7 +248,4 @@ public class VistasController {
 
         return "reuniones/ver";
     }
-
-
-
 }

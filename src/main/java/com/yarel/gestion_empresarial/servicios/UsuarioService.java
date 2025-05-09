@@ -57,15 +57,16 @@ public class UsuarioService {
     }
 
     /**
-     * Busca un usuario por su correo electrónico
-     * @param correo Correo electrónico
+     * Busca un usuario por su nombre completo
+     * @param nombreCompleto Nombre completo del usuario
      * @return DTO del usuario encontrado o vacío si no existe
      */
     @Transactional(readOnly = true)
-    public Optional<UsuarioDTO> findByCorreo(String correo) {
-        return usuarioRepository.findByCorreo(correo)
+    public Optional<UsuarioDTO> findByNombreCompleto(String nombreCompleto) { // <-- Novedad aquí
+        return usuarioRepository.findByNombreCompleto(nombreCompleto)
                 .map(usuarioMapper::toDto);
     }
+
 
     /**
      * Verifica si existe un usuario con el nombre de usuario dado
@@ -78,12 +79,14 @@ public class UsuarioService {
     }
 
     /**
-     * Verifica si existe un usuario con el correo electrónico dado
-     * @param correo Correo electrónico a verificar
+     * Verifica si existe un usuario con el nombre completo dado
+     * @param nombreCompleto Nombre completo a verificar
      * @return true si existe, false en caso contrario
      */
     @Transactional(readOnly = true)
-    public boolean existsByCorreo(String correo) {
-        return usuarioRepository.existsByCorreo(correo);
+    public boolean existsByNombreCompleto(String nombreCompleto) { // <-- Novedad aquí
+        return usuarioRepository.existsByNombreCompleto(nombreCompleto);
     }
+
+
 }

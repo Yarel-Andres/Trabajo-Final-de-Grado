@@ -17,6 +17,9 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+// Genera automáticamente equals() y hashCode().
+// callSuper = true: Incluye los campos de la clase padre (Usuario) en la comparación.
+// exclude = {"tareas"}: Excluye la colección 'tareas' para evitar ciclos infinitos.
 @EqualsAndHashCode(callSuper = true, exclude = {"tareas"})
 @DiscriminatorValue("EMPLEADO")
 public class Empleado extends Usuario {
@@ -32,7 +35,6 @@ public class Empleado extends Usuario {
 
     @Column
     private Double salario;
-
 
     // Define una relacion de 1 a n entre empleado y tarea, un empleado puede tener muchas tareas
     // las tareas del empleado no se cargarán inmediatamente, sino solo cuando sean necesarias
