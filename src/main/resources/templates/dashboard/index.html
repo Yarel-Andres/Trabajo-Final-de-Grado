@@ -13,14 +13,18 @@
         <h2>Dashboard</h2>
         <p>Bienvenido al Sistema de Gestión Empresarial</p>
 
+        <!-- Opciones de jefe -->
         <div th:if="${isJefe}">
             <h3>Opciones de Jefe</h3>
             <a th:href="@{/tareas/asignar}" class="btn">Asignar Tarea</a>
+            <a th:href="@{/reuniones/crear}" class="btn">Programar Reunión</a>
         </div>
 
+        <!--Opciones de empleado -->
         <div th:if="${isEmpleado}">
             <h3>Opciones de Empleado</h3>
             <a th:href="@{/tareas/ver}" class="btn">Ver Mis Tareas</a>
+            <a th:href="@{/reuniones/ver}" class="btn">Ver Mis Reuniones</a>
         </div>
     </div>
 </div>

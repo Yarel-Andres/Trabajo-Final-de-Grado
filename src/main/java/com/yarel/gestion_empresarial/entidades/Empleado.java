@@ -3,6 +3,7 @@ package com.yarel.gestion_empresarial.entidades;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
@@ -16,6 +17,7 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper = true, exclude = {"tareas"})
 @DiscriminatorValue("EMPLEADO")
 public class Empleado extends Usuario {
 
@@ -33,9 +35,8 @@ public class Empleado extends Usuario {
 
 
     // Define una relacion de 1 a n entre empleado y tarea, un empleado puede tener muchas tareas
-                                    // las tareas del empleado no se cargarán inmediatamente, sino solo cuando sean necesarias
+    // las tareas del empleado no se cargarán inmediatamente, sino solo cuando sean necesarias
     @OneToMany(mappedBy = "empleado", fetch = FetchType.LAZY)
     // Se usa Set<Tarea> para evitar tareas duplicadas y new HashSet<>() inicializa la colección vacía.
     private Set<Tarea> tareas = new HashSet<>();
 }
-

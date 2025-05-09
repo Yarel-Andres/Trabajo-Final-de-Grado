@@ -3,6 +3,7 @@ package com.yarel.gestion_empresarial.entidades;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
@@ -14,6 +15,7 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper = true, exclude = {"tareasAsignadas", "proyectos", "reuniones"})
 @DiscriminatorValue("JEFE")
 public class Jefe extends Usuario {
 

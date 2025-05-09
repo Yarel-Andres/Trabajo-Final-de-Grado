@@ -4,10 +4,12 @@ package com.yarel.gestion_empresarial.entidades;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Objects;
 
 // Indica que esta clase es una entidad JPA que se mapea con la base de datos
 @Entity
@@ -21,6 +23,9 @@ import java.util.Set;
 
 @NoArgsConstructor
 @AllArgsConstructor
+
+// Excluye las colecciones del hashCode y equals para evitar ciclos infinitos
+@EqualsAndHashCode(exclude = {"tareas", "proyectos", "reuniones", "registrosTiempo"})
 
 // Define una estrategia de herencia. Esto significa que si otras clases extienden esta clase base (Usuario), las
 // tablas estarán unidas mediante claves foraneas
@@ -60,5 +65,21 @@ public class Usuario {
     // Enum para los roles
     public enum RolEnum {
         RRHH, JEFE, EMPLEADO
+    }
+
+    // Implementación personalizada de hashCode para evitar ciclos infinitos
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, nombreUsuario, correo);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Usuario usuario = (Usuario) o;
+        return Objects.equals(id, usuario.id) &&
+                Objects.equals(nombreUsuario, usuario.nombreUsuario) &&
+                Objects.equals(correo, usuario.correo);
     }
 }

@@ -74,16 +74,10 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/tareas/**")).hasAnyRole("JEFE", "EMPLEADO", "RRHH")
 
 
-
-                        /* Comentamos de momento los accesos a tareas, estos son los que funcionan para las pruebas en
-                            el back con postman
-                        // Restringir acceso a tareas según el rol
-                        .requestMatchers(new AntPathRequestMatcher("/tareas/jefe")).hasRole("JEFE") // Jefe crea tareas
-                        .requestMatchers(new AntPathRequestMatcher("/tareas/**")).hasAnyRole("JEFE", "EMPLEADO", "RRHH") //Acceso a todos
-
-                        // Permitir a los empleados ver sus propias tareas, asi como a jefes y rrhh
-                        .requestMatchers(new AntPathRequestMatcher("/api/tareas/empleado/**")).hasAnyRole("EMPLEADO", "JEFE", "RRHH")
-                        */
+                        // Rutas para reuniones
+                        .requestMatchers(new AntPathRequestMatcher("/reuniones/crear")).hasRole("JEFE")
+                        .requestMatchers(new AntPathRequestMatcher("/reuniones/ver")).hasAnyRole("JEFE", "EMPLEADO", "RRHH")
+                        .requestMatchers(new AntPathRequestMatcher("/reuniones/**")).hasAnyRole("JEFE", "EMPLEADO", "RRHH")
 
 
                         // Cualquier otra petición requiere autenticación

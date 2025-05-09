@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head('Reunión Programada')">
+</head>
+<body>
+<header th:replace="fragments/layout :: header(${#authentication.name})">
+</header>
+
+<div class="container">
+    <div class="card">
+        <h2>Reunión Programada Correctamente</h2>
+
+        <div class="alert alert-success">
+            <p th:text="${mensaje ?: 'La reunión ha sido programada correctamente.'}">La reunión ha sido programada correctamente.</p>
+        </div>
+
+        <div>
+            <a th:href="@{/reuniones/crear}" class="btn">Programar Otra Reunión</a>
+            <a th:href="@{/dashboard}" class="btn btn-secondary">Volver al Dashboard</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

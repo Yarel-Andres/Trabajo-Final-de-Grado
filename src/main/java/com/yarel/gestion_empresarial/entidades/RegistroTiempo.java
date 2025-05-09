@@ -3,16 +3,19 @@ package com.yarel.gestion_empresarial.entidades;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Table(name = "registros_tiempo")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 public class RegistroTiempo {
 
     @Id
@@ -52,4 +55,21 @@ public class RegistroTiempo {
 
     @Column
     private String comentario;
+
+    // Implementación personalizada de hashCode para evitar ciclos infinitos
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, fechaRegistro, horaInicio, horaFin);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RegistroTiempo registro = (RegistroTiempo) o;
+        return Objects.equals(id, registro.id) &&
+                Objects.equals(fechaRegistro, registro.fechaRegistro) &&
+                Objects.equals(horaInicio, registro.horaInicio) &&
+                Objects.equals(horaFin, registro.horaFin);
+    }
 }

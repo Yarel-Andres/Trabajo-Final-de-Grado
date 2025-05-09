@@ -3,18 +3,21 @@ package com.yarel.gestion_empresarial.entidades;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Objects;
 
 @Entity
 @Table(name = "tareas")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(exclude = {"registrosTiempo"})
 public class Tarea {
 
     @Id
@@ -55,9 +58,24 @@ public class Tarea {
 
     @Column
     private String prioridad;
-                                                        // permite que cualquier cambio en Tarea afecte también a RegistroTiempo
-                                                        // (por ejemplo, si se elimina una tarea, también se eliminan sus registros de tiempo)
+    // permite que cualquier cambio en Tarea afecte también a RegistroTiempo
+    // (por ejemplo, si se elimina una tarea, también se eliminan sus registros de tiempo)
     @OneToMany(mappedBy = "tarea", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<RegistroTiempo> registrosTiempo = new HashSet<>();
-}
 
+    // Implementación personalizada de hashCode para evitar ciclos infinitos
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, titulo, fechaCreacion);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Tarea tarea = (Tarea) o;
+        return Objects.equals(id, tarea.id) &&
+                Objects.equals(titulo, tarea.titulo) &&
+                Objects.equals(fechaCreacion, tarea.fechaCreacion);
+    }
+}

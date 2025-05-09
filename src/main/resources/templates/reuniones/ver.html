@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head('Mis Reuniones')">
+</head>
+<body>
+<header th:replace="fragments/layout :: header(${#authentication.name})">
+</header>
+
+<div class="container">
+    <div th:replace="fragments/layout :: messages"></div>
+
+    <div class="card">
+        <h2>Mis Reuniones Programadas</h2>
+
+        <div th:if="${reuniones == null || reuniones.empty}">
+            <p>No tienes reuniones programadas actualmente.</p>
+        </div>
+
+        <div th:if="${reuniones != null && !reuniones.empty}">
+            <table>
+                <thead>
+                <tr>
+                    <th>Título</th>
+                    <th>Descripción</th>
+                    <th>Fecha y Hora</th>
+                    <th>Sala</th>
+                    <th>Organizador</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="reunion : ${reuniones}">
+                    <td th:text="${reunion.titulo}">Título</td>
+                    <td th:text="${reunion.descripcion}">Descripción</td>
+                    <td th:text="${#temporals.format(reunion.fechaHora, 'dd/MM/yyyy HH:mm')}">Fecha y Hora</td>
+                    <td th:text="${reunion.sala}">Sala</td>
+                    <td>Jefe</td> <!-- Aquí podrías mostrar el nombre del jefe si lo incluyes en el DTO -->
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div style="margin-top: 20px;">
+            <a th:href="@{/dashboard}" class="btn">Volver al Dashboard</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

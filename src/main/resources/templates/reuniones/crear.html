@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head('Programar Reunión')">
+</head>
+<body>
+<header th:replace="fragments/layout :: header(${#authentication.name})">
+</header>
+
+<div class="container">
+    <div th:replace="fragments/layout :: messages"></div>
+
+    <div class="card">
+        <h2>Programar Nueva Reunión</h2>
+
+        <form th:action="@{/reuniones/crear}" th:object="${reunion}" method="post">
+            <div class="form-group">
+                <label for="titulo">Título:</label>
+                <input type="text" id="titulo" th:field="*{titulo}" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="descripcion">Descripción:</label>
+                <textarea id="descripcion" th:field="*{descripcion}" class="form-control" rows="4"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="fechaHora">Fecha y Hora:</label>
+                <input type="datetime-local" id="fechaHora" th:field="*{fechaHora}" class="form-control" required
+                       th:attr="min=${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd''T''00:00')}">
+            </div>
+
+            <div class="form-group">
+                <label for="sala">Sala:</label>
+                <input type="text" id="sala" th:field="*{sala}" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label>Participantes:</label>
+                <div style="max-height: 200px; overflow-y: auto; border: 1px solid #ddd; padding: 10px;">
+                    <div th:each="empleado : ${empleados}" class="checkbox-item">
+                        <input type="checkbox" th:id="${'participante-' + empleado.id}"
+                               name="participantesIds" th:value="${empleado.id}" class="form-check-input">
+                        <label th:for="${'participante-' + empleado.id}" th:text="${empleado.nombreCompleto}"
+                               class="form-check-label"></label>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn">Programar Reunión</button>
+            <a th:href="@{/dashboard}" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
+</div>
+
+<style>
+    .checkbox-item {
+        margin-bottom: 8px;
+    }
+    .form-check-input {
+        margin-right: 8px;
+    }
+</style>
+</body>
+</html>

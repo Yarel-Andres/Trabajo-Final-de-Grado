@@ -3,6 +3,7 @@ package com.yarel.gestion_empresarial.entidades;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
@@ -12,6 +13,7 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 @DiscriminatorValue("RRHH")
 public class RRHH extends Usuario {
 
@@ -24,4 +26,3 @@ public class RRHH extends Usuario {
     @Column(name = "fecha_incorporacion_rrhh")
     private LocalDate fechaIncorporacionRRHH;
 }
-
