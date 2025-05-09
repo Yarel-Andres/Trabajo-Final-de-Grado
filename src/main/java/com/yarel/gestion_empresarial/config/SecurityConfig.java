@@ -100,7 +100,7 @@ public class SecurityConfig {
                         .logoutSuccessUrl("/")
                         .permitAll()
                 )
-                // Configuración de seguridad de los encabezados HTTP
+                // Configuración  de seguridad de los encabezados HTTP
                 .headers(headers -> headers
                         .frameOptions(frameOptions -> frameOptions.sameOrigin())
                 );
