@@ -58,38 +58,52 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 // Aquí se establecen reglas de acceso a diferentes endpoints
                 .authorizeHttpRequests(authz -> authz
-                        // Permitir acceso a la página de inicio y registro sin autenticación
+                        // Permitir acceso a recursos estáticos y página de inicio
                         .requestMatchers(new AntPathRequestMatcher("/")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/css/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/js/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/registro/**")).permitAll()
 
                         // Permitir acceso a h2-console solo a administradores (para desarrollo)
                         .requestMatchers(new AntPathRequestMatcher("/h2-console/**")).hasRole("ADMIN")
 
 
+                        // Rutas para tareas
+                        .requestMatchers(new AntPathRequestMatcher("/tareas/asignar")).hasRole("JEFE")
+                        .requestMatchers(new AntPathRequestMatcher("/tareas/ver")).hasRole("EMPLEADO")
+                        .requestMatchers(new AntPathRequestMatcher("/tareas/**")).hasAnyRole("JEFE", "EMPLEADO", "RRHH")
+
+
+
+                        /* Comentamos de momento los accesos a tareas, estos son los que funcionan para las pruebas en
+                            el back con postman
                         // Restringir acceso a tareas según el rol
                         .requestMatchers(new AntPathRequestMatcher("/tareas/jefe")).hasRole("JEFE") // Jefe crea tareas
                         .requestMatchers(new AntPathRequestMatcher("/tareas/**")).hasAnyRole("JEFE", "EMPLEADO", "RRHH") //Acceso a todos
 
                         // Permitir a los empleados ver sus propias tareas, asi como a jefes y rrhh
                         .requestMatchers(new AntPathRequestMatcher("/api/tareas/empleado/**")).hasAnyRole("EMPLEADO", "JEFE", "RRHH")
+                        */
 
 
                         // Cualquier otra petición requiere autenticación
                         .anyRequest().authenticated()
                 )
                 .formLogin(formLogin -> formLogin
-                        .permitAll() // Permite a todos acceder al formulario de login
-                        .defaultSuccessUrl("/dashboard", true) // Redirige al dashboard tras login exitoso
+                        .loginPage("/")  // Usar nuestra página de login personalizada
+                        .loginProcessingUrl("/login")  // URL para procesar el login
+                        .defaultSuccessUrl("/dashboard", true)
+                        .permitAll()
                 )
                 .logout(logout -> logout
-                        .permitAll() // Permite a todos acceder al logout
-                        .logoutSuccessUrl("/") // Redirige a la página de inicio tras logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/")
+                        .permitAll()
                 )
                 // Configuración de seguridad de los encabezados HTTP
                 .headers(headers -> headers
-                        .frameOptions(frameOptions -> frameOptions.sameOrigin()) // Configura la opción de SameOrigin
+                        .frameOptions(frameOptions -> frameOptions.sameOrigin())
                 );
-
-        return http.build();
+                 return http.build();
     }
 }

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head('Asignar Tarea')">
+</head>
+<body>
+<header th:replace="fragments/layout :: header(${#authentication.name})">
+</header>
+
+<div class="container">
+    <div th:replace="fragments/layout :: messages"></div>
+
+    <div class="card">
+        <h2>Asignar Nueva Tarea</h2>
+
+        <form th:action="@{/tareas/asignar}" th:object="${tarea}" method="post">
+            <div class="form-group">
+                <label for="titulo">Título:</label>
+                <input type="text" id="titulo" th:field="*{titulo}" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="descripcion">Descripción:</label>
+                <textarea id="descripcion" th:field="*{descripcion}" class="form-control" rows="4"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="empleadoId">Empleado:</label>
+                <select id="empleadoId" th:field="*{empleadoId}" class="form-control" required>
+                    <option value="">-- Seleccionar Empleado --</option>
+                    <option th:each="empleado : ${empleados}"
+                            th:value="${empleado.id}"
+                            th:text="${empleado.nombreCompleto}"></option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="fechaVencimiento">Fecha de Vencimiento:</label>
+                <input type="date" id="fechaVencimiento" th:field="*{fechaVencimiento}" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="prioridad">Prioridad:</label>
+                <select id="prioridad" th:field="*{prioridad}" class="form-control" required>
+                    <option value="ALTA">Alta</option>
+                    <option value="MEDIA">Media</option>
+                    <option value="BAJA">Baja</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn">Asignar Tarea</button>
+            <a th:href="@{/templates/dashboard}" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
+</div>
+</body>
+</html>

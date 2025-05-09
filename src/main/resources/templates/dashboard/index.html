@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head('Dashboard')">
+</head>
+<body>
+<header th:replace="fragments/layout :: header(${username})">
+</header>
+
+<div class="container">
+    <div th:replace="fragments/layout :: messages"></div>
+
+    <div class="card">
+        <h2>Dashboard</h2>
+        <p>Bienvenido al Sistema de Gestión Empresarial</p>
+
+        <div th:if="${isJefe}">
+            <h3>Opciones de Jefe</h3>
+            <a th:href="@{/tareas/asignar}" class="btn">Asignar Tarea</a>
+        </div>
+
+        <div th:if="${isEmpleado}">
+            <h3>Opciones de Empleado</h3>
+            <a th:href="@{/tareas/ver}" class="btn">Ver Mis Tareas</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

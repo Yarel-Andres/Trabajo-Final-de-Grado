@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head('Tarea Asignada')">
+</head>
+<body>
+<header th:replace="fragments/layout :: header(${#authentication.name})">
+</header>
+
+<div class="container">
+    <div class="card">
+        <h2>Tarea Asignada Correctamente</h2>
+
+        <div class="alert alert-success">
+            <p th:text="${mensaje ?: 'La tarea ha sido asignada correctamente.'}">La tarea ha sido asignada correctamente.</p>
+        </div>
+
+        <div>
+            <a th:href="@{/tareas/asignar}" class="btn">Asignar Otra Tarea</a>
+            <a th:href="@{/dashboard}" class="btn btn-secondary">Volver al Dashboard</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

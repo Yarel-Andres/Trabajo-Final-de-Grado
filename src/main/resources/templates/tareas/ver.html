@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head('Mis Tareas')">
+</head>
+<body>
+<header th:replace="fragments/layout :: header(${#authentication.name})">
+</header>
+
+<div class="container">
+    <div th:replace="fragments/layout :: messages"></div>
+
+    <div class="card">
+        <h2>Mis Tareas Asignadas</h2>
+
+        <div th:if="${tareas == null || tareas.empty}">
+            <p>No tienes tareas asignadas actualmente.</p>
+        </div>
+
+        <div th:if="${tareas != null && !tareas.empty}">
+            <table>
+                <thead>
+                <tr>
+                    <th>Título</th>
+                    <th>Descripción</th>
+                    <th>Fecha Vencimiento</th>
+                    <th>Prioridad</th>
+                    <th>Estado</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="tarea : ${tareas}">
+                    <td th:text="${tarea.titulo}">Título</td>
+                    <td th:text="${tarea.descripcion}">Descripción</td>
+                    <td th:text="${#temporals.format(tarea.fechaVencimiento, 'dd/MM/yyyy')}">Fecha</td>
+                    <td th:text="${tarea.prioridad}">Prioridad</td>
+                    <td th:text="${tarea.completada ? 'Completada' : 'Pendiente'}">Estado</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div style="margin-top: 20px;">
+            <a th:href="@{/dashboard}" class="btn">Volver al Dashboard</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title} + ' - Gestión Empresarial'">Gestión Empresarial</title>
+    <link rel="stylesheet" th:href="@{/templates/css/styles.css}">
+</head>
+<body>
+
+<header th:fragment="header(username)">
+    <div class="header">
+        <h1>Sistema de Gestión Empresarial</h1>
+        <div class="user-info">
+            <span th:text="'Usuario: ' + ${username}">Usuario</span>
+            <a th:href="@{/logout}" class="btn btn-danger">Cerrar sesión</a>
+        </div>
+    </div>
+</header>
+
+<div th:fragment="messages">
+    <div th:if="${mensaje}" class="alert alert-success" th:text="${mensaje}"></div>
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+</div>
+
+</body>
+</html>
