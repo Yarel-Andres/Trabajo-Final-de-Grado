@@ -24,6 +24,10 @@ public class ReunionDTO {
 
     private Long organizadorId;
 
+    // Lo utilizaremos para que en el campo de organizador de reuniones
+    // Apareza el nombre del dicho organizador en vez de jefe
+    private String organizadorNombre;
+
     private Set<Long> participantesIds;
     private Set<Long> registrosTiempoIds;
 
@@ -36,6 +40,7 @@ public class ReunionDTO {
                 ", fechaHora=" + fechaHora +
                 ", sala='" + sala + '\'' +
                 ", organizadorId=" + organizadorId +
+                ", organizadorNombre='" + organizadorNombre + '\'' +
                 ", participantesIds=" + participantesIds +
                 '}';
     }

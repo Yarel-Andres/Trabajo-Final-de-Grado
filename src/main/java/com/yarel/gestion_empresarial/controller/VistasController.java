@@ -209,6 +209,8 @@ public class VistasController {
             // Asignar la reunión usando el servicio
             ReunionDTO nuevaReunion = reunionService.saveReunionForJefe(reunion, nombreUsuario);
             redirectAttributes.addFlashAttribute("mensaje", "Reunión programada correctamente");
+            // Pasar la reunión creada a la vista de confirmación
+            redirectAttributes.addFlashAttribute("reunion", nuevaReunion);
             return "redirect:/reuniones/confirmacion";
         } catch (Exception e) {
             e.printStackTrace(); // Para ver el error completo en los logs
@@ -218,7 +220,9 @@ public class VistasController {
     }
 
     @GetMapping("/reuniones/confirmacion")
-    public String confirmacionReunion() {
+    public String confirmacionReunion(Model model) {
+        // No necesitamos añadir nada al modelo aquí, ya que la reunión
+        // se pasa como un atributo flash desde el método crearReunion
         return "reuniones/confirmacion";
     }
 

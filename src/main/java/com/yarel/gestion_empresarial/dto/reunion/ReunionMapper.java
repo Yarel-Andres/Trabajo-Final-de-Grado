@@ -30,6 +30,7 @@ public interface ReunionMapper {
 
     // Indica cómo mapear propiedades anidadas
     @Mapping(source = "organizador.id", target = "organizadorId")
+    @Mapping(source = "organizador.nombreCompleto", target = "organizadorNombre")
     // Indica cómo mapear una colección compleja a una colección de IDs.
     @Mapping(source = "participantes", target = "participantesIds", qualifiedByName = "participantesToIds")
     //  Metodo es para convertir un objeto Reunion en un ReunionDTO

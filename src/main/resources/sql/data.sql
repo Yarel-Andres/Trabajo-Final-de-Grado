@@ -1,11 +1,11 @@
 -- Insertar usuarios base (jefes)
 INSERT INTO usuarios (nombre_usuario, contraseña, correo, nombre_completo, rol, activo, tipo_usuario)
 VALUES
-    ('jefe1', 'password', 'jefe1@empresa.com', 'Antonio García', 'JEFE', true, 'JEFE'),
-    ('jefe2', 'password', 'jefe2@empresa.com', 'María López', 'JEFE', true, 'JEFE'),
-    ('jefe3', 'password', 'jefe3@empresa.com', 'Roberto Fernández', 'JEFE', true, 'JEFE'),
-    ('jefe4', 'password', 'jefe4@empresa.com', 'Lucía Martínez', 'JEFE', true, 'JEFE'),
-    ('jefe5', 'password', 'jefe5@empresa.com', 'Javier Rodríguez', 'JEFE', true, 'JEFE');
+    ('jefe1', 'pass', 'jefe1@empresa.com', 'Yarel', 'JEFE', true, 'JEFE'),
+    ('jefe2', 'pass', 'jefe2@empresa.com', 'Amado', 'JEFE', true, 'JEFE'),
+    ('jefe3', 'pass', 'jefe3@empresa.com', 'Moises', 'JEFE', true, 'JEFE'),
+    ('jefe4', 'pass', 'jefe4@empresa.com', 'Zacarias', 'JEFE', true, 'JEFE'),
+    ('jefe5', 'pass', 'jefe5@empresa.com', 'Efren', 'JEFE', true, 'JEFE');
 
 -- Insertar jefes (usando SELECT para obtener los IDs de los usuarios recién insertados)
 INSERT INTO jefes (id, fecha_nombramiento, nivel_responsabilidad)
@@ -22,12 +22,12 @@ SELECT id, '2023-01-05', 'Medio' FROM usuarios WHERE nombre_usuario = 'jefe5';
 -- Insertar usuarios base (empleados)
 INSERT INTO usuarios (nombre_usuario, contraseña, correo, nombre_completo, rol, activo, tipo_usuario)
 VALUES
-    ('empleado1', 'password', 'empleado1@empresa.com', 'Carlos Martínez', 'EMPLEADO', true, 'EMPLEADO'),
-    ('empleado2', 'password', 'empleado2@empresa.com', 'Laura Sánchez', 'EMPLEADO', true, 'EMPLEADO'),
-    ('empleado3', 'password', 'empleado3@empresa.com', 'David Fernández', 'EMPLEADO', true, 'EMPLEADO'),
-    ('empleado4', 'password', 'empleado4@empresa.com', 'Ana Gómez', 'EMPLEADO', true, 'EMPLEADO'),
-    ('empleado5', 'password', 'empleado5@empresa.com', 'Miguel Torres', 'EMPLEADO', true, 'EMPLEADO'),
-    ('empleado6', 'password', 'empleado6@empresa.com', 'Sofía Navarro', 'EMPLEADO', true, 'EMPLEADO');
+    ('empleado1', 'pass', 'empleado1@empresa.com', 'Edson', 'EMPLEADO', true, 'EMPLEADO'),
+    ('empleado2', 'pass', 'empleado2@empresa.com', 'Jose', 'EMPLEADO', true, 'EMPLEADO'),
+    ('empleado3', 'pass', 'empleado3@empresa.com', 'Ramiro', 'EMPLEADO', true, 'EMPLEADO'),
+    ('empleado4', 'pass', 'empleado4@empresa.com', 'Raul', 'EMPLEADO', true, 'EMPLEADO'),
+    ('empleado5', 'pass', 'empleado5@empresa.com', 'Erick', 'EMPLEADO', true, 'EMPLEADO'),
+    ('empleado6', 'pass', 'empleado6@empresa.com', 'Jaime', 'EMPLEADO', true, 'EMPLEADO');
 
 -- Insertar empleados (usando SELECT para obtener los IDs de los usuarios recién insertados)
 INSERT INTO empleados (id, fecha_contratacion, puesto, telefono, salario)

@@ -9,38 +9,50 @@
 <div class="container">
     <div th:replace="fragments/layout :: messages"></div>
 
-    <div class="card">
-        <h2>Mis Tareas Asignadas</h2>
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h2 class="card-title mb-4"><i class="fas fa-clipboard-list me-2"></i>Mis Tareas Asignadas</h2>
 
-        <div th:if="${tareas == null || tareas.empty}">
-            <p>No tienes tareas asignadas actualmente.</p>
-        </div>
+            <div th:if="${tareas == null || tareas.empty}" class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                <span>No tienes tareas asignadas actualmente.</span>
+            </div>
 
-        <div th:if="${tareas != null && !tareas.empty}">
-            <table>
-                <thead>
-                <tr>
-                    <th>Título</th>
-                    <th>Descripción</th>
-                    <th>Fecha Vencimiento</th>
-                    <th>Prioridad</th>
-                    <th>Estado</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="tarea : ${tareas}">
-                    <td th:text="${tarea.titulo}">Título</td>
-                    <td th:text="${tarea.descripcion}">Descripción</td>
-                    <td th:text="${#temporals.format(tarea.fechaVencimiento, 'dd/MM/yyyy')}">Fecha</td>
-                    <td th:text="${tarea.prioridad}">Prioridad</td>
-                    <td th:text="${tarea.completada ? 'Completada' : 'Pendiente'}">Estado</td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
+            <div th:if="${tareas != null && !tareas.empty}" class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                    <tr>
+                        <th>Título</th>
+                        <th>Descripción</th>
+                        <th>Fecha Vencimiento</th>
+                        <th>Prioridad</th>
+                        <th>Estado</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="tarea : ${tareas}">
+                        <td th:text="${tarea.titulo}">Título</td>
+                        <td th:text="${tarea.descripcion}">Descripción</td>
+                        <td th:text="${#temporals.format(tarea.fechaVencimiento, 'dd/MM/yyyy')}">Fecha</td>
+                        <td>
+                            <span th:if="${tarea.prioridad == 'ALTA'}" class="badge bg-danger">Alta</span>
+                            <span th:if="${tarea.prioridad == 'MEDIA'}" class="badge bg-warning text-dark">Media</span>
+                            <span th:if="${tarea.prioridad == 'BAJA'}" class="badge bg-info text-dark">Baja</span>
+                        </td>
+                        <td>
+                            <span th:if="${tarea.completada}" class="badge bg-success">Completada</span>
+                            <span th:unless="${tarea.completada}" class="badge bg-secondary">Pendiente</span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
 
-        <div style="margin-top: 20px;">
-            <a th:href="@{/dashboard}" class="btn">Volver al Dashboard</a>
+            <div class="mt-4">
+                <a th:href="@{/dashboard}" class="btn btn-primary">
+                    <i class="fas fa-arrow-left me-2"></i>Volver al Dashboard
+                </a>
+            </div>
         </div>
     </div>
 </div>

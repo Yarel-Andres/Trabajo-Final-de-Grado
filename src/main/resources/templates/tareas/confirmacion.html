@@ -7,16 +7,23 @@
 </header>
 
 <div class="container">
-    <div class="card">
-        <h2>Tarea Asignada Correctamente</h2>
+    <div class="card shadow-sm">
+        <div class="card-body text-center">
+            <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
+            <h2 class="mt-3 mb-4">Tarea Asignada Correctamente</h2>
 
-        <div class="alert alert-success">
-            <p th:text="${mensaje ?: 'La tarea ha sido asignada correctamente.'}">La tarea ha sido asignada correctamente.</p>
-        </div>
+            <div class="alert alert-success">
+                <p class="mb-0" th:text="${mensaje ?: 'La tarea ha sido asignada correctamente.'}">La tarea ha sido asignada correctamente.</p>
+            </div>
 
-        <div>
-            <a th:href="@{/tareas/asignar}" class="btn">Asignar Otra Tarea</a>
-            <a th:href="@{/dashboard}" class="btn btn-secondary">Volver al Dashboard</a>
+            <div class="d-flex justify-content-center gap-2 mt-4">
+                <a th:href="@{/tareas/asignar}" class="btn btn-success">
+                    <i class="fas fa-plus me-2"></i>Asignar Otra Tarea
+                </a>
+                <a th:href="@{/dashboard}" class="btn btn-secondary">
+                    <i class="fas fa-home me-2"></i>Volver al Dashboard
+                </a>
+            </div>
         </div>
     </div>
 </div>

@@ -9,22 +9,36 @@
 <div class="container">
     <div th:replace="fragments/layout :: messages"></div>
 
-    <div class="card">
-        <h2>Dashboard</h2>
-        <p>Bienvenido al Sistema de Gestión Empresarial</p>
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h2 class="card-title mb-4">Dashboard</h2>
+            <p class="lead">Bienvenido <span th:text="${username}" class="fw-bold text-success"></span> al Sistema de Gestión Empresarial</p>
 
-        <!-- Opciones de jefe -->
-        <div th:if="${isJefe}">
-            <h3>Opciones de Jefe</h3>
-            <a th:href="@{/tareas/asignar}" class="btn">Asignar Tarea</a>
-            <a th:href="@{/reuniones/crear}" class="btn">Programar Reunión</a>
-        </div>
+            <!-- Opciones de jefe -->
+            <div th:if="${isJefe}" class="mt-4">
+                <h3 class="h4 mb-3"><i class="fas fa-user-tie me-2"></i>Opciones de Jefe</h3>
+                <div class="d-flex flex-wrap gap-2">
+                    <a th:href="@{/tareas/asignar}" class="btn btn-success">
+                        <i class="fas fa-tasks me-2"></i>Asignar Tarea
+                    </a>
+                    <a th:href="@{/reuniones/crear}" class="btn btn-success">
+                        <i class="fas fa-calendar-plus me-2"></i>Programar Reunión
+                    </a>
+                </div>
+            </div>
 
-        <!--Opciones de empleado -->
-        <div th:if="${isEmpleado}">
-            <h3>Opciones de Empleado</h3>
-            <a th:href="@{/tareas/ver}" class="btn">Ver Mis Tareas</a>
-            <a th:href="@{/reuniones/ver}" class="btn">Ver Mis Reuniones</a>
+            <!--Opciones de empleado -->
+            <div th:if="${isEmpleado}" class="mt-4">
+                <h3 class="h4 mb-3"><i class="fas fa-user me-2"></i>Opciones de Empleado</h3>
+                <div class="d-flex flex-wrap gap-2">
+                    <a th:href="@{/tareas/ver}" class="btn btn-success">
+                        <i class="fas fa-clipboard-list me-2"></i>Ver Mis Tareas
+                    </a>
+                    <a th:href="@{/reuniones/ver}" class="btn btn-success">
+                        <i class="fas fa-calendar-alt me-2"></i>Ver Mis Reuniones
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 </div>
