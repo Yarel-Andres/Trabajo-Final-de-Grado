@@ -2,15 +2,12 @@ package com.yarel.gestion_empresarial.controller;
 
 import com.yarel.gestion_empresarial.dto.empleado.EmpleadoDTO;
 import com.yarel.gestion_empresarial.dto.proyecto.ProyectoDTO;
+import com.yarel.gestion_empresarial.dto.registroTiempo.RegistroTiempoDTO;
 import com.yarel.gestion_empresarial.dto.reunion.ReunionDTO;
 import com.yarel.gestion_empresarial.dto.tarea.TareaDTO;
 import com.yarel.gestion_empresarial.dto.usuario.UsuarioDTO;
 import com.yarel.gestion_empresarial.entidades.Usuario;
-import com.yarel.gestion_empresarial.servicios.EmpleadoService;
-import com.yarel.gestion_empresarial.servicios.ProyectoService;
-import com.yarel.gestion_empresarial.servicios.ReunionService;
-import com.yarel.gestion_empresarial.servicios.TareaService;
-import com.yarel.gestion_empresarial.servicios.UsuarioService;
+import com.yarel.gestion_empresarial.servicios.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -22,6 +19,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.HashSet;
 import java.util.Optional;
@@ -34,14 +32,16 @@ public class VistasController {
     private final ReunionService reunionService;
     private final UsuarioService usuarioService;
     private final ProyectoService proyectoService;
+    private final RegistroTiempoService registroTiempoService;
 
     @Autowired
-    public VistasController(EmpleadoService empleadoService, TareaService tareaService, ReunionService reunionService, UsuarioService usuarioService, ProyectoService proyectoService) {
+    public VistasController(EmpleadoService empleadoService, TareaService tareaService, ReunionService reunionService, UsuarioService usuarioService, ProyectoService proyectoService, RegistroTiempoService registroTiempoService) {
         this.empleadoService = empleadoService;
         this.tareaService = tareaService;
         this.reunionService = reunionService;
         this.usuarioService = usuarioService;
         this.proyectoService = proyectoService;
+        this.registroTiempoService = registroTiempoService;
     }
 
     @GetMapping("/")
@@ -370,5 +370,144 @@ public class VistasController {
         model.addAttribute("isJefe", isJefe);
 
         return "proyectos/ver";
+    }
+
+
+
+    // Mostrar formulario para registrar tiempo
+    @GetMapping("/registros-tiempo/crear")
+    public String crearRegistroTiempoForm(Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String nombreCompleto = auth.getName();
+
+        // Obtener el ID del usuario actual
+        Optional<UsuarioDTO> usuarioOpt = usuarioService.findByNombreCompleto(nombreCompleto);
+        if (usuarioOpt.isEmpty()) {
+            model.addAttribute("error", "No se pudo encontrar el usuario");
+            return "registros-tiempo/crear";
+        }
+
+        // Obtener tareas, proyectos y reuniones disponibles
+        List<TareaDTO> tareas = new ArrayList<>();
+        List<ProyectoDTO> proyectos = new ArrayList<>();
+        List<ReunionDTO> reuniones = new ArrayList<>();
+
+        if (auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_EMPLEADO"))) {
+            // Si es empleado, mostrar solo sus tareas, proyectos y reuniones
+            Long usuarioId = usuarioOpt.get().getId();
+            tareas = tareaService.findByEmpleadoId(usuarioId);
+            proyectos = proyectoService.findByEmpleadoId(usuarioId);
+            reuniones = reunionService.findByParticipanteId(usuarioId);
+        } else if (auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_JEFE"))) {
+            // Si es jefe, mostrar todas las tareas, proyectos y reuniones que ha creado
+            Long usuarioId = usuarioOpt.get().getId();
+            tareas = tareaService.findAll(); // Filtrar por jefe si es necesario
+            proyectos = proyectoService.findByJefeId(usuarioId);
+            reuniones = reunionService.findAll(); // Filtrar por organizador si es necesario
+        }
+
+        model.addAttribute("tareas", tareas);
+        model.addAttribute("proyectos", proyectos);
+        model.addAttribute("reuniones", reuniones);
+        model.addAttribute("registroTiempo", new RegistroTiempoDTO());
+
+        return "registros-tiempo/crear";
+    }
+
+    // Procesar el formulario de registro de tiempo
+    @PostMapping("/registros-tiempo/crear")
+    public String crearRegistroTiempo(@ModelAttribute RegistroTiempoDTO registroTiempo, RedirectAttributes redirectAttributes) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String nombreCompleto = auth.getName();
+
+        try {
+            // Buscar el nombre de usuario por su nombre completo
+            Optional<UsuarioDTO> usuarioOpt = usuarioService.findByNombreCompleto(nombreCompleto);
+
+            if (usuarioOpt.isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "No se pudo encontrar el usuario");
+                return "redirect:/registros-tiempo/crear";
+            }
+
+            String nombreUsuario = usuarioOpt.get().getNombreUsuario();
+
+            // Guardar el registro de tiempo
+            RegistroTiempoDTO nuevoRegistro = registroTiempoService.saveForUsuario(registroTiempo, nombreUsuario);
+            redirectAttributes.addFlashAttribute("mensaje", "Tiempo registrado correctamente");
+            return "redirect:/registros-tiempo/confirmacion";
+        } catch (Exception e) {
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("error", "Error al registrar el tiempo: " + e.getMessage());
+            return "redirect:/registros-tiempo/crear";
+        }
+    }
+
+    // Página de confirmación
+    @GetMapping("/registros-tiempo/confirmacion")
+    public String confirmacionRegistroTiempo() {
+        return "registros-tiempo/confirmacion";
+    }
+
+    // Ver registros de tiempo
+    @GetMapping("/registros-tiempo/ver")
+    public String verRegistrosTiempo(Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String nombreCompleto = auth.getName();
+
+        // Obtener el ID del usuario actual
+        Optional<UsuarioDTO> usuarioOpt = usuarioService.findByNombreCompleto(nombreCompleto);
+        if (usuarioOpt.isEmpty()) {
+            model.addAttribute("error", "No se pudo encontrar el usuario");
+            return "registros-tiempo/ver";
+        }
+
+        Long usuarioId = usuarioOpt.get().getId();
+        List<RegistroTiempoDTO> registros = registroTiempoService.findByUsuarioId(usuarioId);
+        model.addAttribute("registros", registros);
+
+        return "registros-tiempo/ver";
+    }
+
+    // Ver informes de tiempo (para jefes y RRHH)
+    @GetMapping("/registros-tiempo/informes")
+    public String verInformesRegistrosTiempo(Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        // Verificar que el usuario es un jefe o RRHH
+        if (!auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_JEFE")) &&
+                !auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_RRHH"))) {
+            return "redirect:/dashboard";
+        }
+
+        // Obtener todos los empleados para el selector
+        List<EmpleadoDTO> empleados = empleadoService.findAll();
+        model.addAttribute("empleados", empleados);
+
+        // Obtener todos los proyectos para el selector
+        List<ProyectoDTO> proyectos = proyectoService.findAll();
+        model.addAttribute("proyectos", proyectos);
+
+        return "registros-tiempo/informes";
+    }
+
+    // Obtener informes de tiempo por empleado (para jefes y RRHH)
+    @GetMapping("/registros-tiempo/informes/empleado/{empleadoId}")
+    public String verInformesRegistrosTiempoPorEmpleado(@PathVariable Long empleadoId, Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        // Verificar que el usuario es un jefe o RRHH
+        if (!auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_JEFE")) &&
+                !auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_RRHH"))) {
+            return "redirect:/dashboard";
+        }
+
+        List<RegistroTiempoDTO> registros = registroTiempoService.findByUsuarioId(empleadoId);
+        model.addAttribute("registros", registros);
+
+        // Obtener información del empleado
+        Optional<EmpleadoDTO> empleadoOpt = empleadoService.findById(empleadoId);
+        empleadoOpt.ifPresent(empleado -> model.addAttribute("empleado", empleado));
+
+        return "registros-tiempo/informes-empleado";
     }
 }

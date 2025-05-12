@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head('Registrar Tiempo')">
+</head>
+<body>
+<header th:replace="fragments/layout :: header(${#authentication.name})">
+</header>
+
+<div class="container">
+    <div th:replace="fragments/layout :: messages"></div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h2 class="card-title mb-4"><i class="fas fa-clock me-2"></i>Registrar Tiempo</h2>
+
+            <form th:action="@{/registros-tiempo/crear}" th:object="${registroTiempo}" method="post">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="fechaRegistro" class="form-label">Fecha:</label>
+                        <input type="date" id="fechaRegistro" th:field="*{fechaRegistro}" class="form-control"
+                               th:value="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}" required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="horaInicio" class="form-label">Hora de inicio:</label>
+                        <input type="datetime-local" id="horaInicio" th:field="*{horaInicio}" class="form-control" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="horaFin" class="form-label">Hora de fin:</label>
+                        <input type="datetime-local" id="horaFin" th:field="*{horaFin}" class="form-control" required>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Tipo de actividad:</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="tipoActividad" id="tipoTarea" value="tarea" checked>
+                        <label class="form-check-label" for="tipoTarea">Tarea</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="tipoActividad" id="tipoProyecto" value="proyecto">
+                        <label class="form-check-label" for="tipoProyecto">Proyecto</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="tipoActividad" id="tipoReunion" value="reunion">
+                        <label class="form-check-label" for="tipoReunion">Reunión</label>
+                    </div>
+                </div>
+
+                <div id="tareaSection" class="mb-3">
+                    <label for="tareaId" class="form-label">Tarea:</label>
+                    <select id="tareaId" th:field="*{tareaId}" class="form-select">
+                        <option value="">-- Seleccionar Tarea --</option>
+                        <option th:each="tarea : ${tareas}" th:value="${tarea.id}" th:text="${tarea.titulo}"></option>
+                    </select>
+                </div>
+
+                <div id="proyectoSection" class="mb-3 d-none">
+                    <label for="proyectoId" class="form-label">Proyecto:</label>
+                    <select id="proyectoId" th:field="*{proyectoId}" class="form-select">
+                        <option value="">-- Seleccionar Proyecto --</option>
+                        <option th:each="proyecto : ${proyectos}" th:value="${proyecto.id}" th:text="${proyecto.nombre}"></option>
+                    </select>
+                </div>
+
+                <div id="reunionSection" class="mb-3 d-none">
+                    <label for="reunionId" class="form-label">Reunión:</label>
+                    <select id="reunionId" th:field="*{reunionId}" class="form-select">
+                        <option value="">-- Seleccionar Reunión --</option>
+                        <option th:each="reunion : ${reuniones}" th:value="${reunion.id}" th:text="${reunion.titulo}"></option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="comentario" class="form-label">Comentario:</label>
+                    <textarea id="comentario" th:field="*{comentario}" class="form-control" rows="3"></textarea>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save me-2"></i>Registrar Tiempo
+                    </button>
+                    <a th:href="@{/dashboard}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const tipoTarea = document.getElementById('tipoTarea');
+        const tipoProyecto = document.getElementById('tipoProyecto');
+        const tipoReunion = document.getElementById('tipoReunion');
+
+        const tareaSection = document.getElementById('tareaSection');
+        const proyectoSection = document.getElementById('proyectoSection');
+        const reunionSection = document.getElementById('reunionSection');
+
+        const tareaId = document.getElementById('tareaId');
+        const proyectoId = document.getElementById('proyectoId');
+        const reunionId = document.getElementById('reunionId');
+
+        function updateSections() {
+            if (tipoTarea.checked) {
+                tareaSection.classList.remove('d-none');
+                proyectoSection.classList.add('d-none');
+                reunionSection.classList.add('d-none');
+
+                proyectoId.value = '';
+                reunionId.value = '';
+            } else if (tipoProyecto.checked) {
+                tareaSection.classList.add('d-none');
+                proyectoSection.classList.remove('d-none');
+                reunionSection.classList.add('d-none');
+
+                tareaId.value = '';
+                reunionId.value = '';
+            } else if (tipoReunion.checked) {
+                tareaSection.classList.add('d-none');
+                proyectoSection.classList.add('d-none');
+                reunionSection.classList.remove('d-none');
+
+                tareaId.value = '';
+                proyectoId.value = '';
+            }
+        }
+
+        tipoTarea.addEventListener('change', updateSections);
+        tipoProyecto.addEventListener('change', updateSections);
+        tipoReunion.addEventListener('change', updateSections);
+
+        // Inicializar
+        updateSections();
+    });
+</script>
+</body>
+</html>

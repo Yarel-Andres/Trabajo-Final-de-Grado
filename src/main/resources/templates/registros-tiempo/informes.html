@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head('Informes de Tiempo')">
+</head>
+<body>
+<header th:replace="fragments/layout :: header(${#authentication.name})">
+</header>
+
+<div class="container">
+    <div th:replace="fragments/layout :: messages"></div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h2 class="card-title mb-4"><i class="fas fa-chart-bar me-2"></i>Informes de Tiempo</h2>
+
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Por Empleado</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label for="empleadoSelect" class="form-label">Seleccionar Empleado:</label>
+                                <select id="empleadoSelect" class="form-select">
+                                    <option value="">-- Seleccionar Empleado --</option>
+                                    <option th:each="empleado : ${empleados}" th:value="${empleado.id}" th:text="${empleado.nombreCompleto}"></option>
+                                </select>
+                            </div>
+                            <div class="d-grid">
+                                <button id="verEmpleadoBtn" class="btn btn-primary">
+                                    <i class="fas fa-search me-2"></i>Ver Informe
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Por Proyecto</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label for="proyectoSelect" class="form-label">Seleccionar Proyecto:</label>
+                                <select id="proyectoSelect" class="form-select">
+                                    <option value="">-- Seleccionar Proyecto --</option>
+                                    <option th:each="proyecto : ${proyectos}" th:value="${proyecto.id}" th:text="${proyecto.nombre}"></option>
+                                </select>
+                            </div>
+                            <div class="d-grid">
+                                <button id="verProyectoBtn" class="btn btn-success">
+                                    <i class="fas fa-search me-2"></i>Ver Informe
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <a th:href="@{/dashboard}" class="btn btn-primary">
+                    <i class="fas fa-arrow-left me-2"></i>Volver al Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const empleadoSelect = document.getElementById('empleadoSelect');
+        const proyectoSelect = document.getElementById('proyectoSelect');
+        const verEmpleadoBtn = document.getElementById('verEmpleadoBtn');
+        const verProyectoBtn = document.getElementById('verProyectoBtn');
+
+        verEmpleadoBtn.addEventListener('click', function() {
+            const empleadoId = empleadoSelect.value;
+            if (empleadoId) {
+                window.location.href = `/registros-tiempo/informes/empleado/${empleadoId}`;
+            } else {
+                alert('Por favor, selecciona un empleado');
+            }
+        });
+
+        verProyectoBtn.addEventListener('click', function() {
+            const proyectoId = proyectoSelect.value;
+            if (proyectoId) {
+                window.location.href = `/registros-tiempo/informes/proyecto/${proyectoId}`;
+            } else {
+                alert('Por favor, selecciona un proyecto');
+            }
+        });
+    });
+</script>
+</body>
+</html>
