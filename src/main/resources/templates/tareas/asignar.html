@@ -35,6 +35,16 @@
                 </div>
 
                 <div class="mb-3">
+                    <label for="proyectoId" class="form-label">Proyecto:</label>
+                    <select id="proyectoId" th:field="*{proyectoId}" class="form-select" required>
+                        <option value="">-- Seleccionar Proyecto --</option>
+                        <option th:each="proyecto : ${proyectos}"
+                                th:value="${proyecto.id}"
+                                th:text="${proyecto.nombre}"></option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
                     <label for="fechaVencimiento" class="form-label">Fecha de Vencimiento:</label>
                     <input type="date" id="fechaVencimiento" th:field="*{fechaVencimiento}" class="form-control" required>
                 </div>

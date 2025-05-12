@@ -99,15 +99,20 @@ public class RegistroTiempoService {
             registroTiempo.setUsuario(usuario);
         }
 
-        // Establecer la tarea (si aplica)
+        // Establecer la tarea (si aplica) y automáticamente el proyecto asociado a la tarea
         if (registroTiempoDTO.getTareaId() != null) {
             Tarea tarea = tareaRepository.findById(registroTiempoDTO.getTareaId())
                     .orElseThrow(() -> new RuntimeException("Tarea no encontrada con ID: " + registroTiempoDTO.getTareaId()));
             registroTiempo.setTarea(tarea);
+
+            // Si la tarea tiene un proyecto asociado, asignar automáticamente ese proyecto al registro
+            if (tarea.getProyecto() != null) {
+                registroTiempo.setProyecto(tarea.getProyecto());
+            }
         }
 
-        // Establecer el proyecto (si aplica)
-        if (registroTiempoDTO.getProyectoId() != null) {
+        // Establecer el proyecto (si aplica y no se ha establecido por la tarea)
+        if (registroTiempoDTO.getProyectoId() != null && registroTiempo.getProyecto() == null) {
             Proyecto proyecto = proyectoRepository.findById(registroTiempoDTO.getProyectoId())
                     .orElseThrow(() -> new RuntimeException("Proyecto no encontrado con ID: " + registroTiempoDTO.getProyectoId()));
             registroTiempo.setProyecto(proyecto);

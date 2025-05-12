@@ -42,6 +42,11 @@ public class Tarea {
     @JoinColumn(name = "jefe_id")
     private Jefe jefe;
 
+    // Relación con Proyecto - Una tarea pertenece a un proyecto
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "proyecto_id")
+    private Proyecto proyecto;
+
     @Column(name = "fecha_creacion")
     // Se inicializa automáticamente con la fecha y hora actual
     private LocalDateTime fechaCreacion = LocalDateTime.now();

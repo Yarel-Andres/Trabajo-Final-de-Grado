@@ -8,6 +8,7 @@ import com.yarel.gestion_empresarial.dto.tarea.TareaDTO;
 import com.yarel.gestion_empresarial.dto.usuario.UsuarioDTO;
 import com.yarel.gestion_empresarial.entidades.Usuario;
 import com.yarel.gestion_empresarial.servicios.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -17,11 +18,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
@@ -69,7 +72,7 @@ public class VistasController {
     }
 
     @GetMapping("/tareas/asignar")
-    public String asignarTareaForm(Model model) {
+    public String asignarTareaForm(Model model, Principal principal) {
         // Verificar que el usuario es un jefe
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (!auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_JEFE"))) {
@@ -79,6 +82,11 @@ public class VistasController {
         // Obtener lista de empleados para el selector
         List<EmpleadoDTO> empleados = empleadoService.findAll();
         model.addAttribute("empleados", empleados);
+
+        // Obtener lista de proyectos para el selector
+        List<ProyectoDTO> proyectos = proyectoService.findAll();
+        model.addAttribute("proyectos", proyectos);
+
         model.addAttribute("tarea", new TareaDTO());
 
         return "tareas/asignar";
@@ -141,12 +149,92 @@ public class VistasController {
 
         // Obtener las tareas del empleado
         List<TareaDTO> tareas = tareaService.findByEmpleadoId(empleadoId);
+
+        // Obtener todos los usuarios para buscar los nombres de los jefes
+        List<UsuarioDTO> usuarios = usuarioService.findAll();
+
+        // Obtener todos los proyectos para añadir sus nombres a las tareas
+        List<ProyectoDTO> proyectos = proyectoService.findAll();
+
+        // Añadir el nombre del jefe y del proyecto a cada tarea
+        for (TareaDTO tarea : tareas) {
+            // Buscar y asignar el nombre del jefe
+            if (tarea.getJefeId() != null) {
+                for (UsuarioDTO usuario : usuarios) {
+                    if (usuario.getId().equals(tarea.getJefeId())) {
+                        tarea.setJefeNombre(usuario.getNombreCompleto());
+                        break;
+                    }
+                }
+            }
+
+            // Buscar y asignar el nombre del proyecto
+            if (tarea.getProyectoId() != null) {
+                for (ProyectoDTO proyecto : proyectos) {
+                    if (proyecto.getId().equals(tarea.getProyectoId())) {
+                        tarea.setNombreProyecto(proyecto.getNombre());
+                        break;
+                    }
+                }
+            }
+        }
+
         model.addAttribute("tareas", tareas);
 
         return "tareas/ver";
     }
 
+    @GetMapping("/tareas/asignadas")
+    public String verTareasAsignadas(Model model) {
+        // Verificar que el usuario es un jefe
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (!auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_JEFE"))) {
+            return "redirect:/dashboard";
+        }
 
+        String nombreCompleto = auth.getName();
+
+        // Obtener el ID del jefe actual por su nombre completo
+        Long jefeId = null;
+        List<UsuarioDTO> usuarios = usuarioService.findAll();
+        for (UsuarioDTO usuario : usuarios) {
+            if (usuario.getNombreCompleto().equals(nombreCompleto)) {
+                jefeId = usuario.getId();
+                break;
+            }
+        }
+
+        if (jefeId == null) {
+            model.addAttribute("error", "No se pudo encontrar el jefe");
+            return "tareas/asignadas";
+        }
+
+        // Obtener las tareas asignadas por el jefe, agrupadas por proyecto
+        Map<String, List<TareaDTO>> tareasAgrupadas = tareaService.findByJefeIdGroupByProyecto(jefeId);
+
+        // Obtener todos los empleados para añadir sus nombres a las tareas
+        List<EmpleadoDTO> empleados = empleadoService.findAll();
+
+        // Añadir el nombre del empleado a cada tarea
+        for (List<TareaDTO> tareas : tareasAgrupadas.values()) {
+            for (TareaDTO tarea : tareas) {
+                for (EmpleadoDTO empleado : empleados) {
+                    if (empleado.getId().equals(tarea.getEmpleadoId())) {
+                        tarea.setEmpleadoNombre(empleado.getNombreCompleto());
+                        break;
+                    }
+                }
+            }
+        }
+
+        model.addAttribute("tareasAgrupadas", tareasAgrupadas);
+
+        // Obtener todos los proyectos para mostrar información adicional
+        List<ProyectoDTO> proyectos = proyectoService.findAll();
+        model.addAttribute("proyectos", proyectos);
+
+        return "tareas/asignadas";
+    }
 
     @GetMapping("/reuniones/crear")
     public String crearReunionForm(Model model) {
@@ -544,11 +632,13 @@ public class VistasController {
         for (RegistroTiempoDTO registro : registros) {
             if (registro.getUsuarioId() != null) {
                 Optional<UsuarioDTO> usuarioOpt = usuarioService.findById(registro.getUsuarioId());
-                usuarioOpt.ifPresent(usuario -> {
-                    // Añadir el nombre del usuario como propiedad adicional
-                    // Esto requiere modificar el DTO para incluir esta propiedad
-                    registro.setUsuarioNombre(usuario.getNombreCompleto());
-                });
+                if (usuarioOpt.isPresent()) {
+                    registro.setUsuarioNombre(usuarioOpt.get().getNombreCompleto());
+                } else {
+                    registro.setUsuarioNombre("Usuario no encontrado");
+                }
+            } else {
+                registro.setUsuarioNombre("No asignado");
             }
         }
 

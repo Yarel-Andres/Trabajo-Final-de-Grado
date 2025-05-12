@@ -59,7 +59,7 @@
                     </thead>
                     <tbody>
                     <tr th:each="registro : ${registros}">
-                        <td th:text="${registro.usuarioNombre ?: 'No asignado'}">Empleado</td>
+                        <td th:text="${registro.usuarioNombre != null ? registro.usuarioNombre : 'No asignado'}">Empleado</td>
                         <td th:text="${#temporals.format(registro.fechaRegistro, 'dd/MM/yyyy')}">Fecha</td>
                         <td th:text="${#temporals.format(registro.horaInicio, 'HH:mm')}">Hora Inicio</td>
                         <td th:text="${#temporals.format(registro.horaFin, 'HH:mm')}">Hora Fin</td>

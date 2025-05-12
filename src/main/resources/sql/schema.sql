@@ -79,13 +79,15 @@ CREATE TABLE tareas (
                         descripcion TEXT,
                         empleado_id BIGINT,
                         jefe_id BIGINT,
+                        proyecto_id BIGINT, -- Nueva columna para la relación con proyecto
                         fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
                         fecha_vencimiento DATE,
                         completada BOOLEAN DEFAULT FALSE,
                         fecha_completada DATETIME,
                         prioridad VARCHAR(20),
                         FOREIGN KEY (empleado_id) REFERENCES empleados(id),
-                        FOREIGN KEY (jefe_id) REFERENCES jefes(id)
+                        FOREIGN KEY (jefe_id) REFERENCES jefes(id),
+                        FOREIGN KEY (proyecto_id) REFERENCES proyectos(id) -- Nueva clave foránea
 );
 
 -- Crear tabla de reuniones

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head('Tareas Asignadas')">
+</head>
+<body>
+<header th:replace="fragments/layout :: header(${#authentication.name})">
+</header>
+
+<div class="container">
+    <div th:replace="fragments/layout :: messages"></div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="card-title mb-0">
+                    <i class="fas fa-tasks me-2"></i>Tareas Asignadas
+                </h2>
+                <a th:href="@{/tareas/asignar}" class="btn btn-success">
+                    <i class="fas fa-plus me-2"></i>Asignar Nueva Tarea
+                </a>
+            </div>
+
+            <div th:if="${tareasAgrupadas == null || tareasAgrupadas.isEmpty()}" class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                <span>No has asignado tareas actualmente.</span>
+            </div>
+
+            <div th:if="${tareasAgrupadas != null && !tareasAgrupadas.isEmpty()}">
+                <div th:each="entry : ${tareasAgrupadas}" class="card mb-4">
+                    <div class="card-header bg-light">
+                        <h4 class="mb-0">
+                            <i class="fas fa-project-diagram me-2"></i>
+                            <span th:text="${entry.key}">Nombre del Proyecto</span>
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                <tr>
+                                    <th>Título</th>
+                                    <th>Descripción</th>
+                                    <th>Empleado</th>
+                                    <th>Fecha Vencimiento</th>
+                                    <th>Prioridad</th>
+                                    <th>Estado</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="tarea : ${entry.value}">
+                                    <td th:text="${tarea.titulo}">Título</td>
+                                    <td th:text="${tarea.descripcion}">Descripción</td>
+                                    <td th:text="${tarea.empleadoNombre}">Empleado</td>
+                                    <td th:text="${#temporals.format(tarea.fechaVencimiento, 'dd/MM/yyyy')}">Fecha</td>
+                                    <td>
+                                        <span th:if="${tarea.prioridad == 'ALTA'}" class="badge bg-danger">Alta</span>
+                                        <span th:if="${tarea.prioridad == 'MEDIA'}" class="badge bg-warning text-dark">Media</span>
+                                        <span th:if="${tarea.prioridad == 'BAJA'}" class="badge bg-info text-dark">Baja</span>
+                                    </td>
+                                    <td>
+                                        <span th:if="${tarea.completada}" class="badge bg-success">Completada</span>
+                                        <span th:unless="${tarea.completada}" class="badge bg-secondary">Pendiente</span>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <a th:href="@{/dashboard}" class="btn btn-primary">
+                    <i class="fas fa-arrow-left me-2"></i>Volver al Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

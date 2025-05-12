@@ -46,9 +46,9 @@ SELECT id, '2023-04-05', 'QA Tester', '666123456', 28500.0 FROM usuarios WHERE n
 -- Insertar usuarios base (RRHH)
 INSERT INTO usuarios (nombre_usuario, contraseña, correo, nombre_completo, rol, activo, tipo_usuario)
 VALUES
-    ('rrhh1', 'password', 'rrhh1@empresa.com', 'Elena Ruiz', 'RRHH', true, 'RRHH'),
-    ('rrhh2', 'password', 'rrhh2@empresa.com', 'Pablo Moreno', 'RRHH', true, 'RRHH'),
-    ('rrhh3', 'password', 'rrhh3@empresa.com', 'Carmen Jiménez', 'RRHH', true, 'RRHH');
+    ('rrhh1', 'pass', 'rrhh1@empresa.com', 'Elena Ruiz', 'RRHH', true, 'RRHH'),
+    ('rrhh2', 'pass', 'rrhh2@empresa.com', 'Pablo Moreno', 'RRHH', true, 'RRHH'),
+    ('rrhh3', 'pass', 'rrhh3@empresa.com', 'Carmen Jiménez', 'RRHH', true, 'RRHH');
 
 -- Insertar RRHH (usando SELECT para obtener el ID del usuario recién insertado)
 INSERT INTO rrhh (id, area_especializacion, certificaciones, fecha_incorporacion_rrhh)
@@ -70,8 +70,8 @@ SELECT 'Sistema de Análisis de Datos', 'Plataforma de análisis de datos para t
 UNION ALL
 SELECT 'Integración CRM', 'Integración del sistema CRM con otras plataformas', id, '2023-04-15', '2023-10-15', 'EN_PROGRESO' FROM jefes WHERE id = (SELECT id FROM usuarios WHERE nombre_usuario = 'jefe5');
 
--- Insertar tareas (usando subqueries para obtener los IDs)
-INSERT INTO tareas (titulo, descripcion, empleado_id, jefe_id, fecha_creacion, fecha_vencimiento, completada, prioridad)
+-- Insertar tareas (usando subqueries para obtener los IDs) - AHORA CON PROYECTO_ID
+INSERT INTO tareas (titulo, descripcion, empleado_id, jefe_id, fecha_creacion, fecha_vencimiento, completada, prioridad, proyecto_id)
 SELECT
     'Desarrollar API',
     'Implementar endpoints de la API REST',
@@ -80,9 +80,10 @@ SELECT
     NOW() - INTERVAL 5 DAY,
     CURDATE() + INTERVAL 10 DAY,
     false,
-    'MEDIA';
+    'MEDIA',
+    (SELECT id FROM proyectos WHERE nombre = 'Sistema de Gestión');
 
-INSERT INTO tareas (titulo, descripcion, empleado_id, jefe_id, fecha_creacion, fecha_vencimiento, completada, prioridad)
+INSERT INTO tareas (titulo, descripcion, empleado_id, jefe_id, fecha_creacion, fecha_vencimiento, completada, prioridad, proyecto_id)
 SELECT
     'Diseñar interfaz',
     'Diseñar la interfaz principal del sistema',
@@ -91,9 +92,10 @@ SELECT
     NOW() - INTERVAL 7 DAY,
     CURDATE() + INTERVAL 5 DAY,
     false,
-    'ALTA';
+    'ALTA',
+    (SELECT id FROM proyectos WHERE nombre = 'Sistema de Gestión');
 
-INSERT INTO tareas (titulo, descripcion, empleado_id, jefe_id, fecha_creacion, fecha_vencimiento, completada, fecha_completada, prioridad)
+INSERT INTO tareas (titulo, descripcion, empleado_id, jefe_id, fecha_creacion, fecha_vencimiento, completada, fecha_completada, prioridad, proyecto_id)
 SELECT
     'Análisis de requisitos',
     'Analizar requisitos del cliente',
@@ -103,10 +105,11 @@ SELECT
     CURDATE() - INTERVAL 3 DAY,
     true,
     NOW() - INTERVAL 1 DAY,
-    'BAJA';
+    'BAJA',
+    (SELECT id FROM proyectos WHERE nombre = 'App Móvil');
 
--- Nuevas tareas
-INSERT INTO tareas (titulo, descripcion, empleado_id, jefe_id, fecha_creacion, fecha_vencimiento, completada, prioridad)
+-- Nuevas tareas con proyecto_id
+INSERT INTO tareas (titulo, descripcion, empleado_id, jefe_id, fecha_creacion, fecha_vencimiento, completada, prioridad, proyecto_id)
 SELECT
     'Implementar autenticación',
     'Implementar sistema de autenticación OAuth2',
@@ -115,9 +118,10 @@ SELECT
     NOW() - INTERVAL 3 DAY,
     CURDATE() + INTERVAL 7 DAY,
     false,
-    'ALTA';
+    'ALTA',
+    (SELECT id FROM proyectos WHERE nombre = 'Portal Web Corporativo');
 
-INSERT INTO tareas (titulo, descripcion, empleado_id, jefe_id, fecha_creacion, fecha_vencimiento, completada, prioridad)
+INSERT INTO tareas (titulo, descripcion, empleado_id, jefe_id, fecha_creacion, fecha_vencimiento, completada, prioridad, proyecto_id)
 SELECT
     'Optimizar consultas SQL',
     'Revisar y optimizar consultas SQL para mejorar rendimiento',
@@ -126,9 +130,10 @@ SELECT
     NOW() - INTERVAL 2 DAY,
     CURDATE() + INTERVAL 4 DAY,
     false,
-    'MEDIA';
+    'MEDIA',
+    (SELECT id FROM proyectos WHERE nombre = 'Sistema de Análisis de Datos');
 
-INSERT INTO tareas (titulo, descripcion, empleado_id, jefe_id, fecha_creacion, fecha_vencimiento, completada, prioridad)
+INSERT INTO tareas (titulo, descripcion, empleado_id, jefe_id, fecha_creacion, fecha_vencimiento, completada, prioridad, proyecto_id)
 SELECT
     'Pruebas de integración',
     'Realizar pruebas de integración del módulo de pagos',
@@ -137,7 +142,8 @@ SELECT
     NOW() - INTERVAL 4 DAY,
     CURDATE() + INTERVAL 3 DAY,
     false,
-    'ALTA';
+    'ALTA',
+    (SELECT id FROM proyectos WHERE nombre = 'Integración CRM');
 
 -- Insertar reuniones
 INSERT INTO reuniones (titulo, descripcion, fecha_hora, sala, organizador_id)
