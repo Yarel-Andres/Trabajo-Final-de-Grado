@@ -1,5 +1,6 @@
 package com.yarel.gestion_empresarial.repositorios;
 
+import com.yarel.gestion_empresarial.entidades.Empleado;
 import com.yarel.gestion_empresarial.entidades.Jefe;
 import com.yarel.gestion_empresarial.entidades.Proyecto;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -22,4 +23,7 @@ public interface ProyectoRepository extends JpaRepository<Proyecto, Long> {
 
     // Busca proyectos con presupuesto mayor al presupuerto dado por parámetro
     List<Proyecto> findByPresupuestoGreaterThan(Double presupuesto);
+
+    // Metodo para buscar proyectos por empleado
+    List<Proyecto> findByEmpleadosContaining(Empleado empleado);
 }

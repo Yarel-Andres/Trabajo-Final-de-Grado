@@ -16,7 +16,7 @@ import java.util.Objects;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(exclude = {"registrosTiempo"})
+@EqualsAndHashCode(exclude = {"registrosTiempo", "empleados"})
 public class Proyecto {
 
     @Id
@@ -50,6 +50,15 @@ public class Proyecto {
 
     @OneToMany(mappedBy = "proyecto", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<RegistroTiempo> registrosTiempo = new HashSet<>();
+
+    // Relación muchos a muchos con Empleado para que se le puedan asginar proyectos
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "proyecto_empleados",
+            joinColumns = @JoinColumn(name = "proyecto_id"),
+            inverseJoinColumns = @JoinColumn(name = "empleado_id")
+    )
+    private Set<Empleado> empleados = new HashSet<>();
 
     // Implementación personalizada de hashCode para evitar ciclos infinitos
     @Override

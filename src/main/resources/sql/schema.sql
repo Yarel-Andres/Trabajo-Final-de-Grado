@@ -1,4 +1,5 @@
 -- Eliminar tablas si existen para evitar conflictos
+DROP TABLE IF EXISTS proyecto_empleados;
 DROP TABLE IF EXISTS registros_tiempo;
 DROP TABLE IF EXISTS reunion_participantes;
 DROP TABLE IF EXISTS reuniones;
@@ -60,6 +61,15 @@ CREATE TABLE proyectos (
                            estado VARCHAR(50),
                            presupuesto DOUBLE,
                            FOREIGN KEY (jefe_id) REFERENCES jefes(id)
+);
+
+-- Crear tabla de relación entre proyectos y empleados
+CREATE TABLE proyecto_empleados (
+                                    proyecto_id BIGINT,
+                                    empleado_id BIGINT,
+                                    PRIMARY KEY (proyecto_id, empleado_id),
+                                    FOREIGN KEY (proyecto_id) REFERENCES proyectos(id),
+                                    FOREIGN KEY (empleado_id) REFERENCES empleados(id)
 );
 
 -- Crear tabla de tareas

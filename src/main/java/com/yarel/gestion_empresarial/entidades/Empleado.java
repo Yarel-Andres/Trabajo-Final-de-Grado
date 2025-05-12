@@ -20,7 +20,7 @@ import java.util.Set;
 // Genera automáticamente equals() y hashCode().
 // callSuper = true: Incluye los campos de la clase padre (Usuario) en la comparación.
 // exclude = {"tareas"}: Excluye la colección 'tareas' para evitar ciclos infinitos.
-@EqualsAndHashCode(callSuper = true, exclude = {"tareas"})
+@EqualsAndHashCode(callSuper = true, exclude = {"tareas", "proyectos"})
 @DiscriminatorValue("EMPLEADO")
 public class Empleado extends Usuario {
 
@@ -41,4 +41,8 @@ public class Empleado extends Usuario {
     @OneToMany(mappedBy = "empleado", fetch = FetchType.LAZY)
     // Se usa Set<Tarea> para evitar tareas duplicadas y new HashSet<>() inicializa la colección vacía.
     private Set<Tarea> tareas = new HashSet<>();
+
+    // Relación muchos a muchos con Proyecto
+    @ManyToMany(mappedBy = "empleados", fetch = FetchType.LAZY)
+    private Set<Proyecto> proyectos = new HashSet<>();
 }

@@ -1,11 +1,13 @@
 package com.yarel.gestion_empresarial.controller;
 
 import com.yarel.gestion_empresarial.dto.empleado.EmpleadoDTO;
+import com.yarel.gestion_empresarial.dto.proyecto.ProyectoDTO;
 import com.yarel.gestion_empresarial.dto.reunion.ReunionDTO;
 import com.yarel.gestion_empresarial.dto.tarea.TareaDTO;
 import com.yarel.gestion_empresarial.dto.usuario.UsuarioDTO;
 import com.yarel.gestion_empresarial.entidades.Usuario;
 import com.yarel.gestion_empresarial.servicios.EmpleadoService;
+import com.yarel.gestion_empresarial.servicios.ProyectoService;
 import com.yarel.gestion_empresarial.servicios.ReunionService;
 import com.yarel.gestion_empresarial.servicios.TareaService;
 import com.yarel.gestion_empresarial.servicios.UsuarioService;
@@ -18,6 +20,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.HashSet;
@@ -30,13 +33,15 @@ public class VistasController {
     private final TareaService tareaService;
     private final ReunionService reunionService;
     private final UsuarioService usuarioService;
+    private final ProyectoService proyectoService;
 
     @Autowired
-    public VistasController(EmpleadoService empleadoService, TareaService tareaService, ReunionService reunionService, UsuarioService usuarioService) {
+    public VistasController(EmpleadoService empleadoService, TareaService tareaService, ReunionService reunionService, UsuarioService usuarioService, ProyectoService proyectoService) {
         this.empleadoService = empleadoService;
         this.tareaService = tareaService;
         this.reunionService = reunionService;
         this.usuarioService = usuarioService;
+        this.proyectoService = proyectoService;
     }
 
     @GetMapping("/")
@@ -209,8 +214,6 @@ public class VistasController {
             // Asignar la reunión usando el servicio
             ReunionDTO nuevaReunion = reunionService.saveReunionForJefe(reunion, nombreUsuario);
             redirectAttributes.addFlashAttribute("mensaje", "Reunión programada correctamente");
-            // Pasar la reunión creada a la vista de confirmación
-            redirectAttributes.addFlashAttribute("reunion", nuevaReunion);
             return "redirect:/reuniones/confirmacion";
         } catch (Exception e) {
             e.printStackTrace(); // Para ver el error completo en los logs
@@ -220,9 +223,7 @@ public class VistasController {
     }
 
     @GetMapping("/reuniones/confirmacion")
-    public String confirmacionReunion(Model model) {
-        // No necesitamos añadir nada al modelo aquí, ya que la reunión
-        // se pasa como un atributo flash desde el método crearReunion
+    public String confirmacionReunion() {
         return "reuniones/confirmacion";
     }
 
@@ -251,5 +252,123 @@ public class VistasController {
         model.addAttribute("reuniones", reuniones);
 
         return "reuniones/ver";
+    }
+
+    @GetMapping("/proyectos/crear")
+    public String crearProyectoForm(Model model) {
+        // Verificar que el usuario es un jefe
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (!auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_JEFE"))) {
+            return "redirect:/dashboard";
+        }
+
+        // Obtener lista de empleados para el selector
+        List<EmpleadoDTO> empleados = empleadoService.findAll();
+        model.addAttribute("empleados", empleados);
+
+        // Crear un DTO vacío para el formulario
+        ProyectoDTO proyecto = new ProyectoDTO();
+        proyecto.setFechaInicio(LocalDate.now());
+        proyecto.setFechaFinEstimada(LocalDate.now().plusMonths(3));
+        proyecto.setEstado("PLANIFICACION");
+        model.addAttribute("proyecto", proyecto);
+
+        return "proyectos/crear";
+    }
+
+    @PostMapping("/proyectos/crear")
+    public String crearProyecto(@ModelAttribute ProyectoDTO proyecto, @RequestParam(value = "empleadosIds", required = false) List<Long> empleadosIds, RedirectAttributes redirectAttributes) {
+        // Verificar que el usuario es un jefe
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (!auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_JEFE"))) {
+            return "redirect:/dashboard";
+        }
+
+        try {
+            // Buscar el nombre de usuario del jefe por su nombre completo
+            String nombreCompleto = auth.getName();
+            Optional<UsuarioDTO> usuarioOpt = usuarioService.findByNombreCompleto(nombreCompleto);
+
+            if (usuarioOpt.isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "No se pudo encontrar el usuario");
+                return "redirect:/proyectos/crear";
+            }
+
+            String nombreUsuario = usuarioOpt.get().getNombreUsuario();
+
+            // Verificar que los datos necesarios estén presentes
+            if (proyecto.getNombre() == null || proyecto.getNombre().trim().isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "El nombre del proyecto es obligatorio");
+                return "redirect:/proyectos/crear";
+            }
+
+            if (proyecto.getFechaInicio() == null) {
+                redirectAttributes.addFlashAttribute("error", "La fecha de inicio es obligatoria");
+                return "redirect:/proyectos/crear";
+            }
+
+            if (proyecto.getFechaFinEstimada() == null) {
+                redirectAttributes.addFlashAttribute("error", "La fecha de fin estimada es obligatoria");
+                return "redirect:/proyectos/crear";
+            }
+
+            // Asignar los empleados seleccionados
+            if (empleadosIds != null && !empleadosIds.isEmpty()) {
+                proyecto.setEmpleadosIds(new HashSet<>(empleadosIds));
+            } else {
+                proyecto.setEmpleadosIds(new HashSet<>());
+            }
+
+            // Asignar el proyecto usando el servicio
+            ProyectoDTO nuevoProyecto = proyectoService.saveProyectoForJefe(proyecto, nombreUsuario);
+            redirectAttributes.addFlashAttribute("mensaje", "Proyecto creado correctamente");
+            return "redirect:/proyectos/confirmacion";
+        } catch (Exception e) {
+            e.printStackTrace(); // Para ver el error completo en los logs
+            redirectAttributes.addFlashAttribute("error", "Error al crear el proyecto: " + e.getMessage());
+            return "redirect:/proyectos/crear";
+        }
+    }
+
+    @GetMapping("/proyectos/confirmacion")
+    public String confirmacionProyecto() {
+        return "proyectos/confirmacion";
+    }
+
+    @GetMapping("/proyectos/ver")
+    public String verProyectos(Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String nombreCompleto = auth.getName();
+        boolean isJefe = auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_JEFE"));
+
+        // Obtener el ID del usuario actual por su nombre completo
+        Long usuarioId = null;
+        List<UsuarioDTO> usuarios = usuarioService.findAll();
+        for (UsuarioDTO usuario : usuarios) {
+            if (usuario.getNombreCompleto().equals(nombreCompleto)) {
+                usuarioId = usuario.getId();
+                break;
+            }
+        }
+
+        if (usuarioId == null) {
+            model.addAttribute("error", "No se pudo encontrar el usuario");
+            return "proyectos/ver";
+        }
+
+        List<ProyectoDTO> proyectos;
+
+        // Si es jefe, mostrar sus proyectos creados
+        if (isJefe) {
+            proyectos = proyectoService.findByJefeId(usuarioId);
+        } else {
+            // Si es empleado, mostrar los proyectos asignados
+            proyectos = proyectoService.findByEmpleadoId(usuarioId);
+        }
+
+        model.addAttribute("proyectos", proyectos);
+        model.addAttribute("isJefe", isJefe);
+
+        return "proyectos/ver";
     }
 }
