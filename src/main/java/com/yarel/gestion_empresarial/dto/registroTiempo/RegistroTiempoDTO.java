@@ -16,4 +16,7 @@ public class RegistroTiempoDTO {
     private LocalDateTime horaFin;
     private Double horasTrabajadas;
     private String comentario;
+
+    // Campo adicional para mostrar el nombre del usuario en los informes
+    private String usuarioNombre;
 }

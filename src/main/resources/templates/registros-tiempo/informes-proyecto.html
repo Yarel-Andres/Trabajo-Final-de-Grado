@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head('Informe de Tiempo - Proyecto')">
+</head>
+<body>
+<header th:replace="fragments/layout :: header(${#authentication.name})">
+</header>
+
+<div class="container">
+    <div th:replace="fragments/layout :: messages"></div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="card-title mb-0">
+                    <i class="fas fa-project-diagram me-2"></i>Informe de Tiempo:
+                    <span th:if="${proyecto != null}" th:text="${proyecto.nombre}" class="text-success"></span>
+                </h2>
+                <a th:href="@{/registros-tiempo/informes}" class="btn btn-primary">
+                    <i class="fas fa-arrow-left me-2"></i>Volver a Informes
+                </a>
+            </div>
+
+            <div th:if="${registros == null || registros.empty}" class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                <span>No hay registros de tiempo para este proyecto.</span>
+            </div>
+
+            <div th:if="${proyecto != null}" class="card mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Información del Proyecto</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Nombre:</strong> <span th:text="${proyecto.nombre}"></span></p>
+                            <p><strong>Descripción:</strong> <span th:text="${proyecto.descripcion}"></span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Fecha Inicio:</strong> <span th:text="${#temporals.format(proyecto.fechaInicio, 'dd/MM/yyyy')}"></span></p>
+                            <p><strong>Fecha Fin Estimada:</strong> <span th:text="${#temporals.format(proyecto.fechaFinEstimada, 'dd/MM/yyyy')}"></span></p>
+                            <p><strong>Estado:</strong> <span th:text="${proyecto.estado}"></span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div th:if="${registros != null && !registros.empty}" class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                    <tr>
+                        <th>Empleado</th>
+                        <th>Fecha</th>
+                        <th>Hora Inicio</th>
+                        <th>Hora Fin</th>
+                        <th>Horas</th>
+                        <th>Comentario</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="registro : ${registros}">
+                        <td th:text="${registro.usuarioNombre ?: 'No asignado'}">Empleado</td>
+                        <td th:text="${#temporals.format(registro.fechaRegistro, 'dd/MM/yyyy')}">Fecha</td>
+                        <td th:text="${#temporals.format(registro.horaInicio, 'HH:mm')}">Hora Inicio</td>
+                        <td th:text="${#temporals.format(registro.horaFin, 'HH:mm')}">Hora Fin</td>
+                        <td th:text="${#numbers.formatDecimal(registro.horasTrabajadas, 1, 2)}">Horas</td>
+                        <td th:text="${registro.comentario}">Comentario</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Resumen de horas -->
+            <div th:if="${registros != null && !registros.empty}" class="card mt-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Resumen de Horas</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="card bg-primary text-white">
+                                <div class="card-body text-center">
+                                    <h3 class="mb-0" th:text="${#numbers.formatDecimal(#aggregates.sum(registros.![horasTrabajadas]), 1, 2)}">0</h3>
+                                    <p class="mb-0">Total Horas</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-success text-white">
+                                <div class="card-body text-center">
+                                    <h3 class="mb-0" th:text="${registros.size()}">0</h3>
+                                    <p class="mb-0">Registros</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-info text-white">
+                                <div class="card-body text-center">
+                                    <h3 class="mb-0" th:text="${#numbers.formatDecimal(#aggregates.avg(registros.![horasTrabajadas]), 1, 2)}">0</h3>
+                                    <p class="mb-0">Promedio Horas/Registro</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <a th:href="@{/registros-tiempo/informes}" class="btn btn-primary">
+                    <i class="fas fa-arrow-left me-2"></i>Volver a Informes
+                </a>
+                <a th:href="@{/dashboard}" class="btn btn-secondary">
+                    <i class="fas fa-home me-2"></i>Volver al Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

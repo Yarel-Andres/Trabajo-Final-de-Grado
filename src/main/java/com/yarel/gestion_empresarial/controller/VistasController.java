@@ -501,13 +501,59 @@ public class VistasController {
             return "redirect:/dashboard";
         }
 
+        // Obtener información del empleado
+        Optional<EmpleadoDTO> empleadoOpt = empleadoService.findById(empleadoId);
+        if (empleadoOpt.isEmpty()) {
+            model.addAttribute("error", "Empleado no encontrado");
+            return "registros-tiempo/informes";
+        }
+
+        model.addAttribute("empleado", empleadoOpt.get());
+
+        // Obtener registros de tiempo del empleado
         List<RegistroTiempoDTO> registros = registroTiempoService.findByUsuarioId(empleadoId);
         model.addAttribute("registros", registros);
 
-        // Obtener información del empleado
-        Optional<EmpleadoDTO> empleadoOpt = empleadoService.findById(empleadoId);
-        empleadoOpt.ifPresent(empleado -> model.addAttribute("empleado", empleado));
-
         return "registros-tiempo/informes-empleado";
+    }
+
+    // Obtener informes de tiempo por proyecto (para jefes y RRHH)
+    @GetMapping("/registros-tiempo/informes/proyecto/{proyectoId}")
+    public String verInformesRegistrosTiempoPorProyecto(@PathVariable Long proyectoId, Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        // Verificar que el usuario es un jefe o RRHH
+        if (!auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_JEFE")) &&
+                !auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_RRHH"))) {
+            return "redirect:/dashboard";
+        }
+
+        // Obtener información del proyecto
+        Optional<ProyectoDTO> proyectoOpt = proyectoService.findById(proyectoId);
+        if (proyectoOpt.isEmpty()) {
+            model.addAttribute("error", "Proyecto no encontrado");
+            return "registros-tiempo/informes";
+        }
+
+        model.addAttribute("proyecto", proyectoOpt.get());
+
+        // Obtener registros de tiempo del proyecto
+        List<RegistroTiempoDTO> registros = registroTiempoService.findByProyectoId(proyectoId);
+
+        // Enriquecer los registros con nombres de usuario
+        for (RegistroTiempoDTO registro : registros) {
+            if (registro.getUsuarioId() != null) {
+                Optional<UsuarioDTO> usuarioOpt = usuarioService.findById(registro.getUsuarioId());
+                usuarioOpt.ifPresent(usuario -> {
+                    // Añadir el nombre del usuario como propiedad adicional
+                    // Esto requiere modificar el DTO para incluir esta propiedad
+                    registro.setUsuarioNombre(usuario.getNombreCompleto());
+                });
+            }
+        }
+
+        model.addAttribute("registros", registros);
+
+        return "registros-tiempo/informes-proyecto";
     }
 }
