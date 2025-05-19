@@ -12,10 +12,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -102,5 +104,33 @@ public class ProyectoService {
 
         List<Proyecto> proyectos = proyectoRepository.findByJefe(jefe);
         return proyectoMapper.toDtoList(proyectos);
+    }
+
+    // Obtiene proyectos finalizados
+    @Transactional
+    public void finalizarProyecto(Long proyectoId) {
+        Proyecto proyecto = proyectoRepository.findById(proyectoId)
+                .orElseThrow(() -> new RuntimeException("Proyecto no encontrado con ID: " + proyectoId));
+
+        proyecto.setCompletado(true);
+        proyecto.setFechaFinReal(LocalDate.now());
+
+        proyectoRepository.save(proyecto);
+    }
+
+    // Añadir método para obtener proyectos completados por empleado
+    @Transactional(readOnly = true)
+    public List<ProyectoDTO> findCompletadosByEmpleadoId(Long empleadoId) {
+        Empleado empleado = empleadoRepository.findById(empleadoId)
+                .orElseThrow(() -> new RuntimeException("Empleado no encontrado con ID: " + empleadoId));
+
+        List<Proyecto> proyectos = proyectoRepository.findByEmpleadosContaining(empleado);
+
+        // Filtrar solo los proyectos completados
+        List<Proyecto> proyectosCompletados = proyectos.stream()
+                .filter(Proyecto::isCompletado)
+                .collect(Collectors.toList());
+
+        return proyectoMapper.toDtoList(proyectosCompletados);
     }
 }

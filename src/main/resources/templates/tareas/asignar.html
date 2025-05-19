@@ -44,9 +44,51 @@
                     </select>
                 </div>
 
+                <!-- Fecha de vencimiento con hora y minutos -->
                 <div class="mb-3">
-                    <label for="fechaVencimiento" class="form-label">Fecha de Vencimiento:</label>
-                    <input type="date" id="fechaVencimiento" th:field="*{fechaVencimiento}" class="form-control" required>
+                    <label for="fechaVencimientoDate" class="form-label">Fecha de vencimiento</label>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <input type="date" class="form-control" id="fechaVencimientoDate" name="fechaVencimientoDate" required>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="horaVencimiento" name="horaVencimiento">
+                                <option value="0">00</option>
+                                <option value="1">01</option>
+                                <option value="2">02</option>
+                                <option value="3">03</option>
+                                <option value="4">04</option>
+                                <option value="5">05</option>
+                                <option value="6">06</option>
+                                <option value="7">07</option>
+                                <option value="8">08</option>
+                                <option value="9">09</option>
+                                <option value="10">10</option>
+                                <option value="11">11</option>
+                                <option value="12">12</option>
+                                <option value="13">13</option>
+                                <option value="14">14</option>
+                                <option value="15">15</option>
+                                <option value="16">16</option>
+                                <option value="17">17</option>
+                                <option value="18">18</option>
+                                <option value="19">19</option>
+                                <option value="20">20</option>
+                                <option value="21">21</option>
+                                <option value="22">22</option>
+                                <option value="23">23</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="minutosVencimiento" name="minutosVencimiento">
+                                <option value="0">00</option>
+                                <option value="15">15</option>
+                                <option value="30">30</option>
+                                <option value="45">45</option>
+                            </select>
+                        </div>
+                    </div>
+                    <small class="form-text text-muted">Seleccione la fecha, hora y minutos de vencimiento</small>
                 </div>
 
                 <div class="mb-3">
@@ -70,5 +112,28 @@
         </div>
     </div>
 </div>
+
+
+<!-- Para establecer fecha actual por defecto y 09 como valor predeterminado para la hora-->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Establecer la fecha actual como valor predeterminado para la fecha de vencimiento
+        const fechaVencimientoInput = document.getElementById('fechaVencimientoDate');
+        if (fechaVencimientoInput) {
+            const hoy = new Date();
+            const año = hoy.getFullYear();
+            const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+            const dia = String(hoy.getDate()).padStart(2, '0');
+            const fechaActual = `${año}-${mes}-${dia}`;
+            fechaVencimientoInput.value = fechaActual;
+        }
+
+        // Establecer "09" como valor predeterminado para la hora
+        const horaVencimientoSelect = document.getElementById('horaVencimiento');
+        if (horaVencimientoSelect) {
+            horaVencimientoSelect.value = "9"; // Selecciona la opción con valor "9" (que muestra "09")
+        }
+    });
+</script>
 </body>
 </html>

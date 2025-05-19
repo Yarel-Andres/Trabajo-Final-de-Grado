@@ -21,11 +21,18 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
+import java.util.HashMap;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Controller
 public class VistasController {
@@ -36,6 +43,8 @@ public class VistasController {
     private final UsuarioService usuarioService;
     private final ProyectoService proyectoService;
     private final RegistroTiempoService registroTiempoService;
+
+    private static final Logger log = LoggerFactory.getLogger(VistasController.class);
 
     @Autowired
     public VistasController(EmpleadoService empleadoService, TareaService tareaService, ReunionService reunionService, UsuarioService usuarioService, ProyectoService proyectoService, RegistroTiempoService registroTiempoService) {
@@ -64,6 +73,8 @@ public class VistasController {
 
         boolean isJefe = auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_JEFE"));
         boolean isEmpleado = auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_EMPLEADO"));
+        boolean isRRHH = auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_RRHH"));
+        model.addAttribute("isRRHH", isRRHH);
 
         model.addAttribute("isJefe", isJefe);
         model.addAttribute("isEmpleado", isEmpleado);
@@ -93,7 +104,12 @@ public class VistasController {
     }
 
     @PostMapping("/tareas/asignar")
-    public String asignarTarea(@ModelAttribute TareaDTO tarea, RedirectAttributes redirectAttributes) {
+    public String asignarTarea(
+            @ModelAttribute TareaDTO tarea,
+            @RequestParam("fechaVencimientoDate") String fechaVencimientoDate,
+            @RequestParam("horaVencimiento") int horaVencimiento,
+            @RequestParam("minutosVencimiento") int minutosVencimiento,
+            RedirectAttributes redirectAttributes) {
         // Verificar que el usuario es un jefe
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (!auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_JEFE"))) {
@@ -112,11 +128,18 @@ public class VistasController {
 
             String nombreUsuario = usuarioOpt.get().getNombreUsuario();
 
+            // Convertir la fecha de string a LocalDateTime
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDate fecha = LocalDate.parse(fechaVencimientoDate, formatter);
+            LocalDateTime fechaHora = fecha.atTime(horaVencimiento, minutosVencimiento);
+            tarea.setFechaVencimiento(fechaHora);
+
             // Asignar la tarea usando el servicio existente
             TareaDTO nuevaTarea = tareaService.saveTareaForJefe(tarea, nombreUsuario);
             redirectAttributes.addFlashAttribute("mensaje", "Tarea asignada correctamente");
             return "redirect:/tareas/confirmacion";
         } catch (Exception e) {
+            e.printStackTrace(); // Para ver el error completo en los logs
             redirectAttributes.addFlashAttribute("error", "Error al asignar la tarea: " + e.getMessage());
             return "redirect:/tareas/asignar";
         }
@@ -147,8 +170,12 @@ public class VistasController {
             return "tareas/ver";
         }
 
-        // Obtener las tareas del empleado
+        // Obtener las tareas del empleado (solo las no completadas)
         List<TareaDTO> tareas = tareaService.findByEmpleadoId(empleadoId);
+        // Filtrar para mostrar solo las tareas no completadas
+        tareas = tareas.stream()
+                .filter(tarea -> !tarea.isCompletada())
+                .toList();
 
         // Obtener todos los usuarios para buscar los nombres de los jefes
         List<UsuarioDTO> usuarios = usuarioService.findAll();
@@ -182,6 +209,188 @@ public class VistasController {
         model.addAttribute("tareas", tareas);
 
         return "tareas/ver";
+    }
+
+    @PostMapping("/tareas/finalizar")
+    public String finalizarTarea(@RequestParam("tareaId") Long tareaId, RedirectAttributes redirectAttributes) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String nombreCompleto = auth.getName();
+
+        try {
+            // Obtener el ID del empleado actual por su nombre completo
+            Long empleadoId = null;
+            List<EmpleadoDTO> empleados = empleadoService.findAll();
+            for (EmpleadoDTO empleado : empleados) {
+                if (empleado.getNombreCompleto().equals(nombreCompleto)) {
+                    empleadoId = empleado.getId();
+                    break;
+                }
+            }
+
+            if (empleadoId == null) {
+                redirectAttributes.addFlashAttribute("error", "No se pudo encontrar el empleado");
+                return "redirect:/tareas/ver";
+            }
+
+            // Verificar que la tarea pertenece al empleado
+            Optional<TareaDTO> tareaOpt = tareaService.findById(tareaId);
+            if (tareaOpt.isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "No se pudo encontrar la tarea");
+                return "redirect:/tareas/ver";
+            }
+
+            TareaDTO tarea = tareaOpt.get();
+            if (!tarea.getEmpleadoId().equals(empleadoId)) {
+                redirectAttributes.addFlashAttribute("error", "No tienes permiso para finalizar esta tarea");
+                return "redirect:/tareas/ver";
+            }
+
+            // Finalizar la tarea
+            tareaService.finalizarTarea(tareaId);
+            redirectAttributes.addFlashAttribute("mensaje", "Tarea finalizada correctamente");
+            return "redirect:/tareas/ver";
+        } catch (Exception e) {
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("error", "Error al finalizar la tarea: " + e.getMessage());
+            return "redirect:/tareas/ver";
+        }
+    }
+
+    @GetMapping("/finalizados")
+    public String verFinalizados(Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String nombreCompleto = auth.getName();
+
+        // Obtener el ID del empleado actual por su nombre completo
+        Long empleadoId = null;
+        List<EmpleadoDTO> empleados = empleadoService.findAll();
+        for (EmpleadoDTO empleado : empleados) {
+            if (empleado.getNombreCompleto().equals(nombreCompleto)) {
+                empleadoId = empleado.getId();
+                break;
+            }
+        }
+
+        if (empleadoId == null) {
+            model.addAttribute("error", "No se pudo encontrar el empleado");
+            return "finalizados/index";
+        }
+
+        // Obtener las tareas completadas del empleado
+        List<TareaDTO> tareasCompletadas = tareaService.findCompletadasByEmpleadoId(empleadoId);
+
+        // Obtener las reuniones completadas del empleado
+        List<ReunionDTO> reunionesCompletadas = reunionService.findCompletadasByParticipanteId(empleadoId);
+
+        // Obtener los proyectos completados del empleado
+        List<ProyectoDTO> proyectosCompletados = proyectoService.findCompletadosByEmpleadoId(empleadoId);
+
+        // Obtener todos los usuarios para buscar los nombres de los jefes
+        List<UsuarioDTO> usuarios = usuarioService.findAll();
+
+        // Obtener todos los proyectos para añadir sus nombres a las tareas
+        List<ProyectoDTO> proyectos = proyectoService.findAll();
+
+        // Crear un mapa para acceder rápidamente a los usuarios por ID
+        Map<Long, String> usuariosMap = new HashMap<>();
+        for (UsuarioDTO usuario : usuarios) {
+            usuariosMap.put(usuario.getId(), usuario.getNombreCompleto());
+        }
+
+        // Añadir el mapa de usuarios al modelo
+        model.addAttribute("usuariosMap", usuariosMap);
+
+        // Añadir el nombre del jefe y del proyecto a cada tarea
+        for (TareaDTO tarea : tareasCompletadas) {
+            // Buscar y asignar el nombre del jefe
+            if (tarea.getJefeId() != null) {
+                for (UsuarioDTO usuario : usuarios) {
+                    if (usuario.getId().equals(tarea.getJefeId())) {
+                        tarea.setJefeNombre(usuario.getNombreCompleto());
+                        break;
+                    }
+                }
+            }
+
+            // Buscar y asignar el nombre del proyecto
+            if (tarea.getProyectoId() != null) {
+                for (ProyectoDTO proyecto : proyectos) {
+                    if (proyecto.getId().equals(tarea.getProyectoId())) {
+                        tarea.setNombreProyecto(proyecto.getNombre());
+                        break;
+                    }
+                }
+            }
+        }
+
+        // Añadir los nombres de los participantes a cada reunión
+        for (ReunionDTO reunion : reunionesCompletadas) {
+            // Asignar el nombre del organizador
+            if (reunion.getOrganizadorId() != null) {
+                String nombreOrganizador = usuariosMap.get(reunion.getOrganizadorId());
+                if (nombreOrganizador != null) {
+                    reunion.setOrganizadorNombre(nombreOrganizador);
+                }
+            }
+        }
+
+        // Añadir los nombres de los empleados a cada proyecto
+        for (ProyectoDTO proyecto : proyectosCompletados) {
+            if (proyecto.getEmpleadosIds() != null && !proyecto.getEmpleadosIds().isEmpty()) {
+                for (Long empleadoId2 : proyecto.getEmpleadosIds()) {
+                    String nombreEmpleado = usuariosMap.get(empleadoId2);
+                    if (nombreEmpleado != null) {
+                        proyecto.getEmpleadosNombres().add(nombreEmpleado);
+                    }
+                }
+            }
+        }
+
+        model.addAttribute("tareasCompletadas", tareasCompletadas);
+        model.addAttribute("reunionesCompletadas", reunionesCompletadas);
+        model.addAttribute("proyectosCompletados", proyectosCompletados);
+
+        return "finalizados/index";
+    }
+
+    // Proyectos finalizados
+    @PostMapping("/proyectos/finalizar")
+    public String finalizarProyecto(@RequestParam("proyectoId") Long proyectoId, RedirectAttributes redirectAttributes) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String nombreCompleto = auth.getName();
+
+        try {
+            // Obtener el ID del usuario actual por su nombre completo
+            Long usuarioId = null;
+            List<UsuarioDTO> usuarios = usuarioService.findAll();
+            for (UsuarioDTO usuario : usuarios) {
+                if (usuario.getNombreCompleto().equals(nombreCompleto)) {
+                    usuarioId = usuario.getId();
+                    break;
+                }
+            }
+
+            if (usuarioId == null) {
+                redirectAttributes.addFlashAttribute("error", "No se pudo encontrar el usuario");
+                return "redirect:/proyectos/ver";
+            }
+
+            // Verificar que el proyecto existe
+            Optional<ProyectoDTO> proyectoOpt = proyectoService.findById(proyectoId);
+            if (proyectoOpt.isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "No se pudo encontrar el proyecto");
+                return "redirect:/proyectos/ver";
+            }
+
+            // Finalizar el proyecto
+            proyectoService.finalizarProyecto(proyectoId);
+            redirectAttributes.addFlashAttribute("mensaje", "Proyecto finalizado correctamente");
+            return "redirect:/proyectos/ver";
+        } catch (Exception e) {
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("error", "Error al finalizar el proyecto: " + e.getMessage());
+            return "redirect:/proyectos/ver";
+        }
     }
 
     @GetMapping("/tareas/asignadas")
@@ -250,14 +459,24 @@ public class VistasController {
 
         // Crear un DTO vacío para el formulario
         ReunionDTO reunion = new ReunionDTO();
-        reunion.setFechaHora(LocalDateTime.now().plusDays(1).withHour(10).withMinute(0));
+
+        // No necesitamos establecer fechaHora aquí ya que ahora usamos campos separados
         model.addAttribute("reunion", reunion);
+
+        // Establecer la fecha actual como valor por defecto para el campo de fecha
+        model.addAttribute("fechaActual", LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
 
         return "reuniones/crear";
     }
 
     @PostMapping("/reuniones/crear")
-    public String crearReunion(@ModelAttribute ReunionDTO reunion, @RequestParam(value = "participantesIds", required = false) List<Long> participantesIds, RedirectAttributes redirectAttributes) {
+    public String crearReunion(
+            @ModelAttribute ReunionDTO reunion,
+            @RequestParam(value = "participantesIds", required = false) List<Long> participantesIds,
+            @RequestParam("fechaReunionDate") String fechaReunionDate,
+            @RequestParam("horaReunion") int horaReunion,
+            @RequestParam("minutosReunion") int minutosReunion,
+            RedirectAttributes redirectAttributes) {
         // Verificar que el usuario es un jefe
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (!auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_JEFE"))) {
@@ -282,22 +501,25 @@ public class VistasController {
                 return "redirect:/reuniones/crear";
             }
 
-            if (reunion.getFechaHora() == null) {
-                redirectAttributes.addFlashAttribute("error", "La fecha y hora de la reunión son obligatorias");
-                return "redirect:/reuniones/crear";
-            }
-
             if (reunion.getSala() == null || reunion.getSala().trim().isEmpty()) {
                 redirectAttributes.addFlashAttribute("error", "La sala de la reunión es obligatoria");
                 return "redirect:/reuniones/crear";
             }
 
-            // Asignar los participantes seleccionados
-            if (participantesIds != null && !participantesIds.isEmpty()) {
-                reunion.setParticipantesIds(new HashSet<>(participantesIds));
-            } else {
-                reunion.setParticipantesIds(new HashSet<>());
+            // Verificar que hay al menos un participante seleccionado
+            if (participantesIds == null || participantesIds.isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "Debe seleccionar al menos un participante");
+                return "redirect:/reuniones/crear";
             }
+
+            // Convertir la fecha de string a LocalDateTime
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDate fecha = LocalDate.parse(fechaReunionDate, formatter);
+            LocalDateTime fechaHora = fecha.atTime(horaReunion, minutosReunion);
+            reunion.setFechaHora(fechaHora);
+
+            // Asignar los participantes seleccionados
+            reunion.setParticipantesIds(new HashSet<>(participantesIds));
 
             // Asignar la reunión usando el servicio
             ReunionDTO nuevaReunion = reunionService.saveReunionForJefe(reunion, nombreUsuario);
@@ -315,6 +537,7 @@ public class VistasController {
         return "reuniones/confirmacion";
     }
 
+    // Modificar el método verReuniones para filtrar solo las reuniones no completadas
     @GetMapping("/reuniones/ver")
     public String verReuniones(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -337,9 +560,102 @@ public class VistasController {
 
         // Obtener las reuniones del usuario
         List<ReunionDTO> reuniones = reunionService.findByParticipanteId(usuarioId);
+
+        // Filtrar para mostrar solo las reuniones no completadas
+        reuniones = reuniones.stream()
+                .filter(reunion -> !reunion.isCompletada())
+                .collect(Collectors.toList());
+
+        // Crear un mapa para acceder rápidamente a los usuarios por ID
+        Map<Long, String> usuariosMap = new HashMap<>();
+        for (UsuarioDTO usuario : usuarios) {
+            usuariosMap.put(usuario.getId(), usuario.getNombreCompleto());
+        }
+
+        // Añadir los nombres de los participantes a cada reunión
+        for (ReunionDTO reunion : reuniones) {
+            Set<String> participantesNombres = new HashSet<>();
+            if (reunion.getParticipantesIds() != null) {
+                for (Long participanteId : reunion.getParticipantesIds()) {
+                    String nombreParticipante = usuariosMap.get(participanteId);
+                    if (nombreParticipante != null) {
+                        participantesNombres.add(nombreParticipante);
+                    }
+                }
+            }
+            // Almacenar los nombres en un atributo temporal
+            model.addAttribute("participantesNombres_" + reunion.getId(), participantesNombres);
+
+            // Asignar el nombre del organizador
+            if (reunion.getOrganizadorId() != null) {
+                String nombreOrganizador = usuariosMap.get(reunion.getOrganizadorId());
+                if (nombreOrganizador != null) {
+                    reunion.setOrganizadorNombre(nombreOrganizador);
+                }
+            }
+        }
+
         model.addAttribute("reuniones", reuniones);
 
         return "reuniones/ver";
+    }
+
+    @GetMapping("/reuniones/asignadas")
+    public String verReunionesAsignadas(Model model) {
+        // Verificar que el usuario es un jefe
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (!auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_JEFE"))) {
+            return "redirect:/dashboard";
+        }
+
+        String nombreCompleto = auth.getName();
+
+        // Obtener el ID del jefe actual por su nombre completo
+        Long jefeId = null;
+        List<UsuarioDTO> usuarios = usuarioService.findAll();
+        for (UsuarioDTO usuario : usuarios) {
+            if (usuario.getNombreCompleto().equals(nombreCompleto)) {
+                jefeId = usuario.getId();
+                break;
+            }
+        }
+
+        if (jefeId == null) {
+            model.addAttribute("error", "No se pudo encontrar el jefe");
+            return "reuniones/asignadas";
+        }
+
+        // Obtener las reuniones organizadas por el jefe
+        List<ReunionDTO> reuniones = reunionService.findByOrganizadorId(jefeId);
+
+        // Obtener todos los usuarios para añadir sus nombres a las reuniones
+        List<UsuarioDTO> todosUsuarios = usuarioService.findAll();
+
+        // Crear un mapa para acceder rápidamente a los usuarios por ID
+        Map<Long, String> usuariosMap = new HashMap<>();
+        for (UsuarioDTO usuario : todosUsuarios) {
+            usuariosMap.put(usuario.getId(), usuario.getNombreCompleto());
+        }
+
+        // Añadir los nombres de los participantes a cada reunión
+        for (ReunionDTO reunion : reuniones) {
+            Set<String> participantesNombres = new HashSet<>();
+            if (reunion.getParticipantesIds() != null) {
+                for (Long participanteId : reunion.getParticipantesIds()) {
+                    String nombreParticipante = usuariosMap.get(participanteId);
+                    if (nombreParticipante != null) {
+                        participantesNombres.add(nombreParticipante);
+                    }
+                }
+            }
+            // Almacenar los nombres en un atributo temporal
+            reunion.setOrganizadorNombre(nombreCompleto);
+            model.addAttribute("participantesNombres_" + reunion.getId(), participantesNombres);
+        }
+
+        model.addAttribute("reuniones", reuniones);
+
+        return "reuniones/asignadas";
     }
 
     @GetMapping("/proyectos/crear")
@@ -428,6 +744,7 @@ public class VistasController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String nombreCompleto = auth.getName();
         boolean isJefe = auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_JEFE"));
+        boolean isRRHH = auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_RRHH"));
 
         // Obtener el ID del usuario actual por su nombre completo
         Long usuarioId = null;
@@ -446,12 +763,41 @@ public class VistasController {
 
         List<ProyectoDTO> proyectos;
 
+        // Si es RRHH, redirigir a la vista de RRHH para proyectos
+        if (isRRHH) {
+            return "redirect:/rrhh/proyectos";
+        }
         // Si es jefe, mostrar sus proyectos creados
-        if (isJefe) {
+        else if (isJefe) {
             proyectos = proyectoService.findByJefeId(usuarioId);
         } else {
             // Si es empleado, mostrar los proyectos asignados
             proyectos = proyectoService.findByEmpleadoId(usuarioId);
+            // Filtrar para mostrar solo los proyectos no completados
+            proyectos = proyectos.stream()
+                    .filter(proyecto -> !proyecto.isCompletado())
+                    .collect(Collectors.toList());
+        }
+
+        // Obtener todos los empleados para añadir sus nombres a los proyectos
+        List<EmpleadoDTO> empleados = empleadoService.findAll();
+
+        // Crear un mapa para acceder rápidamente a los empleados por ID
+        Map<Long, String> empleadosMap = new HashMap<>();
+        for (EmpleadoDTO empleado : empleados) {
+            empleadosMap.put(empleado.getId(), empleado.getNombreCompleto());
+        }
+
+        // Añadir los nombres de los empleados a cada proyecto
+        for (ProyectoDTO proyecto : proyectos) {
+            if (proyecto.getEmpleadosIds() != null && !proyecto.getEmpleadosIds().isEmpty()) {
+                for (Long empleadoId : proyecto.getEmpleadosIds()) {
+                    String nombreEmpleado = empleadosMap.get(empleadoId);
+                    if (nombreEmpleado != null) {
+                        proyecto.getEmpleadosNombres().add(nombreEmpleado);
+                    }
+                }
+            }
         }
 
         model.addAttribute("proyectos", proyectos);
@@ -464,7 +810,10 @@ public class VistasController {
 
     // Mostrar formulario para registrar tiempo
     @GetMapping("/registros-tiempo/crear")
-    public String crearRegistroTiempoForm(Model model) {
+    public String crearRegistroTiempoForm(Model model,
+                                          @RequestParam(required = false) Long tareaId,
+                                          @RequestParam(required = false) Long proyectoId,
+                                          @RequestParam(required = false) Long reunionId) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String nombreCompleto = auth.getName();
 
@@ -497,7 +846,41 @@ public class VistasController {
         model.addAttribute("tareas", tareas);
         model.addAttribute("proyectos", proyectos);
         model.addAttribute("reuniones", reuniones);
-        model.addAttribute("registroTiempo", new RegistroTiempoDTO());
+
+        // Crear un nuevo DTO para el registro de tiempo
+        RegistroTiempoDTO registroTiempo = new RegistroTiempoDTO();
+
+        // Determinar el tipo de actividad basado en los parámetros recibidos
+        String tipoActividad = null;
+
+        // Si se proporciona un ID de tarea
+        if (tareaId != null) {
+            registroTiempo.setTareaId(tareaId);
+            tipoActividad = "tarea";
+        }
+        // Si se proporciona un ID de proyecto
+        else if (proyectoId != null) {
+            registroTiempo.setProyectoId(proyectoId);
+            tipoActividad = "proyecto";
+        }
+        // Si se proporciona un ID de reunión
+        else if (reunionId != null) {
+            registroTiempo.setReunionId(reunionId);
+            tipoActividad = "reunion";
+        }
+
+        // Añadir el tipo de actividad al modelo si se ha determinado
+        if (tipoActividad != null) {
+            model.addAttribute("tipoActividadSeleccionada", tipoActividad);
+            model.addAttribute("mostrarSoloUnaOpcion", true);
+        } else {
+            model.addAttribute("mostrarSoloUnaOpcion", false);
+        }
+
+        model.addAttribute("registroTiempo", registroTiempo);
+
+        // Establecer la fecha actual como valor por defecto
+        model.addAttribute("fechaActual", LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
 
         return "registros-tiempo/crear";
     }
@@ -519,15 +902,53 @@ public class VistasController {
 
             String nombreUsuario = usuarioOpt.get().getNombreUsuario();
 
-            // Guardar el registro de tiempo
-            RegistroTiempoDTO nuevoRegistro = registroTiempoService.saveForUsuario(registroTiempo, nombreUsuario);
-            redirectAttributes.addFlashAttribute("mensaje", "Tiempo registrado correctamente");
-            return "redirect:/registros-tiempo/confirmacion";
+            try {
+                // Convertir las fechas de string a LocalDateTime
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+                // Fecha de inicio
+                LocalDate fechaInicio = LocalDate.parse(registroTiempo.getFechaInicioTemp(), formatter);
+                LocalDateTime horaInicioDateTime = fechaInicio.atTime(
+                        registroTiempo.getHoraInicioTemp(),
+                        registroTiempo.getMinutosInicioTemp()
+                );
+                registroTiempo.setHoraInicio(horaInicioDateTime);
+
+                // Fecha de fin
+                LocalDate fechaFin = LocalDate.parse(registroTiempo.getFechaFinTemp(), formatter);
+                LocalDateTime horaFinDateTime = fechaFin.atTime(
+                        registroTiempo.getHoraFinTemp(),
+                        registroTiempo.getMinutosFinTemp()
+                );
+                registroTiempo.setHoraFin(horaFinDateTime);
+
+                // Establecer la fecha de registro (usamos la fecha de inicio)
+                registroTiempo.setFechaRegistro(fechaInicio);
+
+                // Calcular horas trabajadas
+                double horasTrabajadas = calcularHorasTrabajadas(horaInicioDateTime, horaFinDateTime);
+                registroTiempo.setHorasTrabajadas(horasTrabajadas);
+
+                // Guardar el registro de tiempo
+                RegistroTiempoDTO nuevoRegistro = registroTiempoService.saveForUsuario(registroTiempo, nombreUsuario);
+                redirectAttributes.addFlashAttribute("mensaje", "Tiempo registrado correctamente");
+                return "redirect:/registros-tiempo/confirmacion";
+            } catch (Exception e) {
+                e.printStackTrace();
+                redirectAttributes.addFlashAttribute("error", "Error al procesar las fechas: " + e.getMessage());
+                return "redirect:/registros-tiempo/crear";
+            }
         } catch (Exception e) {
             e.printStackTrace();
             redirectAttributes.addFlashAttribute("error", "Error al registrar el tiempo: " + e.getMessage());
             return "redirect:/registros-tiempo/crear";
         }
+    }
+
+    // Método auxiliar para calcular las horas trabajadas entre dos fechas
+    private double calcularHorasTrabajadas(LocalDateTime inicio, LocalDateTime fin) {
+        long segundos = java.time.Duration.between(inicio, fin).getSeconds();
+        return segundos / 3600.0; // Convertir segundos a horas
     }
 
     // Página de confirmación
@@ -625,25 +1046,88 @@ public class VistasController {
 
         model.addAttribute("proyecto", proyectoOpt.get());
 
-        // Obtener registros de tiempo del proyecto
-        List<RegistroTiempoDTO> registros = registroTiempoService.findByProyectoId(proyectoId);
+        try {
+            // Obtener registros de tiempo del proyecto
+            List<RegistroTiempoDTO> registros = registroTiempoService.findByProyectoId(proyectoId);
 
-        // Enriquecer los registros con nombres de usuario
-        for (RegistroTiempoDTO registro : registros) {
-            if (registro.getUsuarioId() != null) {
-                Optional<UsuarioDTO> usuarioOpt = usuarioService.findById(registro.getUsuarioId());
-                if (usuarioOpt.isPresent()) {
-                    registro.setUsuarioNombre(usuarioOpt.get().getNombreCompleto());
-                } else {
-                    registro.setUsuarioNombre("Usuario no encontrado");
-                }
-            } else {
-                registro.setUsuarioNombre("No asignado");
+            // Cargar todos los usuarios una sola vez para mejorar el rendimiento
+            List<UsuarioDTO> todosLosUsuarios = usuarioService.findAll();
+            Map<Long, String> mapaUsuarios = new HashMap<>();
+            for (UsuarioDTO usuario : todosLosUsuarios) {
+                mapaUsuarios.put(usuario.getId(), usuario.getNombreCompleto());
             }
+
+            // Enriquecer los registros con nombres de usuario
+            for (RegistroTiempoDTO registro : registros) {
+                if (registro.getUsuarioId() != null) {
+                    String nombreUsuario = mapaUsuarios.get(registro.getUsuarioId());
+                    if (nombreUsuario != null) {
+                        registro.setUsuarioNombre(nombreUsuario);
+                    } else {
+                        registro.setUsuarioNombre("Usuario ID: " + registro.getUsuarioId());
+                    }
+                } else {
+                    registro.setUsuarioNombre("No asignado");
+                }
+
+                // Añadir información de depuración al modelo
+                System.out.println("Registro ID: " + registro.getId() +
+                        ", Usuario ID: " + registro.getUsuarioId() +
+                        ", Nombre asignado: " + registro.getUsuarioNombre());
+            }
+
+            model.addAttribute("registros", registros);
+
+            // Añadir información de depuración al modelo
+            model.addAttribute("totalRegistros", registros.size());
+            model.addAttribute("totalUsuarios", todosLosUsuarios.size());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("error", "Error al cargar los registros de tiempo: " + e.getMessage());
         }
 
-        model.addAttribute("registros", registros);
-
         return "registros-tiempo/informes-proyecto";
+    }
+
+
+    // Añadir este método al controlador
+    @PostMapping("/reuniones/finalizar")
+    public String finalizarReunion(@RequestParam("reunionId") Long reunionId, RedirectAttributes redirectAttributes) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String nombreCompleto = auth.getName();
+
+        try {
+            // Obtener el ID del usuario actual por su nombre completo
+            Long usuarioId = null;
+            List<UsuarioDTO> usuarios = usuarioService.findAll();
+            for (UsuarioDTO usuario : usuarios) {
+                if (usuario.getNombreCompleto().equals(nombreCompleto)) {
+                    usuarioId = usuario.getId();
+                    break;
+                }
+            }
+
+            if (usuarioId == null) {
+                redirectAttributes.addFlashAttribute("error", "No se pudo encontrar el usuario");
+                return "redirect:/reuniones/ver";
+            }
+
+            // Verificar que la reunión existe
+            Optional<ReunionDTO> reunionOpt = reunionService.findById(reunionId);
+            if (reunionOpt.isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "No se pudo encontrar la reunión");
+                return "redirect:/reuniones/ver";
+            }
+
+            // Finalizar la reunión
+            reunionService.finalizarReunion(reunionId);
+            redirectAttributes.addFlashAttribute("mensaje", "Reunión finalizada correctamente");
+            return "redirect:/reuniones/ver";
+        } catch (Exception e) {
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("error", "Error al finalizar la reunión: " + e.getMessage());
+            return "redirect:/reuniones/ver";
+        }
     }
 }

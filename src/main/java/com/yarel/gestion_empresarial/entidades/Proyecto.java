@@ -48,6 +48,19 @@ public class Proyecto {
     @Column
     private Double presupuesto;
 
+
+    @Column(name = "completado", nullable = false)
+    private boolean completado = false;
+
+    public boolean isCompletado() {
+        return completado;
+    }
+
+    public void setCompletado(boolean completado) {
+        this.completado = completado;
+    }
+
+
     @OneToMany(mappedBy = "proyecto", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<RegistroTiempo> registrosTiempo = new HashSet<>();
 
@@ -75,4 +88,8 @@ public class Proyecto {
                 Objects.equals(nombre, proyecto.nombre) &&
                 Objects.equals(fechaInicio, proyecto.fechaInicio);
     }
+
+    // Añade esta relación a la clase Proyecto.java
+    @OneToMany(mappedBy = "proyecto", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<Presupuesto> presupuestos = new HashSet<>();
 }

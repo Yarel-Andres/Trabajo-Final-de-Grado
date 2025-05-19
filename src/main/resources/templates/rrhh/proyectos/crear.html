@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Crear Presupuesto - RRHH')}">
+    <title>Crear Presupuesto - RRHH</title>
+</head>
+<body>
+<header th:replace="~{fragments/layout :: header(${#authentication.name})}"></header>
+
+<div class="container mt-4">
+    <h2>Crear Presupuesto</h2>
+
+    <div th:replace="~{fragments/layout :: messages}"></div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Información del Proyecto</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Nombre:</strong> <span th:text="${proyecto.nombre}"></span></p>
+                    <p><strong>Descripción:</strong> <span th:text="${proyecto.descripcion}"></span></p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Fecha inicio:</strong> <span th:text="${#temporals.format(proyecto.fechaInicio, 'dd/MM/yyyy')}"></span></p>
+                    <p><strong>Total horas registradas:</strong> <span th:text="${totalHoras}"></span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form th:action="@{/rrhh/presupuestos/guardar}" th:object="${presupuesto}" method="post">
+        <input type="hidden" th:field="*{proyectoId}" />
+        <input type="hidden" th:field="*{proyectoNombre}" />
+        <input type="hidden" th:field="*{fechaCreacion}" />
+        <input type="hidden" th:field="*{horasEstimadas}" />
+        <input type="hidden" th:field="*{estado}" />
+
+        <div class="card">
+            <div class="card-header">
+                <h5>Datos del Presupuesto</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label for="nombreCliente" class="form-label">Nombre del Cliente</label>
+                    <input type="text" class="form-control" id="nombreCliente" th:field="*{nombreCliente}" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="tarifaHora" class="form-label">Tarifa por Hora (€)</label>
+                    <input type="number" class="form-control" id="tarifaHora" th:field="*{tarifaHora}" step="0.01" min="0" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="horasEstimadas" class="form-label">Horas Estimadas</label>
+                    <input type="number" class="form-control" id="horasEstimadas" th:field="*{horasEstimadas}" step="0.01" min="0" readonly>
+                    <small class="form-text text-muted">Basado en las horas registradas en el proyecto</small>
+                </div>
+
+                <div class="mb-3">
+                    <label for="costoTotal" class="form-label">Costo Total (€)</label>
+                    <input type="number" class="form-control" id="costoTotal" th:field="*{costoTotal}" step="0.01" min="0">
+                    <small class="form-text text-muted">Se calcula automáticamente al guardar si no se especifica</small>
+                </div>
+
+                <div class="mb-3">
+                    <label for="descripcion" class="form-label">Descripción</label>
+                    <textarea class="form-control" id="descripcion" th:field="*{descripcion}" rows="3"></textarea>
+                </div>
+            </div>
+            <div class="card-footer">
+                <button type="submit" class="btn btn-primary">Guardar Presupuesto</button>
+                <a th:href="@{/templates/rrhh/proyectos}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Bootstrap Bundle with Popper -->
+<script th:src="@{/webjars/bootstrap/5.3.2/js/bootstrap.bundle.min.js}"></script>
+
+<!-- Script para calcular el costo total automáticamente -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const tarifaHoraInput = document.getElementById('tarifaHora');
+        const horasEstimadasInput = document.getElementById('horasEstimadas');
+        const costoTotalInput = document.getElementById('costoTotal');
+
+        function calcularCostoTotal() {
+            const tarifaHora = parseFloat(tarifaHoraInput.value) || 0;
+            const horasEstimadas = parseFloat(horasEstimadasInput.value) || 0;
+            costoTotalInput.value = (tarifaHora * horasEstimadas).toFixed(2);
+        }
+
+        tarifaHoraInput.addEventListener('input', calcularCostoTotal);
+        horasEstimadasInput.addEventListener('input', calcularCostoTotal);
+
+        // Calcular inicialmente
+        calcularCostoTotal();
+    });
+</script>
+</body>
+</html>

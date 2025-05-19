@@ -22,6 +22,10 @@ public class ReunionDTO {
     @NotBlank(message = "La sala es obligatoria")
     private String sala;
 
+    // Añadir estos campos a la clase ReunionDTO
+    private boolean completada = false;
+    private LocalDateTime fechaCompletada;
+
     private Long organizadorId;
 
     // Lo utilizaremos para que en el campo de organizador de reuniones
@@ -29,6 +33,17 @@ public class ReunionDTO {
     private String organizadorNombre;
 
     private Set<Long> participantesIds;
+
+    // Nombres de los participantes (no se mapea directamente, se usa para la vista)
+    private Set<String> participantesNombres = new HashSet<>();
+
+    // Getter para participantesNombres
+    public Set<String> getParticipantesNombres() {
+        if (participantesNombres == null) {
+            participantesNombres = new HashSet<>();
+        }
+        return participantesNombres;
+    }
     private Set<Long> registrosTiempoIds;
 
     @Override
@@ -52,4 +67,6 @@ public class ReunionDTO {
         }
         return participantesIds;
     }
+
+
 }

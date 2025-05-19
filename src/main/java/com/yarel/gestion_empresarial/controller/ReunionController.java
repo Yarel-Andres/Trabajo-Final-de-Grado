@@ -84,8 +84,13 @@ public class ReunionController {
     // Obtener reunion con id de participante(empleado)
     @GetMapping("/participante/{participanteId}")
     public ResponseEntity<List<ReunionDTO>> getReunionesForParticipante(@PathVariable Long participanteId) {
-        List<ReunionDTO> reuniones = reunionService.findByParticipanteId(participanteId);
-        return ResponseEntity.ok(reuniones);
+        try {
+            List<ReunionDTO> reuniones = reunionService.findByParticipanteId(participanteId);
+            return ResponseEntity.ok(reuniones);
+        } catch (Exception e) {
+            log.error("Error al obtener reuniones para el participante: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     // Manejador de excepciones global para el controlador

@@ -21,6 +21,12 @@
                 </a>
             </div>
 
+            <!-- Mensaje de error (mantenemos esto ya que es importante para el usuario) -->
+            <div th:if="${error}" class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <span th:text="${error}">Error</span>
+            </div>
+
             <div th:if="${registros == null || registros.empty}" class="alert alert-info">
                 <i class="fas fa-info-circle me-2"></i>
                 <span>No hay registros de tiempo para este proyecto.</span>
@@ -39,7 +45,6 @@
                         <div class="col-md-6">
                             <p><strong>Fecha Inicio:</strong> <span th:text="${#temporals.format(proyecto.fechaInicio, 'dd/MM/yyyy')}"></span></p>
                             <p><strong>Fecha Fin Estimada:</strong> <span th:text="${#temporals.format(proyecto.fechaFinEstimada, 'dd/MM/yyyy')}"></span></p>
-                            <p><strong>Estado:</strong> <span th:text="${proyecto.estado}"></span></p>
                         </div>
                     </div>
                 </div>
@@ -59,7 +64,9 @@
                     </thead>
                     <tbody>
                     <tr th:each="registro : ${registros}">
-                        <td th:text="${registro.usuarioNombre != null ? registro.usuarioNombre : 'No asignado'}">Empleado</td>
+                        <td>
+                            <span th:text="${registro.usuarioNombre != null && !registro.usuarioNombre.isEmpty() ? registro.usuarioNombre : 'No asignado'}">Empleado</span>
+                        </td>
                         <td th:text="${#temporals.format(registro.fechaRegistro, 'dd/MM/yyyy')}">Fecha</td>
                         <td th:text="${#temporals.format(registro.horaInicio, 'HH:mm')}">Hora Inicio</td>
                         <td th:text="${#temporals.format(registro.horaFin, 'HH:mm')}">Hora Fin</td>

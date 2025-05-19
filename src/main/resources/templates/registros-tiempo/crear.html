@@ -14,26 +14,68 @@
             <h2 class="card-title mb-4"><i class="fas fa-clock me-2"></i>Registrar Tiempo</h2>
 
             <form th:action="@{/registros-tiempo/crear}" th:object="${registroTiempo}" method="post">
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="fechaRegistro" class="form-label">Fecha:</label>
-                        <input type="date" id="fechaRegistro" th:field="*{fechaRegistro}" class="form-control"
-                               th:value="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}" required>
+                <!-- Eliminamos el campo fechaRegistro ya que usaremos la misma fecha para inicio y fin -->
+
+                <!-- Hora de inicio -->
+                <div class="mb-4">
+                    <h5>Hora de inicio</h5>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="fechaInicioTemp" class="form-label">Fecha:</label>
+                            <input type="date" id="fechaInicioTemp" th:field="*{fechaInicioTemp}" class="form-control"
+                                   th:value="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="horaInicioTemp" class="form-label">Hora:</label>
+                            <select id="horaInicioTemp" th:field="*{horaInicioTemp}" class="form-select" required>
+                                <option th:each="hora : ${#numbers.sequence(8, 20)}"
+                                        th:value="${hora}"
+                                        th:text="${hora < 10 ? '0' + hora : hora}">09</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="minutosInicioTemp" class="form-label">Minutos:</label>
+                            <select id="minutosInicioTemp" th:field="*{minutosInicioTemp}" class="form-select" required>
+                                <option value="0">00</option>
+                                <option value="15">15</option>
+                                <option value="30">30</option>
+                                <option value="45">45</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="horaInicio" class="form-label">Hora de inicio:</label>
-                        <input type="datetime-local" id="horaInicio" th:field="*{horaInicio}" class="form-control" required>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="horaFin" class="form-label">Hora de fin:</label>
-                        <input type="datetime-local" id="horaFin" th:field="*{horaFin}" class="form-control" required>
+                <!-- Hora de fin -->
+                <div class="mb-4">
+                    <h5>Hora de fin</h5>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="fechaFinTemp" class="form-label">Fecha:</label>
+                            <input type="date" id="fechaFinTemp" th:field="*{fechaFinTemp}" class="form-control"
+                                   th:value="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="horaFinTemp" class="form-label">Hora:</label>
+                            <select id="horaFinTemp" th:field="*{horaFinTemp}" class="form-select" required>
+                                <option th:each="hora : ${#numbers.sequence(8, 20)}"
+                                        th:value="${hora}"
+                                        th:text="${hora < 10 ? '0' + hora : hora}">18</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="minutosFinTemp" class="form-label">Minutos:</label>
+                            <select id="minutosFinTemp" th:field="*{minutosFinTemp}" class="form-select" required>
+                                <option value="0">00</option>
+                                <option value="15">15</option>
+                                <option value="30">30</option>
+                                <option value="45">45</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 
-                <div class="mb-3">
+                <!-- Tipo de actividad - Mostrar todas las opciones o solo una según el contexto -->
+                <div class="mb-3" th:if="${!mostrarSoloUnaOpcion}">
                     <label class="form-label">Tipo de actividad:</label>
                     <div class="form-check">
                         <input class="form-check-input" type="radio" name="tipoActividad" id="tipoTarea" value="tarea" checked>
@@ -49,7 +91,28 @@
                     </div>
                 </div>
 
-                <div id="tareaSection" class="mb-3">
+                <!-- Tipo de actividad - Mostrar solo la opción seleccionada -->
+                <div class="mb-3" th:if="${mostrarSoloUnaOpcion}">
+                    <label class="form-label">Tipo de actividad:</label>
+                    <div class="form-check" th:if="${tipoActividadSeleccionada == 'tarea'}">
+                        <input class="form-check-input" type="radio" name="tipoActividad" id="tipoTareaUnico" value="tarea" checked>
+                        <label class="form-check-label" for="tipoTareaUnico">Tarea</label>
+                        <input type="hidden" name="tipoActividad" value="tarea">
+                    </div>
+                    <div class="form-check" th:if="${tipoActividadSeleccionada == 'proyecto'}">
+                        <input class="form-check-input" type="radio" name="tipoActividad" id="tipoProyectoUnico" value="proyecto" checked>
+                        <label class="form-check-label" for="tipoProyectoUnico">Proyecto</label>
+                        <input type="hidden" name="tipoActividad" value="proyecto">
+                    </div>
+                    <div class="form-check" th:if="${tipoActividadSeleccionada == 'reunion'}">
+                        <input class="form-check-input" type="radio" name="tipoActividad" id="tipoReunionUnico" value="reunion" checked>
+                        <label class="form-check-label" for="tipoReunionUnico">Reunión</label>
+                        <input type="hidden" name="tipoActividad" value="reunion">
+                    </div>
+                </div>
+
+                <!-- Secciones de selección -->
+                <div id="tareaSection" class="mb-3" th:classappend="${tipoActividadSeleccionada != 'tarea' && tipoActividadSeleccionada != null ? 'd-none' : ''}">
                     <label for="tareaId" class="form-label">Tarea:</label>
                     <select id="tareaId" th:field="*{tareaId}" class="form-select">
                         <option value="">-- Seleccionar Tarea --</option>
@@ -57,7 +120,7 @@
                     </select>
                 </div>
 
-                <div id="proyectoSection" class="mb-3 d-none">
+                <div id="proyectoSection" class="mb-3" th:classappend="${tipoActividadSeleccionada != 'proyecto' && tipoActividadSeleccionada != null ? 'd-none' : ''}">
                     <label for="proyectoId" class="form-label">Proyecto:</label>
                     <select id="proyectoId" th:field="*{proyectoId}" class="form-select">
                         <option value="">-- Seleccionar Proyecto --</option>
@@ -65,7 +128,7 @@
                     </select>
                 </div>
 
-                <div id="reunionSection" class="mb-3 d-none">
+                <div id="reunionSection" class="mb-3" th:classappend="${tipoActividadSeleccionada != 'reunion' && tipoActividadSeleccionada != null ? 'd-none' : ''}">
                     <label for="reunionId" class="form-label">Reunión:</label>
                     <select id="reunionId" th:field="*{reunionId}" class="form-select">
                         <option value="">-- Seleccionar Reunión --</option>
@@ -93,6 +156,7 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Solo configurar los radio buttons si están presentes (cuando no hay una opción preseleccionada)
         const tipoTarea = document.getElementById('tipoTarea');
         const tipoProyecto = document.getElementById('tipoProyecto');
         const tipoReunion = document.getElementById('tipoReunion');
@@ -105,38 +169,87 @@
         const proyectoId = document.getElementById('proyectoId');
         const reunionId = document.getElementById('reunionId');
 
-        function updateSections() {
-            if (tipoTarea.checked) {
-                tareaSection.classList.remove('d-none');
-                proyectoSection.classList.add('d-none');
-                reunionSection.classList.add('d-none');
+        // Establecer la fecha actual en los campos de fecha usando JavaScript
+        const fechaInicioTemp = document.getElementById('fechaInicioTemp');
+        const fechaFinTemp = document.getElementById('fechaFinTemp');
 
-                proyectoId.value = '';
-                reunionId.value = '';
-            } else if (tipoProyecto.checked) {
-                tareaSection.classList.add('d-none');
-                proyectoSection.classList.remove('d-none');
-                reunionSection.classList.add('d-none');
-
-                tareaId.value = '';
-                reunionId.value = '';
-            } else if (tipoReunion.checked) {
-                tareaSection.classList.add('d-none');
-                proyectoSection.classList.add('d-none');
-                reunionSection.classList.remove('d-none');
-
-                tareaId.value = '';
-                proyectoId.value = '';
-            }
+        if (fechaInicioTemp && !fechaInicioTemp.value) {
+            const hoy = new Date();
+            const año = hoy.getFullYear();
+            const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+            const dia = String(hoy.getDate()).padStart(2, '0');
+            fechaInicioTemp.value = `${año}-${mes}-${dia}`;
         }
 
-        tipoTarea.addEventListener('change', updateSections);
-        tipoProyecto.addEventListener('change', updateSections);
-        tipoReunion.addEventListener('change', updateSections);
+        if (fechaFinTemp && !fechaFinTemp.value) {
+            const hoy = new Date();
+            const año = hoy.getFullYear();
+            const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+            const dia = String(hoy.getDate()).padStart(2, '0');
+            fechaFinTemp.value = `${año}-${mes}-${dia}`;
+        }
 
-        // Inicializar
-        updateSections();
+        // Establecer valores predeterminados para los selectores de hora
+        document.getElementById('horaInicioTemp').value = "9"; // 9:00 AM
+        document.getElementById('minutosInicioTemp').value = "0"; // 00 minutos
+        document.getElementById('horaFinTemp').value = "17"; // 5:00 PM
+        document.getElementById('minutosFinTemp').value = "0"; // 00 minutos
+
+        // Solo configurar los event listeners si los elementos existen
+        if (tipoTarea && tipoProyecto && tipoReunion) {
+            function updateSections() {
+                if (tipoTarea.checked) {
+                    tareaSection.classList.remove('d-none');
+                    proyectoSection.classList.add('d-none');
+                    reunionSection.classList.add('d-none');
+
+                    proyectoId.value = '';
+                    reunionId.value = '';
+                } else if (tipoProyecto.checked) {
+                    tareaSection.classList.add('d-none');
+                    proyectoSection.classList.remove('d-none');
+                    reunionSection.classList.add('d-none');
+
+                    tareaId.value = '';
+                    reunionId.value = '';
+                } else if (tipoReunion.checked) {
+                    tareaSection.classList.add('d-none');
+                    proyectoSection.classList.add('d-none');
+                    reunionSection.classList.remove('d-none');
+
+                    tareaId.value = '';
+                    proyectoId.value = '';
+                }
+            }
+
+            tipoTarea.addEventListener('change', updateSections);
+            tipoProyecto.addEventListener('change', updateSections);
+            tipoReunion.addEventListener('change', updateSections);
+
+            // Inicializar
+            updateSections();
+        }
+
+        // Validación para asegurar que la hora de fin sea posterior a la hora de inicio
+        document.querySelector('form').addEventListener('submit', function(event) {
+            const fechaInicio = document.getElementById('fechaInicioTemp').value;
+            const horaInicio = document.getElementById('horaInicioTemp').value;
+            const minutosInicio = document.getElementById('minutosInicioTemp').value;
+
+            const fechaFin = document.getElementById('fechaFinTemp').value;
+            const horaFin = document.getElementById('horaFinTemp').value;
+            const minutosFin = document.getElementById('minutosFinTemp').value;
+
+            const inicio = new Date(`${fechaInicio}T${horaInicio.padStart(2, '0')}:${minutosInicio.padStart(2, '0')}:00`);
+            const fin = new Date(`${fechaFin}T${horaFin.padStart(2, '0')}:${minutosFin.padStart(2, '0')}:00`);
+
+            if (fin <= inicio) {
+                event.preventDefault();
+                alert('La hora de fin debe ser posterior a la hora de inicio');
+            }
+        });
     });
 </script>
+
 </body>
 </html>

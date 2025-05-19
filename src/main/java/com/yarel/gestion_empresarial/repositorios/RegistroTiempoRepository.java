@@ -16,6 +16,9 @@ public interface RegistroTiempoRepository extends JpaRepository<RegistroTiempo, 
     List<RegistroTiempo> findByReunion(Reunion reunion);
     List<RegistroTiempo> findByFechaRegistro(LocalDate fechaRegistro);
 
+    // Método que faltaba - busca registros por ID de reunión
+    List<RegistroTiempo> findByReunionId(Long reunionId);
+
     // Busca registros de tiempo con horas trabajadas mayores que el valor dado
     List<RegistroTiempo> findByHorasTrabajadasGreaterThan(Double horasTrabajadas);
 

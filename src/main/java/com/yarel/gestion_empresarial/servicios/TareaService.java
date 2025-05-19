@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -85,6 +86,7 @@ public class TareaService {
 
             // Verificar que el empleado esté asignado al proyecto
             if (!proyecto.getEmpleados().contains(empleado)) {
+                // Opcionalmente, añadir el empleado al proyecto si  {
                 // Opcionalmente, añadir el empleado al proyecto si no está asignado
                 proyecto.getEmpleados().add(empleado);
                 proyectoRepository.save(proyecto);
@@ -107,6 +109,33 @@ public class TareaService {
 
         List<Tarea> tareas = tareaRepository.findByEmpleado(empleado);
         return tareaMapper.toDtoList(tareas);
+    }
+
+    // Método para buscar tareas completadas de un empleado
+    @Transactional(readOnly = true)
+    public List<TareaDTO> findCompletadasByEmpleadoId(Long empleadoId) {
+        Empleado empleado = empleadoRepository.findById(empleadoId)
+                .orElseThrow(() -> new RuntimeException("Empleado no encontrado con ID: " + empleadoId));
+
+        List<Tarea> tareas = tareaRepository.findByEmpleado(empleado);
+        // Filtrar para obtener solo las tareas completadas
+        List<Tarea> tareasCompletadas = tareas.stream()
+                .filter(Tarea::isCompletada)
+                .collect(Collectors.toList());
+        return tareaMapper.toDtoList(tareasCompletadas);
+    }
+
+    // Método para finalizar una tarea
+    @Transactional
+    public TareaDTO finalizarTarea(Long tareaId) {
+        Tarea tarea = tareaRepository.findById(tareaId)
+                .orElseThrow(() -> new RuntimeException("Tarea no encontrada con ID: " + tareaId));
+
+        tarea.setCompletada(true);
+        tarea.setFechaCompletada(LocalDateTime.now());
+
+        tarea = tareaRepository.save(tarea);
+        return tareaMapper.toDto(tarea);
     }
 
     // Método para buscar tareas por proyecto

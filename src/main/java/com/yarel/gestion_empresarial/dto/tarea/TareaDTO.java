@@ -14,7 +14,7 @@ public class TareaDTO {
     private Long jefeId;
     private Long proyectoId; // Nuevo campo para el ID del proyecto
     private LocalDateTime fechaCreacion;
-    private LocalDate fechaVencimiento;
+    private LocalDateTime fechaVencimiento;
     private boolean completada;
     private LocalDateTime fechaCompletada;
     private String prioridad;

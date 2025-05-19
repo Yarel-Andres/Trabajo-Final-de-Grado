@@ -52,7 +52,7 @@ public class Tarea {
     private LocalDateTime fechaCreacion = LocalDateTime.now();
 
     @Column(name = "fecha_vencimiento")
-    private LocalDate fechaVencimiento;
+    private LocalDateTime fechaVencimiento;
 
     @Column
     private boolean completada = false;

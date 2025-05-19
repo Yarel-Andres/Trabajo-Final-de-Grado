@@ -14,6 +14,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -55,6 +58,36 @@ public class TareaController {
         return new ResponseEntity<>(nuevaTarea, HttpStatus.CREATED);
     }
 
+    // Metodo para finalizar una tarea (API)
+    @PostMapping("/{id}/finalizar")
+    public ResponseEntity<TareaDTO> finalizarTarea(@PathVariable Long id) {
+        // Obtener el usuario autenticado
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        // Verificar que el empleado solo pueda finalizar sus propias tareas
+        Optional<TareaDTO> tareaOpt = tareaService.findById(id);
+        if (tareaOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        TareaDTO tarea = tareaOpt.get();
+        Optional<Empleado> empleadoOpt = empleadoRepository.findById(tarea.getEmpleadoId());
+        if (empleadoOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Empleado empleado = empleadoOpt.get();
+        if (!empleado.getNombreUsuario().equals(username) &&
+                !authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_JEFE")) &&
+                !authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_RRHH"))) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        // Finalizar la tarea
+        TareaDTO tareaFinalizada = tareaService.finalizarTarea(id);
+        return ResponseEntity.ok(tareaFinalizada);
+    }
 
     // Metodo para que un empleado pueda ver sus tareas
     @GetMapping("/empleado/{empleadoId}")
@@ -86,4 +119,3 @@ public class TareaController {
         return ResponseEntity.ok(tareasDTO);
     }
 }
-

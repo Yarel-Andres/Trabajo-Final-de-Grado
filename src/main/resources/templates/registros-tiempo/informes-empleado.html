@@ -53,7 +53,6 @@
                         <th>Hora Fin</th>
                         <th>Horas</th>
                         <th>Tipo</th>
-                        <th>Descripción</th>
                         <th>Comentario</th>
                     </tr>
                     </thead>
@@ -64,14 +63,15 @@
                         <td th:text="${#temporals.format(registro.horaFin, 'HH:mm')}">Hora Fin</td>
                         <td th:text="${#numbers.formatDecimal(registro.horasTrabajadas, 1, 2)}">Horas</td>
                         <td>
-                            <span th:if="${registro.tareaId != null}" class="badge bg-primary">Tarea</span>
-                            <span th:if="${registro.proyectoId != null}" class="badge bg-success">Proyecto</span>
-                            <span th:if="${registro.reunionId != null}" class="badge bg-info">Reunión</span>
-                        </td>
-                        <td>
-                            <span th:if="${registro.tareaId != null}" th:text="${'Tarea #' + registro.tareaId}">Tarea</span>
-                            <span th:if="${registro.proyectoId != null}" th:text="${'Proyecto #' + registro.proyectoId}">Proyecto</span>
-                            <span th:if="${registro.reunionId != null}" th:text="${'Reunión #' + registro.reunionId}">Reunión</span>
+                            <span th:if="${registro.tipoRegistro == 'Tarea'}" class="badge bg-primary">Tarea</span>
+                            <span th:if="${registro.tipoRegistro == 'Proyecto'}" class="badge bg-success">Proyecto</span>
+                            <span th:if="${registro.tipoRegistro == 'Reunión'}" class="badge bg-info">Reunión</span>
+                            <!-- Fallback por si el tipo no está establecido -->
+                            <span th:if="${registro.tipoRegistro == null}">
+                                <span th:if="${registro.tareaId != null}" class="badge bg-primary">Tarea</span>
+                                <span th:if="${registro.proyectoId != null && registro.tareaId == null}" class="badge bg-success">Proyecto</span>
+                                <span th:if="${registro.reunionId != null}" class="badge bg-info">Reunión</span>
+                            </span>
                         </td>
                         <td th:text="${registro.comentario}">Comentario</td>
                     </tr>

@@ -1,9 +1,13 @@
+-- Modificar el inicio del script para incluir la eliminación de la tabla presupuestos_proyecto
+-- Eliminar tablas si existen para evitar conflictos
+-- Modificar el inicio del script para incluir la eliminación de la tabla presupuestos
 -- Eliminar tablas si existen para evitar conflictos
 DROP TABLE IF EXISTS proyecto_empleados;
 DROP TABLE IF EXISTS registros_tiempo;
 DROP TABLE IF EXISTS reunion_participantes;
 DROP TABLE IF EXISTS reuniones;
 DROP TABLE IF EXISTS tareas;
+DROP TABLE IF EXISTS presupuestos; -- Añadir esta línea ANTES de eliminar proyectos
 DROP TABLE IF EXISTS proyectos;
 DROP TABLE IF EXISTS rrhh;
 DROP TABLE IF EXISTS empleados;
@@ -60,6 +64,7 @@ CREATE TABLE proyectos (
                            fecha_fin_real DATE,
                            estado VARCHAR(50),
                            presupuesto DOUBLE,
+                           completado BOOLEAN DEFAULT FALSE,
                            FOREIGN KEY (jefe_id) REFERENCES jefes(id)
 );
 
@@ -81,7 +86,7 @@ CREATE TABLE tareas (
                         jefe_id BIGINT,
                         proyecto_id BIGINT, -- Nueva columna para la relación con proyecto
                         fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
-                        fecha_vencimiento DATE,
+                        fecha_vencimiento DATETIME,
                         completada BOOLEAN DEFAULT FALSE,
                         fecha_completada DATETIME,
                         prioridad VARCHAR(20),
@@ -98,6 +103,8 @@ CREATE TABLE reuniones (
                            fecha_hora DATETIME,
                            sala VARCHAR(50),
                            organizador_id BIGINT,
+                           completada BOOLEAN DEFAULT FALSE,
+                           fecha_completada DATETIME,
                            FOREIGN KEY (organizador_id) REFERENCES jefes(id)
 );
 
@@ -126,4 +133,20 @@ CREATE TABLE registros_tiempo (
                                   FOREIGN KEY (tarea_id) REFERENCES tareas(id),
                                   FOREIGN KEY (proyecto_id) REFERENCES proyectos(id),
                                   FOREIGN KEY (reunion_id) REFERENCES reuniones(id)
+);
+
+-- Crear tabla de presupuestos
+CREATE TABLE presupuestos (
+                              id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                              nombre_cliente VARCHAR(100) NOT NULL,
+                              proyecto_id BIGINT,
+                              rrhh_id BIGINT,
+                              fecha_creacion DATE,
+                              tarifa_hora DOUBLE,
+                              horas_estimadas DOUBLE,
+                              costo_total DOUBLE,
+                              descripcion TEXT,
+                              estado VARCHAR(20) DEFAULT 'BORRADOR',
+                              FOREIGN KEY (proyecto_id) REFERENCES proyectos(id),
+                              FOREIGN KEY (rrhh_id) REFERENCES usuarios(id)
 );

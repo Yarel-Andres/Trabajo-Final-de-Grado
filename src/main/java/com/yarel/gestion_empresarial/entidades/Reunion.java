@@ -32,6 +32,13 @@ public class Reunion {
     @Column(name = "fecha_hora")
     private LocalDateTime fechaHora;
 
+    // Añadir estos campos a la clase Reunion
+    @Column(nullable = false)
+    private boolean completada = false;
+
+    @Column(name = "fecha_completada")
+    private LocalDateTime fechaCompletada;
+
     @Column
     private String sala;
 
@@ -40,7 +47,7 @@ public class Reunion {
     private Jefe organizador;
 
     // una reunión puede tener múltiples participantes y un usuario puede participar en varias reuniones
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "reunion_participantes",
             joinColumns = @JoinColumn(name = "reunion_id"),

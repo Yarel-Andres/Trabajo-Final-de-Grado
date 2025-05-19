@@ -186,7 +186,7 @@ public class InitData {
         tarea1.setEmpleado(empleado1);
         tarea1.setJefe(jefe1);
         tarea1.setFechaCreacion(LocalDateTime.now().minusDays(5));
-        tarea1.setFechaVencimiento(LocalDate.now().plusDays(10));
+        //tarea1.setFechaVencimiento(LocalDate.now().plusDays(10));
         tarea1.setCompletada(false);
         tarea1.setPrioridad("MEDIA");
 
@@ -196,7 +196,7 @@ public class InitData {
         tarea2.setEmpleado(empleado2);
         tarea2.setJefe(jefe1);
         tarea2.setFechaCreacion(LocalDateTime.now().minusDays(7));
-        tarea2.setFechaVencimiento(LocalDate.now().plusDays(5));
+        //tarea2.setFechaVencimiento(LocalDate.now().plusDays(5));
         tarea2.setCompletada(false);
         tarea2.setPrioridad("ALTA");
 
@@ -206,7 +206,7 @@ public class InitData {
         tarea3.setEmpleado(empleado3);
         tarea3.setJefe(jefe2);
         tarea3.setFechaCreacion(LocalDateTime.now().minusDays(10));
-        tarea3.setFechaVencimiento(LocalDate.now().minusDays(3));
+        //tarea3.setFechaVencimiento(LocalDate.now().minusDays(3));
         tarea3.setCompletada(true);
         tarea3.setFechaCompletada(LocalDateTime.now().minusDays(1));
         tarea3.setPrioridad("BAJA");

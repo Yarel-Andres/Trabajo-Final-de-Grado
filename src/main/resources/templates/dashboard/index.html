@@ -17,57 +17,196 @@
             <!-- Opciones de jefe -->
             <div th:if="${isJefe}" class="mt-4">
                 <h3 class="h4 mb-3"><i class="fas fa-user-tie me-2"></i>Opciones de Jefe</h3>
-                <div class="d-flex flex-wrap gap-2">
-                    <a th:href="@{/tareas/asignar}" class="btn btn-success">
-                        <i class="fas fa-tasks me-2"></i>Asignar Tarea
-                    </a>
-                    <a th:href="@{/tareas/asignadas}" class="btn btn-success">
-                        <i class="fas fa-clipboard-check me-2"></i>Ver Tareas Asignadas
-                    </a>
-                    <a th:href="@{/reuniones/crear}" class="btn btn-success">
-                        <i class="fas fa-calendar-plus me-2"></i>Programar Reunión
-                    </a>
-                    <a th:href="@{/proyectos/crear}" class="btn btn-success">
-                        <i class="fas fa-project-diagram me-2"></i>Crear Proyecto
-                    </a>
-                    <a th:href="@{/proyectos/ver}" class="btn btn-success">
-                        <i class="fas fa-clipboard-list me-2"></i>Ver Mis Proyectos
-                    </a>
-                    <!-- Opciones para registros de tiempo -->
-                    <a th:href="@{/registros-tiempo/crear}" class="btn btn-success">
-                        <i class="fas fa-clock me-2"></i>Registrar Tiempo
-                    </a>
-                    <a th:href="@{/registros-tiempo/ver}" class="btn btn-success">
-                        <i class="fas fa-list-alt me-2"></i>Ver Mis Registros
-                    </a>
-                    <a th:href="@{/registros-tiempo/informes}" class="btn btn-success">
-                        <i class="fas fa-chart-bar me-2"></i>Informes de Tiempo
-                    </a>
+
+                <div class="row mt-4">
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Gestión de Tareas</h5>
+                                <p class="card-text">Asigna y gestiona las tareas de tu equipo.</p>
+                                <div class="d-flex flex-column gap-2">
+                                    <a th:href="@{/tareas/asignar}" class="btn btn-primary">
+                                        <i class="fas fa-tasks me-2"></i>Asignar Tarea
+                                    </a>
+                                    <a th:href="@{/tareas/asignadas}" class="btn btn-outline-primary">
+                                        <i class="fas fa-clipboard-check me-2"></i>Ver Tareas Asignadas
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Reuniones</h5>
+                                <p class="card-text">Programa y gestiona reuniones con tu equipo.</p>
+                                <div class="d-flex flex-column gap-2">
+                                    <a th:href="@{/reuniones/crear}" class="btn btn-primary">
+                                        <i class="fas fa-calendar-plus me-2"></i>Programar Reunión
+                                    </a>
+                                    <a th:href="@{/reuniones/asignadas}" class="btn btn-outline-primary">
+                                        <i class="fas fa-calendar-check me-2"></i>Ver Reuniones Asignadas
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Proyectos</h5>
+                                <p class="card-text">Crea y gestiona tus proyectos.</p>
+                                <div class="d-flex flex-column gap-2">
+                                    <a th:href="@{/proyectos/crear}" class="btn btn-primary">
+                                        <i class="fas fa-project-diagram me-2"></i>Crear Proyecto
+                                    </a>
+                                    <a th:href="@{/proyectos/ver}" class="btn btn-outline-primary">
+                                        <i class="fas fa-clipboard-list me-2"></i>Ver Mis Proyectos
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-3">
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Registro de Tiempo</h5>
+                                <p class="card-text">Gestiona los registros de tiempo de tu equipo.</p>
+                                <div class="d-flex flex-column gap-2">
+                                    <a th:href="@{/registros-tiempo/crear}" class="btn btn-primary">
+                                        <i class="fas fa-clock me-2"></i>Registrar Tiempo
+                                    </a>
+                                    <a th:href="@{/registros-tiempo/ver}" class="btn btn-outline-primary">
+                                        <i class="fas fa-list-alt me-2"></i>Ver Mis Registros
+                                    </a>
+                                    <a th:href="@{/registros-tiempo/informes}" class="btn btn-outline-primary">
+                                        <i class="fas fa-chart-bar me-2"></i>Informes de Tiempo
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <!--Opciones de empleado -->
             <div th:if="${isEmpleado}" class="mt-4">
                 <h3 class="h4 mb-3"><i class="fas fa-user me-2"></i>Opciones de Empleado</h3>
-                <div class="d-flex flex-wrap gap-2">
-                    <a th:href="@{/tareas/ver}" class="btn btn-success">
-                        <i class="fas fa-clipboard-list me-2"></i>Ver Mis Tareas
-                    </a>
-                    <a th:href="@{/reuniones/ver}" class="btn btn-success">
-                        <i class="fas fa-calendar-alt me-2"></i>Ver Mis Reuniones
-                    </a>
-                    <a th:href="@{/proyectos/ver}" class="btn btn-success">
-                        <i class="fas fa-project-diagram me-2"></i>Ver Mis Proyectos
-                    </a>
-                    <!-- Opciones para registros de tiempo -->
-                    <a th:href="@{/registros-tiempo/crear}" class="btn btn-success">
-                        <i class="fas fa-clock me-2"></i>Registrar Tiempo
-                    </a>
-                    <a th:href="@{/registros-tiempo/ver}" class="btn btn-success">
-                        <i class="fas fa-list-alt me-2"></i>Ver Mis Registros
-                    </a>
+
+                <div class="row mt-4">
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Mis Tareas</h5>
+                                <p class="card-text">Visualiza y gestiona tus tareas asignadas.</p>
+                                <a th:href="@{/tareas/ver}" class="btn btn-primary">
+                                    <i class="fas fa-clipboard-list me-2"></i>Ver Mis Tareas
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Mis Reuniones</h5>
+                                <p class="card-text">Consulta las reuniones programadas.</p>
+                                <a th:href="@{/reuniones/ver}" class="btn btn-primary">
+                                    <i class="fas fa-calendar-alt me-2"></i>Ver Mis Reuniones
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Mis Proyectos</h5>
+                                <p class="card-text">Visualiza los proyectos en los que participas.</p>
+                                <a th:href="@{/proyectos/ver}" class="btn btn-primary">
+                                    <i class="fas fa-project-diagram me-2"></i>Ver Mis Proyectos
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-3">
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Registro de Tiempo</h5>
+                                <p class="card-text">Gestiona tus registros de tiempo de trabajo.</p>
+                                <div class="d-flex flex-column gap-2">
+                                    <a th:href="@{/registros-tiempo/crear}" class="btn btn-primary">
+                                        <i class="fas fa-clock me-2"></i>Registrar Tiempo
+                                    </a>
+                                    <a th:href="@{/registros-tiempo/ver}" class="btn btn-outline-primary">
+                                        <i class="fas fa-list-alt me-2"></i>Ver Mis Registros
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Elementos Finalizados</h5>
+                                <p class="card-text">Consulta tus tareas, reuniones y proyectos finalizados.</p>
+                                <div class="d-flex flex-column gap-2">
+                                    <a th:href="@{/finalizados}" class="btn btn-primary">
+                                        <i class="fas fa-check-circle me-2"></i>Ver Finalizados
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
+
+            <!--Opciones de RRHH -->
+            <div th:if="${isRRHH}" class="mt-4">
+                <h3 class="h4 mb-3"><i class="fas fa-user-tie me-2"></i>Opciones de RRHH</h3>
+                <!-- Los botones verdes han sido eliminados -->
+            </div>
+
+            <!-- Sección para RRHH con tarjetas (mantener esta parte) -->
+            <div th:if="${isRRHH}" class="row mt-4">
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Presupuestos</h5>
+                            <p class="card-text">Gestiona los presupuestos de la empresa.</p>
+                            <a href="/rrhh/presupuestos" class="btn btn-primary">Ver Presupuestos</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Proyectos</h5>
+                            <p class="card-text">Visualiza y gestiona los proyectos de la empresa.</p>
+                            <a href="/rrhh/proyectos" class="btn btn-primary">Ver Proyectos</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Informes de Tiempo</h5>
+                            <p class="card-text">Consulta los informes de tiempo de los empleados.</p>
+                            <a href="/registros-tiempo/informes" class="btn btn-primary">Ver Informes</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>

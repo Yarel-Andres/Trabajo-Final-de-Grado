@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Crear Presupuesto - RRHH')}">
+    <title>Crear Presupuesto - RRHH</title>
+</head>
+<body>
+<header th:replace="~{fragments/layout :: header(${#authentication.name})}"></header>
+
+<div class="container mt-4">
+    <h2>Crear Presupuesto</h2>
+
+    <div th:replace="~{fragments/layout :: messages}"></div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Nuevo Presupuesto para Proyecto: <span th:text="${proyecto.nombre}"></span></h5>
+        </div>
+        <div class="card-body">
+            <form th:action="@{/rrhh/presupuestos/guardar}" th:object="${presupuesto}" method="post">
+                <input type="hidden" th:field="*{proyectoId}" />
+                <input type="hidden" th:field="*{proyectoNombre}" />
+                <input type="hidden" th:field="*{fechaCreacion}" />
+                <input type="hidden" th:field="*{estado}" />
+                <input type="hidden" th:field="*{horasEstimadas}" />
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="nombreCliente" class="form-label">Nombre del Cliente</label>
+                            <input type="text" class="form-control" id="nombreCliente" th:field="*{nombreCliente}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="tarifaHora" class="form-label">Tarifa por Hora (€)</label>
+                            <input type="number" step="0.01" class="form-control" id="tarifaHora" th:field="*{tarifaHora}" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="descripcion" class="form-label">Descripción</label>
+                            <textarea class="form-control" id="descripcion" th:field="*{descripcion}" rows="4"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Horas Estimadas</label>
+                            <p class="form-control-static" th:text="${totalHoras}"></p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="costoTotal" class="form-label">Costo Total (€)</label>
+                            <input type="number" step="0.01" class="form-control" id="costoTotal" th:field="*{costoTotal}" readonly>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end">
+                    <a th:href="@{/templates/rrhh/proyectos}" class="btn btn-secondary me-2">Cancelar</a>
+                    <button type="submit" class="btn btn-primary">Guardar Presupuesto</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Script para calcular el costo total automáticamente -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const tarifaInput = document.getElementById('tarifaHora');
+        const horasEstimadas = [[${totalHoras}]];
+        const costoTotalInput = document.getElementById('costoTotal');
+
+        function calcularCostoTotal() {
+            const tarifa = parseFloat(tarifaInput.value) || 0;
+            const costoTotal = tarifa * horasEstimadas;
+            costoTotalInput.value = costoTotal.toFixed(2);
+        }
+
+        // Calcular inicialmente
+        calcularCostoTotal();
+
+        // Recalcular cuando cambie la tarifa
+        tarifaInput.addEventListener('input', calcularCostoTotal);
+    });
+</script>
+
+<!-- Bootstrap Bundle with Popper -->
+<script th:src="@{/webjars/bootstrap/5.3.2/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

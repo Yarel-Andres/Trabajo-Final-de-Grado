@@ -26,6 +26,7 @@ public interface ReunionRepository extends JpaRepository<Reunion, Long> {
     List<Reunion> findByFechaHoraBefore(LocalDateTime fechaHora);
 
     // Busca reuniones en las que participa un participante en concreto
-    @Query("SELECT r FROM Reunion r JOIN r.participantes p WHERE p = :participante")
+    // Modificado para cargar los participantes de manera EAGER
+    @Query("SELECT DISTINCT r FROM Reunion r LEFT JOIN FETCH r.participantes WHERE r IN (SELECT r2 FROM Reunion r2 JOIN r2.participantes p WHERE p = :participante)")
     List<Reunion> findByParticipante(@Param("participante") Usuario participante);
 }

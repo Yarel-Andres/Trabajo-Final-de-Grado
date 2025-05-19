@@ -37,7 +37,23 @@ public class RegistroTiempoService {
     @Transactional(readOnly = true)
     public List<RegistroTiempoDTO> findAll() {
         List<RegistroTiempo> registros = registroTiempoRepository.findAll();
-        return registroTiempoMapper.toDtoList(registros);
+        List<RegistroTiempoDTO> registrosDTO = registroTiempoMapper.toDtoList(registros);
+
+        // Determinar el tipo de registro para cada DTO
+        for (int i = 0; i < registros.size(); i++) {
+            RegistroTiempo registro = registros.get(i);
+            RegistroTiempoDTO dto = registrosDTO.get(i);
+
+            if (registro.getTarea() != null) {
+                dto.setTipoRegistro("Tarea");
+            } else if (registro.getProyecto() != null) {
+                dto.setTipoRegistro("Proyecto");
+            } else if (registro.getReunion() != null) {
+                dto.setTipoRegistro("Reunión");
+            }
+        }
+
+        return registrosDTO;
     }
 
     // Obtener un registro por ID
@@ -54,7 +70,26 @@ public class RegistroTiempoService {
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + usuarioId));
 
         List<RegistroTiempo> registros = registroTiempoRepository.findByUsuario(usuario);
-        return registroTiempoMapper.toDtoList(registros);
+        List<RegistroTiempoDTO> registrosDTO = registroTiempoMapper.toDtoList(registros);
+
+        // Asegurar que el usuarioId esté establecido en cada DTO y determinar el tipo
+        for (int i = 0; i < registros.size(); i++) {
+            RegistroTiempoDTO dto = registrosDTO.get(i);
+            RegistroTiempo registro = registros.get(i);
+
+            dto.setUsuarioId(usuarioId);
+
+            // Determinar el tipo de registro
+            if (registro.getTarea() != null) {
+                dto.setTipoRegistro("Tarea");
+            } else if (registro.getProyecto() != null) {
+                dto.setTipoRegistro("Proyecto");
+            } else if (registro.getReunion() != null) {
+                dto.setTipoRegistro("Reunión");
+            }
+        }
+
+        return registrosDTO;
     }
 
     // Obtener registros por tarea
@@ -64,7 +99,22 @@ public class RegistroTiempoService {
                 .orElseThrow(() -> new RuntimeException("Tarea no encontrada con ID: " + tareaId));
 
         List<RegistroTiempo> registros = registroTiempoRepository.findByTarea(tarea);
-        return registroTiempoMapper.toDtoList(registros);
+        List<RegistroTiempoDTO> registrosDTO = registroTiempoMapper.toDtoList(registros);
+
+        // Asegurar que los IDs de usuario estén establecidos en cada DTO
+        for (int i = 0; i < registros.size(); i++) {
+            RegistroTiempoDTO dto = registrosDTO.get(i);
+            RegistroTiempo registro = registros.get(i);
+
+            if (registro.getUsuario() != null) {
+                dto.setUsuarioId(registro.getUsuario().getId());
+            }
+
+            // Establecer el tipo como Tarea
+            dto.setTipoRegistro("Tarea");
+        }
+
+        return registrosDTO;
     }
 
     // Obtener registros por proyecto
@@ -74,17 +124,52 @@ public class RegistroTiempoService {
                 .orElseThrow(() -> new RuntimeException("Proyecto no encontrado con ID: " + proyectoId));
 
         List<RegistroTiempo> registros = registroTiempoRepository.findByProyecto(proyecto);
-        return registroTiempoMapper.toDtoList(registros);
+        List<RegistroTiempoDTO> registrosDTO = registroTiempoMapper.toDtoList(registros);
+
+        // Asegurar que los IDs de usuario estén establecidos en cada DTO
+        for (int i = 0; i < registros.size(); i++) {
+            RegistroTiempo registro = registros.get(i);
+            RegistroTiempoDTO dto = registrosDTO.get(i);
+
+            if (registro.getUsuario() != null) {
+                dto.setUsuarioId(registro.getUsuario().getId());
+                // También podemos establecer el nombre directamente aquí
+                dto.setUsuarioNombre(registro.getUsuario().getNombreCompleto());
+            }
+
+            // Determinar el tipo de registro
+            if (registro.getTarea() != null) {
+                dto.setTipoRegistro("Tarea");
+            } else {
+                dto.setTipoRegistro("Proyecto");
+            }
+        }
+
+        return registrosDTO;
     }
 
     // Obtener registros por reunión
     @Transactional(readOnly = true)
     public List<RegistroTiempoDTO> findByReunionId(Long reunionId) {
-        Reunion reunion = reunionRepository.findById(reunionId)
-                .orElseThrow(() -> new RuntimeException("Reunión no encontrada con ID: " + reunionId));
+        // Usar el nuevo método del repositorio
+        List<RegistroTiempo> registros = registroTiempoRepository.findByReunionId(reunionId);
+        List<RegistroTiempoDTO> registrosDTO = registroTiempoMapper.toDtoList(registros);
 
-        List<RegistroTiempo> registros = registroTiempoRepository.findByReunion(reunion);
-        return registroTiempoMapper.toDtoList(registros);
+        // Asegurar que los IDs de usuario estén establecidos en cada DTO
+        for (int i = 0; i < registros.size(); i++) {
+            RegistroTiempo registro = registros.get(i);
+            RegistroTiempoDTO dto = registrosDTO.get(i);
+
+            if (registro.getUsuario() != null) {
+                dto.setUsuarioId(registro.getUsuario().getId());
+                dto.setUsuarioNombre(registro.getUsuario().getNombreCompleto());
+            }
+
+            // Establecer el tipo como Reunión
+            dto.setTipoRegistro("Reunión");
+        }
+
+        return registrosDTO;
     }
 
     // Crear un nuevo registro de tiempo
@@ -104,6 +189,7 @@ public class RegistroTiempoService {
             Tarea tarea = tareaRepository.findById(registroTiempoDTO.getTareaId())
                     .orElseThrow(() -> new RuntimeException("Tarea no encontrada con ID: " + registroTiempoDTO.getTareaId()));
             registroTiempo.setTarea(tarea);
+            registroTiempoDTO.setTipoRegistro("Tarea");
 
             // Si la tarea tiene un proyecto asociado, asignar automáticamente ese proyecto al registro
             if (tarea.getProyecto() != null) {
@@ -116,6 +202,11 @@ public class RegistroTiempoService {
             Proyecto proyecto = proyectoRepository.findById(registroTiempoDTO.getProyectoId())
                     .orElseThrow(() -> new RuntimeException("Proyecto no encontrado con ID: " + registroTiempoDTO.getProyectoId()));
             registroTiempo.setProyecto(proyecto);
+
+            // Solo establecer el tipo como Proyecto si no es una tarea
+            if (registroTiempoDTO.getTipoRegistro() == null) {
+                registroTiempoDTO.setTipoRegistro("Proyecto");
+            }
         }
 
         // Establecer la reunión (si aplica)
@@ -123,6 +214,7 @@ public class RegistroTiempoService {
             Reunion reunion = reunionRepository.findById(registroTiempoDTO.getReunionId())
                     .orElseThrow(() -> new RuntimeException("Reunión no encontrada con ID: " + registroTiempoDTO.getReunionId()));
             registroTiempo.setReunion(reunion);
+            registroTiempoDTO.setTipoRegistro("Reunión");
         }
 
         // Calcular horas trabajadas si no se proporcionaron
@@ -141,7 +233,23 @@ public class RegistroTiempoService {
         }
 
         registroTiempo = registroTiempoRepository.save(registroTiempo);
-        return registroTiempoMapper.toDto(registroTiempo);
+        RegistroTiempoDTO resultado = registroTiempoMapper.toDto(registroTiempo);
+
+        // Asegurar que el tipo de registro se mantenga después del mapeo
+        if (registroTiempoDTO.getTipoRegistro() != null) {
+            resultado.setTipoRegistro(registroTiempoDTO.getTipoRegistro());
+        } else {
+            // Determinar el tipo basado en los IDs presentes
+            if (resultado.getTareaId() != null) {
+                resultado.setTipoRegistro("Tarea");
+            } else if (resultado.getProyectoId() != null) {
+                resultado.setTipoRegistro("Proyecto");
+            } else if (resultado.getReunionId() != null) {
+                resultado.setTipoRegistro("Reunión");
+            }
+        }
+
+        return resultado;
     }
 
     // Crear un registro de tiempo para un usuario específico

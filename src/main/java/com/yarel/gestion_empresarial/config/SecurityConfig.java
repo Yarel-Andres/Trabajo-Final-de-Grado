@@ -58,7 +58,6 @@ public class SecurityConfig {
 
 
     @Bean
-    // Este metodo configura cómo se manejan las solicitudes HTTP en términos de seguridad.
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 // CSRF está deshabilitado. Esto facilita pruebas en desarrollo, pero debe ser habilitado en producción
@@ -74,18 +73,20 @@ public class SecurityConfig {
                         // Permitir acceso a h2-console solo a administradores (para desarrollo)
                         .requestMatchers(new AntPathRequestMatcher("/h2-console/**")).hasRole("ADMIN")
 
+                        // Rutas para RRHH
+                        .requestMatchers(new AntPathRequestMatcher("/rrhh/**")).hasRole("RRHH")
+                        .requestMatchers(new AntPathRequestMatcher("/rrhh/presupuestos/**")).hasRole("RRHH")
+                        .requestMatchers(new AntPathRequestMatcher("/rrhh/proyectos/**")).hasRole("RRHH")
 
                         // Rutas para tareas
                         .requestMatchers(new AntPathRequestMatcher("/tareas/asignar")).hasRole("JEFE")
                         .requestMatchers(new AntPathRequestMatcher("/tareas/ver")).hasRole("EMPLEADO")
                         .requestMatchers(new AntPathRequestMatcher("/tareas/**")).hasAnyRole("JEFE", "EMPLEADO", "RRHH")
 
-
                         // Rutas para reuniones
                         .requestMatchers(new AntPathRequestMatcher("/reuniones/crear")).hasRole("JEFE")
                         .requestMatchers(new AntPathRequestMatcher("/reuniones/ver")).hasAnyRole("JEFE", "EMPLEADO", "RRHH")
                         .requestMatchers(new AntPathRequestMatcher("/reuniones/**")).hasAnyRole("JEFE", "EMPLEADO", "RRHH")
-
 
                         // Cualquier otra petición requiere autenticación
                         .anyRequest().authenticated()
@@ -105,6 +106,6 @@ public class SecurityConfig {
                 .headers(headers -> headers
                         .frameOptions(frameOptions -> frameOptions.sameOrigin())
                 );
-                 return http.build();
+        return http.build();
     }
 }

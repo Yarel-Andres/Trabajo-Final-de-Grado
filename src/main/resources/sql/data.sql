@@ -59,16 +59,16 @@ UNION ALL
 SELECT id, 'Selección', 'Talent Acquisition', '2022-11-10' FROM usuarios WHERE nombre_usuario = 'rrhh3';
 
 -- Insertar proyectos
-INSERT INTO proyectos (nombre, descripcion, jefe_id, fecha_inicio, fecha_fin_estimada, estado)
-SELECT 'Sistema de Gestión', 'Sistema para gestión empresarial', id, '2023-01-20', '2023-12-31', 'EN_PROGRESO' FROM jefes WHERE id = (SELECT id FROM usuarios WHERE nombre_usuario = 'jefe1')
+INSERT INTO proyectos (nombre, descripcion, jefe_id, fecha_inicio, fecha_fin_estimada, estado, completado)
+SELECT 'Sistema de Gestión', 'Sistema para gestión empresarial', id, '2023-01-20', '2023-12-31', 'EN_PROGRESO', false FROM jefes WHERE id = (SELECT id FROM usuarios WHERE nombre_usuario = 'jefe1')
 UNION ALL
-SELECT 'App Móvil', 'Aplicación móvil para clientes', id, '2023-05-15', '2023-11-30', 'EN_PROGRESO' FROM jefes WHERE id = (SELECT id FROM usuarios WHERE nombre_usuario = 'jefe2')
+SELECT 'App Móvil', 'Aplicación móvil para clientes', id, '2023-05-15', '2023-11-30', 'EN_PROGRESO', false FROM jefes WHERE id = (SELECT id FROM usuarios WHERE nombre_usuario = 'jefe2')
 UNION ALL
-SELECT 'Portal Web Corporativo', 'Rediseño del portal web corporativo', id, '2023-03-01', '2023-09-30', 'EN_PROGRESO' FROM jefes WHERE id = (SELECT id FROM usuarios WHERE nombre_usuario = 'jefe3')
+SELECT 'Portal Web Corporativo', 'Rediseño del portal web corporativo', id, '2023-03-01', '2023-09-30', 'EN_PROGRESO', false FROM jefes WHERE id = (SELECT id FROM usuarios WHERE nombre_usuario = 'jefe3')
 UNION ALL
-SELECT 'Sistema de Análisis de Datos', 'Plataforma de análisis de datos para toma de decisiones', id, '2023-06-01', '2024-02-28', 'PLANIFICACION' FROM jefes WHERE id = (SELECT id FROM usuarios WHERE nombre_usuario = 'jefe4')
+SELECT 'Sistema de Análisis de Datos', 'Plataforma de análisis de datos para toma de decisiones', id, '2023-06-01', '2024-02-28', 'PLANIFICACION', false FROM jefes WHERE id = (SELECT id FROM usuarios WHERE nombre_usuario = 'jefe4')
 UNION ALL
-SELECT 'Integración CRM', 'Integración del sistema CRM con otras plataformas', id, '2023-04-15', '2023-10-15', 'EN_PROGRESO' FROM jefes WHERE id = (SELECT id FROM usuarios WHERE nombre_usuario = 'jefe5');
+SELECT 'Integración CRM', 'Integración del sistema CRM con otras plataformas', id, '2023-04-15', '2023-10-15', 'EN_PROGRESO', false FROM jefes WHERE id = (SELECT id FROM usuarios WHERE nombre_usuario = 'jefe5');
 
 -- Insertar tareas (usando subqueries para obtener los IDs) - AHORA CON PROYECTO_ID
 INSERT INTO tareas (titulo, descripcion, empleado_id, jefe_id, fecha_creacion, fecha_vencimiento, completada, prioridad, proyecto_id)
@@ -282,3 +282,29 @@ SELECT
     NOW() - INTERVAL 21 HOUR,
     4.0,
     'Diseño de la interfaz principal';
+
+-- Añadir un nuevo proyecto creado por Amado (jefe2)
+INSERT INTO proyectos (nombre, descripcion, jefe_id, fecha_inicio, fecha_fin_estimada, estado, completado)
+VALUES ('Proyecto Colaborativo', 'Proyecto para demostrar la colaboración entre equipos',
+        (SELECT id FROM jefes WHERE id = (SELECT id FROM usuarios WHERE nombre_usuario = 'jefe2')),
+        '2023-04-10', '2023-12-15', 'EN_PROGRESO', false);
+
+-- Añadir a Edson (empleado1) al proyecto
+INSERT INTO proyecto_empleados (proyecto_id, empleado_id)
+VALUES ((SELECT id FROM proyectos WHERE nombre = 'Proyecto Colaborativo'),
+        (SELECT id FROM empleados WHERE id = (SELECT id FROM usuarios WHERE nombre_usuario = 'empleado1')));
+
+-- Añadir a Raul (empleado4) al proyecto
+INSERT INTO proyecto_empleados (proyecto_id, empleado_id)
+VALUES ((SELECT id FROM proyectos WHERE nombre = 'Proyecto Colaborativo'),
+        (SELECT id FROM empleados WHERE id = (SELECT id FROM usuarios WHERE nombre_usuario = 'empleado4')));
+
+-- Añadir a Jose (empleado2) al proyecto
+INSERT INTO proyecto_empleados (proyecto_id, empleado_id)
+VALUES ((SELECT id FROM proyectos WHERE nombre = 'Proyecto Colaborativo'),
+        (SELECT id FROM empleados WHERE id = (SELECT id FROM usuarios WHERE nombre_usuario = 'empleado2')));
+
+-- Añadir a Ramiro (empleado3) al proyecto
+INSERT INTO proyecto_empleados (proyecto_id, empleado_id)
+VALUES ((SELECT id FROM proyectos WHERE nombre = 'Proyecto Colaborativo'),
+        (SELECT id FROM empleados WHERE id = (SELECT id FROM usuarios WHERE nombre_usuario = 'empleado3')));

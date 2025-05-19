@@ -51,7 +51,7 @@
                                     <td th:text="${tarea.titulo}">Título</td>
                                     <td th:text="${tarea.descripcion}">Descripción</td>
                                     <td th:text="${tarea.empleadoNombre}">Empleado</td>
-                                    <td th:text="${#temporals.format(tarea.fechaVencimiento, 'dd/MM/yyyy')}">Fecha</td>
+                                    <td th:text="${#temporals.format(tarea.fechaVencimiento, 'dd/MM/yyyy HH:mm')}">Fecha</td>
                                     <td>
                                         <span th:if="${tarea.prioridad == 'ALTA'}" class="badge bg-danger">Alta</span>
                                         <span th:if="${tarea.prioridad == 'MEDIA'}" class="badge bg-warning text-dark">Media</span>

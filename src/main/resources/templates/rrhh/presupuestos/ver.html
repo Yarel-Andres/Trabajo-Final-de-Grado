@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Detalle de Presupuesto - RRHH')}">
+    <title>Detalle de Presupuesto - RRHH</title>
+</head>
+<body>
+<header th:replace="~{fragments/layout :: header(${#authentication.name})}"></header>
+
+<div class="container mt-4">
+    <h2>Detalle de Presupuesto</h2>
+
+    <div th:replace="~{fragments/layout :: messages}"></div>
+
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Presupuesto #<span th:text="${presupuesto.id}"></span></h5>
+            <span th:class="${presupuesto.estado == 'BORRADOR' ? 'badge bg-warning' :
+                            (presupuesto.estado == 'APROBADO' ? 'badge bg-success' : 'badge bg-danger')}"
+                  th:text="${presupuesto.estado}"></span>
+        </div>
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <h6 class="fw-bold">Información del Proyecto</h6>
+                    <p><strong>Proyecto:</strong> <span th:text="${presupuesto.proyectoNombre}"></span></p>
+                    <p><strong>ID Proyecto:</strong> <span th:text="${presupuesto.proyectoId}"></span></p>
+                    <p><strong>Fecha de Creación:</strong> <span th:text="${#temporals.format(presupuesto.fechaCreacion, 'dd/MM/yyyy')}"></span></p>
+                </div>
+                <div class="col-md-6">
+                    <h6 class="fw-bold">Información del Cliente</h6>
+                    <p><strong>Cliente:</strong> <span th:text="${presupuesto.nombreCliente}"></span></p>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <h6 class="fw-bold">Descripción</h6>
+                    <p th:text="${presupuesto.descripcion ?: 'Sin descripción'}"></p>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <h6 class="fw-bold">Información Financiera</h6>
+                    <p><strong>Tarifa por Hora:</strong> <span th:text="${presupuesto.tarifaHora} + ' €'"></span></p>
+                    <p><strong>Horas Estimadas:</strong> <span th:text="${presupuesto.horasEstimadas}"></span></p>
+                    <p><strong>Costo Total:</strong> <span th:text="${presupuesto.costoTotal} + ' €'" class="fw-bold"></span></p>
+                </div>
+            </div>
+
+            <!-- Historial de cambios si existe -->
+            <div class="row mb-4" th:if="${!#lists.isEmpty(historialCambios)}">
+                <div class="col-md-12">
+                    <h6 class="fw-bold">Historial de Cambios</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-striped">
+                            <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Usuario</th>
+                                <th>Acción</th>
+                                <th>Comentario</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="cambio : ${historialCambios}">
+                                <td th:text="${#temporals.format(cambio.fecha, 'dd/MM/yyyy HH:mm')}"></td>
+                                <td th:text="${cambio.usuario}"></td>
+                                <td th:text="${cambio.accion}"></td>
+                                <td th:text="${cambio.comentario}"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botones de acción según el estado -->
+            <div class="d-flex justify-content-between mt-4">
+                <div>
+                    <a th:href="@{/rrhh/presupuestos}" class="btn btn-secondary">Volver a Presupuestos</a>
+                    <a th:href="@{/templates/rrhh/proyectos/{id}(id=${presupuesto.proyectoId})}" class="btn btn-info">Ver Proyecto</a>
+                </div>
+                <div th:if="${presupuesto.estado == 'BORRADOR'}">
+                    <form th:action="@{/rrhh/presupuestos/{id}/editar(id=${presupuesto.id})}" method="get" class="d-inline">
+                        <button type="submit" class="btn btn-warning">Editar</button>
+                    </form>
+                    <form th:action="@{/rrhh/presupuestos/{id}/aprobar(id=${presupuesto.id})}" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-success">Aprobar</button>
+                    </form>
+                    <form th:action="@{/rrhh/presupuestos/{id}/rechazar(id=${presupuesto.id})}" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-danger">Rechazar</button>
+                    </form>
+                </div>
+                <div th:if="${presupuesto.estado == 'RECHAZADO'}">
+                    <form th:action="@{/rrhh/presupuestos/{id}/reactivar(id=${presupuesto.id})}" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-primary">Reactivar</button>
+                    </form>
+                </div>
+                <div th:if="${presupuesto.estado == 'APROBADO'}">
+                    <form th:action="@{/rrhh/presupuestos/{id}/generar-pdf(id=${presupuesto.id})}" method="get" class="d-inline">
+                        <button type="submit" class="btn btn-primary">Generar PDF</button>
+                    </form>
+                    <form th:action="@{/rrhh/presupuestos/{id}/enviar-email(id=${presupuesto.id})}" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-info">Enviar por Email</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap Bundle with Popper -->
+<script th:src="@{/webjars/bootstrap/5.3.2/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

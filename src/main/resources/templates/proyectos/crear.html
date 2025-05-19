@@ -1,80 +1,132 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/layout :: head('Crear Proyecto')">
+<head th:replace="~{fragments/layout :: head('Crear Proyecto')}">
+    <title>Crear Proyecto</title>
 </head>
 <body>
-<header th:replace="fragments/layout :: header(${#authentication.name})">
-</header>
+<header th:replace="~{fragments/layout :: header(${#authentication.name})}"></header>
 
-<div class="container">
-    <div th:replace="fragments/layout :: messages"></div>
-
+<div class="container mt-4">
     <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h2 class="mb-0"><i class="fas fa-project-diagram me-2"></i>Crear Nuevo Proyecto</h2>
+        </div>
         <div class="card-body">
-            <h2 class="card-title mb-4"><i class="fas fa-project-diagram me-2"></i>Crear Nuevo Proyecto</h2>
+            <div th:replace="~{fragments/layout :: messages}"></div>
 
             <form th:action="@{/proyectos/crear}" th:object="${proyecto}" method="post">
                 <div class="mb-3">
-                    <label for="nombre" class="form-label">Nombre del Proyecto:</label>
-                    <input type="text" id="nombre" th:field="*{nombre}" class="form-control" required>
+                    <label for="nombre" class="form-label">Nombre del Proyecto *</label>
+                    <input type="text" class="form-control" id="nombre" th:field="*{nombre}" required>
                 </div>
 
                 <div class="mb-3">
-                    <label for="descripcion" class="form-label">Descripción:</label>
-                    <textarea id="descripcion" th:field="*{descripcion}" class="form-control" rows="4"></textarea>
+                    <label for="descripcion" class="form-label">Descripción</label>
+                    <textarea class="form-control" id="descripcion" th:field="*{descripcion}" rows="3"></textarea>
                 </div>
 
-                <div class="mb-3">
-                    <label for="fechaInicio" class="form-label">Fecha de Inicio:</label>
-                    <input type="date" id="fechaInicio" th:field="*{fechaInicio}" class="form-control" required>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="fechaInicio" class="form-label">Fecha de Inicio *</label>
+                        <input type="date" class="form-control" id="fechaInicio" th:field="*{fechaInicio}" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="fechaFinEstimada" class="form-label">Fecha de Fin Estimada *</label>
+                        <input type="date" class="form-control" id="fechaFinEstimada" th:field="*{fechaFinEstimada}" required>
+                    </div>
                 </div>
 
-                <div class="mb-3">
-                    <label for="fechaFinEstimada" class="form-label">Fecha de Fin Estimada:</label>
-                    <input type="date" id="fechaFinEstimada" th:field="*{fechaFinEstimada}" class="form-control" required>
-                </div>
+                <!-- Campo oculto para el estado -->
+                <input type="hidden" th:field="*{estado}" value="PLANIFICACION">
 
                 <div class="mb-3">
-                    <label for="estado" class="form-label">Estado:</label>
-                    <select id="estado" th:field="*{estado}" class="form-select" required>
-                        <option value="PLANIFICACION">Planificación</option>
-                        <option value="EN_PROGRESO">En Progreso</option>
-                        <option value="COMPLETADO">Completado</option>
-                        <option value="CANCELADO">Cancelado</option>
-                    </select>
-                </div>
-
-                <div class="mb-3">
-                    <label for="presupuesto" class="form-label">Presupuesto:</label>
-                    <input type="number" id="presupuesto" th:field="*{presupuesto}" class="form-control" step="0.01">
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Empleados Asignados:</label>
+                    <label class="form-label">Empleados Asignados: <span class="text-danger">*</span></label>
                     <div class="card">
                         <div class="card-body" style="max-height: 200px; overflow-y: auto;">
                             <div th:each="empleado : ${empleados}" class="form-check mb-2">
                                 <input type="checkbox" th:id="${'empleado-' + empleado.id}"
-                                       name="empleadosIds" th:value="${empleado.id}" class="form-check-input">
+                                       name="empleadosIds" th:value="${empleado.id}" class="form-check-input empleado-check">
                                 <label th:for="${'empleado-' + empleado.id}" th:text="${empleado.nombreCompleto}"
                                        class="form-check-label"></label>
                             </div>
                         </div>
                     </div>
+                    <div id="empleadosError" class="text-danger mt-1" style="display: none;">
+                        Debe seleccionar al menos un empleado
+                    </div>
                 </div>
 
-                <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save me-2"></i>Crear Proyecto
-                    </button>
+                <div class="d-flex justify-content-between mt-4">
                     <a th:href="@{/dashboard}" class="btn btn-secondary">
                         <i class="fas fa-arrow-left me-2"></i>Cancelar
                     </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i>Guardar Proyecto
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
+<!-- Bootstrap Bundle with Popper -->
+<script th:src="@{/webjars/bootstrap/5.3.2/js/bootstrap.bundle.min.js}"></script>
+
+<!-- Script para establecer fecha actual por defecto -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Obtener el campo de fecha de inicio
+        const fechaInicioInput = document.getElementById('fechaInicio');
+
+        // Verificar si el campo ya tiene un valor (para no sobrescribir datos existentes)
+        if (!fechaInicioInput.value) {
+            // Obtener la fecha actual en formato YYYY-MM-DD
+            const hoy = new Date();
+            const año = hoy.getFullYear();
+            const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+            const dia = String(hoy.getDate()).padStart(2, '0');
+            const fechaActual = `${año}-${mes}-${dia}`;
+
+            // Establecer la fecha actual como valor por defecto
+            fechaInicioInput.value = fechaActual;
+        }
+    });
+</script>
+
+<!-- Script para validar selección de empleados -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form');
+        const empleadoChecks = document.querySelectorAll('.empleado-check');
+        const empleadosError = document.getElementById('empleadosError');
+
+        form.addEventListener('submit', function(event) {
+            // Verificar si al menos un empleado está seleccionado
+            let empleadoSeleccionado = false;
+            empleadoChecks.forEach(function(check) {
+                if (check.checked) {
+                    empleadoSeleccionado = true;
+                }
+            });
+
+            if (!empleadoSeleccionado) {
+                event.preventDefault();
+                empleadosError.style.display = 'block';
+                window.scrollTo(0, empleadosError.offsetTop - 100);
+            } else {
+                empleadosError.style.display = 'none';
+            }
+        });
+
+        // Ocultar mensaje de error cuando se selecciona un empleado
+        empleadoChecks.forEach(function(check) {
+            check.addEventListener('change', function() {
+                if (this.checked) {
+                    empleadosError.style.display = 'none';
+                }
+            });
+        });
+    });
+</script>
 </body>
 </html>

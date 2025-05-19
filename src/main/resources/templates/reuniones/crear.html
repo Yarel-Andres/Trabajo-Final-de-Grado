@@ -24,10 +24,29 @@
                     <textarea id="descripcion" th:field="*{descripcion}" class="form-control" rows="4"></textarea>
                 </div>
 
-                <div class="mb-3">
-                    <label for="fechaHora" class="form-label">Fecha y Hora:</label>
-                    <input type="datetime-local" id="fechaHora" th:field="*{fechaHora}" class="form-control" required
-                           th:attr="min=${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd''T''00:00')}">
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label for="fechaReunion" class="form-label">Fecha:</label>
+                        <input type="date" id="fechaReunion" name="fechaReunionDate" class="form-control" required
+                               th:attr="min=${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="horaReunion" class="form-label">Hora:</label>
+                        <select id="horaReunion" name="horaReunion" class="form-select" required>
+                            <option value="">-- Hora --</option>
+                            <option th:each="hora : ${#numbers.sequence(8, 20)}" th:value="${hora}" th:text="${hora}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="minutosReunion" class="form-label">Minutos:</label>
+                        <select id="minutosReunion" name="minutosReunion" class="form-select" required>
+                            <option value="">-- Minutos --</option>
+                            <option value="0">00</option>
+                            <option value="15">15</option>
+                            <option value="30">30</option>
+                            <option value="45">45</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="mb-3">
@@ -44,16 +63,19 @@
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label">Participantes:</label>
+                    <label class="form-label">Participantes: <span class="text-danger">*</span></label>
                     <div class="card">
                         <div class="card-body" style="max-height: 200px; overflow-y: auto;">
                             <div th:each="empleado : ${empleados}" class="form-check mb-2">
                                 <input type="checkbox" th:id="${'participante-' + empleado.id}"
-                                       name="participantesIds" th:value="${empleado.id}" class="form-check-input">
+                                       name="participantesIds" th:value="${empleado.id}" class="form-check-input participante-check">
                                 <label th:for="${'participante-' + empleado.id}" th:text="${empleado.nombreCompleto}"
                                        class="form-check-label"></label>
                             </div>
                         </div>
+                    </div>
+                    <div id="participantesError" class="text-danger mt-1" style="display: none;">
+                        Debe seleccionar al menos un participante
                     </div>
                 </div>
 
@@ -70,5 +92,50 @@
     </div>
 </div>
 
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Establecer la fecha actual como valor predeterminado para la fecha de reunión
+        const fechaReunionInput = document.getElementById('fechaReunion');
+        if (fechaReunionInput) {
+            const hoy = new Date();
+            const año = hoy.getFullYear();
+            const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+            const dia = String(hoy.getDate()).padStart(2, '0');
+            const fechaActual = `${año}-${mes}-${dia}`;
+            fechaReunionInput.value = fechaActual;
+        }
+
+        const form = document.querySelector('form');
+        const participanteChecks = document.querySelectorAll('.participante-check');
+        const participantesError = document.getElementById('participantesError');
+
+        form.addEventListener('submit', function(event) {
+            // Verificar si al menos un participante está seleccionado
+            let participanteSeleccionado = false;
+            participanteChecks.forEach(function(check) {
+                if (check.checked) {
+                    participanteSeleccionado = true;
+                }
+            });
+
+            if (!participanteSeleccionado) {
+                event.preventDefault();
+                participantesError.style.display = 'block';
+                window.scrollTo(0, participantesError.offsetTop - 100);
+            } else {
+                participantesError.style.display = 'none';
+            }
+        });
+
+        // Ocultar mensaje de error cuando se selecciona un participante
+        participanteChecks.forEach(function(check) {
+            check.addEventListener('change', function() {
+                if (this.checked) {
+                    participantesError.style.display = 'none';
+                }
+            });
+        });
+    });
+</script>
 </body>
 </html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Horas del Proyecto - RRHH')}">
+    <title>Horas del Proyecto - RRHH</title>
+</head>
+<body>
+<header th:replace="~{fragments/layout :: header(${#authentication.name})}"></header>
+
+<div class="container mt-4">
+    <h2>Horas registradas para el proyecto</h2>
+
+    <div th:replace="~{fragments/layout :: messages}"></div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 th:text="${proyecto.nombre}"></h5>
+        </div>
+        <div class="card-body">
+            <p th:text="${proyecto.descripcion}"></p>
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Fecha inicio:</strong> <span th:text="${#temporals.format(proyecto.fechaInicio, 'dd/MM/yyyy')}"></span></p>
+                    <p><strong>Fecha fin estimada:</strong> <span th:text="${proyecto.fechaFinEstimada != null ? #temporals.format(proyecto.fechaFinEstimada, 'dd/MM/yyyy') : 'No definida'}"></span></p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Estado:</strong> <span th:text="${proyecto.estado}"></span></p>
+                    <p><strong>Total horas registradas:</strong> <span th:text="${totalHoras}"></span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h3>Registros de tiempo</h3>
+    <div class="alert alert-info" th:if="${registros.empty}">
+        No hay registros de tiempo para este proyecto.
+    </div>
+
+    <div class="table-responsive" th:if="${!registros.empty}">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Usuario</th>
+                <th>Fecha</th>
+                <th>Horas</th>
+                <th>Comentario</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="registro : ${registros}">
+                <td th:text="${registro.usuarioNombre}"></td>
+                <td th:text="${#temporals.format(registro.fechaRegistro, 'dd/MM/yyyy')}"></td>
+                <td th:text="${registro.horasTrabajadas}"></td>
+                <td th:text="${registro.comentario}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="mt-4">
+        <a th:href="@{/templates/rrhh/proyectos}" class="btn btn-secondary">Volver a Proyectos</a>
+        <a th:href="@{/rrhh/presupuestos/crear/{id}(id=${proyecto.id})}" class="btn btn-primary">Crear Presupuesto</a>
+    </div>
+</div>
+
+<!-- Bootstrap Bundle with Popper -->
+<script th:src="@{/webjars/bootstrap/5.3.2/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

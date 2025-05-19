@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head('Reuniones Asignadas')">
+</head>
+<body>
+<header th:replace="fragments/layout :: header(${#authentication.name})">
+</header>
+
+<div class="container">
+    <div th:replace="fragments/layout :: messages"></div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h2 class="card-title mb-4"><i class="fas fa-calendar-alt me-2"></i>Reuniones Asignadas</h2>
+
+            <div th:if="${reuniones == null || reuniones.empty}" class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                <span>No has asignado ninguna reunión actualmente.</span>
+            </div>
+
+            <div th:if="${reuniones != null && !reuniones.empty}">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                        <tr>
+                            <th>Título</th>
+                            <th>Descripción</th>
+                            <th>Fecha y Hora</th>
+                            <th>Sala</th>
+                            <th>Participantes</th>
+                            <th>Acciones</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="reunion : ${reuniones}">
+                            <td th:text="${reunion.titulo}">Título</td>
+                            <td th:text="${reunion.descripcion}">Descripción</td>
+                            <td th:text="${#temporals.format(reunion.fechaHora, 'dd/MM/yyyy HH:mm')}">Fecha y Hora</td>
+                            <td th:text="${reunion.sala}">Sala</td>
+                            <td>
+                                <button class="btn btn-outline-info btn-sm" type="button" data-bs-toggle="collapse"
+                                        th:data-bs-target="'#participantesReunion' + ${reunion.id}"
+                                        aria-expanded="false" th:aria-controls="'#participantesReunion' + ${reunion.id}">
+                                    <i class="fas fa-users me-1"></i> Ver Participantes
+                                </button>
+                                <div class="collapse mt-2" th:id="'participantesReunion' + ${reunion.id}">
+                                    <div class="card card-body">
+                                        <div>
+                                            <div th:if="${__${'participantesNombres_' + reunion.id}__ == null || __${'participantesNombres_' + reunion.id}__.isEmpty()}">
+                                                <span class="text-muted">No hay participantes asignados</span>
+                                            </div>
+                                            <ul class="list-group list-group-flush" th:unless="${__${'participantesNombres_' + reunion.id}__ == null || __${'participantesNombres_' + reunion.id}__.isEmpty()}">
+                                                <li class="list-group-item" th:each="participante : ${__${'participantesNombres_' + reunion.id}__}">
+                                                    <i class="fas fa-user me-2"></i>
+                                                    <span th:text="${participante}">Nombre del Participante</span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <form th:action="@{/reuniones/finalizar}" method="post" style="display: inline;">
+                                    <input type="hidden" name="reunionId" th:value="${reunion.id}" />
+                                    <button type="submit" class="btn btn-sm btn-outline-success">
+                                        <i class="fas fa-flag-checkered me-1"></i>Finalizar
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <a th:href="@{/dashboard}" class="btn btn-primary">
+                    <i class="fas fa-arrow-left me-2"></i>Volver al Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Estilos para animación suave -->
+<style>
+    .collapse {
+        transition: height 0.35s ease;
+    }
+</style>
+
+<!-- Script para manejar los collapses -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Asegurarse de que Bootstrap esté cargado
+        if (typeof bootstrap === 'undefined') {
+            console.log('Bootstrap no está cargado, cargando desde CDN...');
+            var script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js';
+            script.integrity = 'sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p';
+            script.crossOrigin = 'anonymous';
+            document.head.appendChild(script);
+
+            // Esperar a que Bootstrap se cargue
+            script.onload = initializeCollapses;
+        } else {
+            initializeCollapses();
+        }
+
+        function initializeCollapses() {
+            console.log('Inicializando collapses...');
+            // No necesitamos inicializar manualmente los collapses
+            // Bootstrap 5 los inicializa automáticamente con los atributos data-bs-toggle="collapse"
+        }
+    });
+</script>
+</body>
+</html>
