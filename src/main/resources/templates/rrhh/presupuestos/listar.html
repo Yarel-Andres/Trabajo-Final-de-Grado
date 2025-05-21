@@ -14,7 +14,7 @@
     <div class="card mb-4">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0">Presupuestos</h5>
-            <a th:href="@{/templates/rrhh/proyectos}" class="btn btn-primary btn-sm">Volver a Proyectos</a>
+            <a th:href="@{/dashboard}" class="btn btn-primary btn-sm">Volver al Dashboard</a>
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -44,7 +44,8 @@
                         <td th:text="${presupuesto.costoTotal} + ' €'"></td>
                         <td>
                             <span th:class="${presupuesto.estado == 'BORRADOR' ? 'badge bg-warning' :
-                                            (presupuesto.estado == 'APROBADO' ? 'badge bg-success' : 'badge bg-danger')}"
+                                            (presupuesto.estado == 'ENVIADO' ? 'badge bg-info' :
+                                            (presupuesto.estado == 'APROBADO' ? 'badge bg-success' : 'badge bg-danger'))}"
                                   th:text="${presupuesto.estado}"></span>
                         </td>
                         <td>

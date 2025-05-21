@@ -60,18 +60,14 @@
                                 </div>
                             </div>
                         </td>
-                        <!-- Modificar el botón de finalizar para que envíe un formulario POST -->
                         <td>
                             <div class="btn-group">
                                 <a th:href="@{/registros-tiempo/crear(reunionId=${reunion.id})}" class="btn btn-sm btn-outline-primary me-1">
                                     <i class="fas fa-clock me-1"></i>Registrar Tiempo
                                 </a>
-                                <form th:action="@{/reuniones/finalizar}" method="post" style="display: inline;">
-                                    <input type="hidden" name="reunionId" th:value="${reunion.id}" />
-                                    <button type="submit" class="btn btn-sm btn-outline-success">
-                                        <i class="fas fa-flag-checkered me-1"></i>Finalizar
-                                    </button>
-                                </form>
+                                <button class="btn btn-sm btn-outline-success">
+                                    <i class="fas fa-flag-checkered me-1"></i>Finalizar
+                                </button>
                             </div>
                         </td>
                     </tr>
@@ -120,5 +116,8 @@
         }
     });
 </script>
+
+<!-- Incluir el fragmento CSRF -->
+<div th:replace="fragments/layout :: csrf-script"></div>
 </body>
 </html>

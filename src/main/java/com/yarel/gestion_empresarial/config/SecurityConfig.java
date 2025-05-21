@@ -1,15 +1,11 @@
-// Configuracion de la seguridad para que jefe, empleado y rrhh se logeen y puedan realizar las
-// funcionalidades que se le permiten segun su rol. Que un jefe asigne una tarea a un empleado, etc...
 package com.yarel.gestion_empresarial.config;
 
 import com.yarel.gestion_empresarial.repositorios.UsuarioRepository;
 import com.yarel.gestion_empresarial.entidades.Usuario;
-import com.yarel.gestion_empresarial.entidades.Usuario.RolEnum;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -20,12 +16,10 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import java.util.Optional;
 
 @Configuration
-// Habilita la seguridad en la aplicación, activando las características de Spring Security
 @EnableWebSecurity
 public class SecurityConfig {
 
     @Bean
-    // Se busca el usuario en usuarioRepository y, si existe, se transforma en un usuario de Spring Security
     public UserDetailsService userDetailsService(UsuarioRepository usuarioRepository) {
         return username -> {
             // Primero intentamos buscar por nombre de usuario
@@ -52,16 +46,15 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        // Usar NoOpPasswordEncoder para desarrollo (no encripta las contraseñas)
-        return org.springframework.security.crypto.password.NoOpPasswordEncoder.getInstance();
+        // Usar BCryptPasswordEncoder para cifrar contraseñas
+        return new BCryptPasswordEncoder();
     }
-
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                // CSRF está deshabilitado. Esto facilita pruebas en desarrollo, pero debe ser habilitado en producción
-                .csrf(csrf -> csrf.disable())
+                // Habilitar CSRF (está habilitado por defecto, pero lo dejamos explícito)
+                .csrf(csrf -> csrf.ignoringRequestMatchers(new AntPathRequestMatcher("/h2-console/**")))
                 // Aquí se establecen reglas de acceso a diferentes endpoints
                 .authorizeHttpRequests(authz -> authz
                         // Permitir acceso a recursos estáticos y página de inicio
@@ -98,11 +91,15 @@ public class SecurityConfig {
                         .permitAll()
                 )
                 .logout(logout -> logout
-                        .logoutUrl("/logout")
+                        // Modificación principal: especificar el método POST para logout
+                        .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "POST"))
                         .logoutSuccessUrl("/")
+                        .invalidateHttpSession(true)
+                        .clearAuthentication(true)
+                        .deleteCookies("JSESSIONID")
                         .permitAll()
                 )
-                // Configuración  de seguridad de los encabezados HTTP
+                // Configuración de seguridad de los encabezados HTTP
                 .headers(headers -> headers
                         .frameOptions(frameOptions -> frameOptions.sameOrigin())
                 );

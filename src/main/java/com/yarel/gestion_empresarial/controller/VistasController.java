@@ -211,6 +211,7 @@ public class VistasController {
         return "tareas/ver";
     }
 
+    // Finalizar tarea para el empleado
     @PostMapping("/tareas/finalizar")
     public String finalizarTarea(@RequestParam("tareaId") Long tareaId, RedirectAttributes redirectAttributes) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -253,6 +254,68 @@ public class VistasController {
             e.printStackTrace();
             redirectAttributes.addFlashAttribute("error", "Error al finalizar la tarea: " + e.getMessage());
             return "redirect:/tareas/ver";
+        }
+    }
+
+
+    // Eliminar tareas asignadas para el jefe
+    @PostMapping("/tareas/eliminar")
+    public String eliminarTarea(@RequestParam("tareaId") Long tareaId, RedirectAttributes redirectAttributes) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        // Verificar que el usuario es un jefe
+        if (!auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_JEFE"))) {
+            redirectAttributes.addFlashAttribute("error", "No tienes permisos para realizar esta acción");
+            return "redirect:/dashboard";
+        }
+
+        String nombreCompleto = auth.getName();
+
+        try {
+            // Obtener el ID del jefe actual por su nombre completo
+            Long jefeId = null;
+            List<UsuarioDTO> usuarios = usuarioService.findAll();
+            for (UsuarioDTO usuario : usuarios) {
+                if (usuario.getNombreCompleto().equals(nombreCompleto)) {
+                    jefeId = usuario.getId();
+                    break;
+                }
+            }
+
+            if (jefeId == null) {
+                redirectAttributes.addFlashAttribute("error", "No se pudo encontrar el jefe");
+                return "redirect:/tareas/asignadas";
+            }
+
+            // Verificar que la tarea existe y está completada
+            Optional<TareaDTO> tareaOpt = tareaService.findById(tareaId);
+            if (tareaOpt.isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "No se pudo encontrar la tarea");
+                return "redirect:/tareas/asignadas";
+            }
+
+            TareaDTO tarea = tareaOpt.get();
+
+            // Verificar que la tarea fue asignada por este jefe
+            if (!tarea.getJefeId().equals(jefeId)) {
+                redirectAttributes.addFlashAttribute("error", "No tienes permiso para eliminar esta tarea");
+                return "redirect:/tareas/asignadas";
+            }
+
+            // Verificar que la tarea está completada
+            if (!tarea.isCompletada()) {
+                redirectAttributes.addFlashAttribute("error", "Solo se pueden eliminar tareas completadas");
+                return "redirect:/tareas/asignadas";
+            }
+
+            // Eliminar la tarea
+            tareaService.eliminarTarea(tareaId);
+            redirectAttributes.addFlashAttribute("mensaje", "Tarea eliminada correctamente");
+            return "redirect:/tareas/asignadas";
+        } catch (Exception e) {
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("error", "Error al eliminar la tarea: " + e.getMessage());
+            return "redirect:/tareas/asignadas";
         }
     }
 
@@ -1129,5 +1192,81 @@ public class VistasController {
             redirectAttributes.addFlashAttribute("error", "Error al finalizar la reunión: " + e.getMessage());
             return "redirect:/reuniones/ver";
         }
+    }
+
+
+    // Calendario
+    @GetMapping("/calendario")
+    public String verCalendario(Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String nombreCompleto = auth.getName();
+
+        // Obtener el ID del empleado actual por su nombre completo
+        Long empleadoId = null;
+        List<EmpleadoDTO> empleados = empleadoService.findAll();
+        for (EmpleadoDTO empleado : empleados) {
+            if (empleado.getNombreCompleto().equals(nombreCompleto)) {
+                empleadoId = empleado.getId();
+                break;
+            }
+        }
+
+        if (empleadoId == null) {
+            model.addAttribute("error", "No se pudo encontrar el empleado");
+            return "calendario/calendario"; // Apunta al archivo en la subcarpeta
+        }
+
+        // 1. Obtener todas las tareas del empleado
+        List<TareaDTO> tareas = tareaService.findByEmpleadoId(empleadoId);
+
+        // 2. Obtener los proyectos en los que participa el empleado
+        List<ProyectoDTO> proyectosDelEmpleado = proyectoService.findByEmpleadoId(empleadoId);
+
+        // 3. Obtener las reuniones en las que participa el empleado
+        List<ReunionDTO> reuniones = reunionService.findByParticipanteId(empleadoId);
+
+        // Obtener todos los usuarios para buscar los nombres
+        List<UsuarioDTO> usuarios = usuarioService.findAll();
+        Map<Long, String> usuariosMap = new HashMap<>();
+        for (UsuarioDTO usuario : usuarios) {
+            usuariosMap.put(usuario.getId(), usuario.getNombreCompleto());
+        }
+
+        // Obtener todos los proyectos para añadir sus nombres a las tareas
+        List<ProyectoDTO> proyectos = proyectoService.findAll();
+
+        // Añadir el nombre del jefe y del proyecto a cada tarea
+        for (TareaDTO tarea : tareas) {
+            // Buscar y asignar el nombre del jefe
+            if (tarea.getJefeId() != null) {
+                tarea.setJefeNombre(usuariosMap.getOrDefault(tarea.getJefeId(), "No asignado"));
+            }
+
+            // Buscar y asignar el nombre del proyecto
+            if (tarea.getProyectoId() != null) {
+                for (ProyectoDTO proyecto : proyectos) {
+                    if (proyecto.getId().equals(tarea.getProyectoId())) {
+                        tarea.setNombreProyecto(proyecto.getNombre());
+                        break;
+                    }
+                }
+            }
+        }
+
+        // Enriquecer las reuniones con información adicional
+        for (ReunionDTO reunion : reuniones) {
+            // Asignar el nombre del organizador
+            if (reunion.getOrganizadorId() != null) {
+                reunion.setOrganizadorNombre(usuariosMap.getOrDefault(reunion.getOrganizadorId(), "No asignado"));
+            }
+        }
+
+        // Añadir todos los datos al modelo
+        model.addAttribute("tareas", tareas);
+        model.addAttribute("proyectos", proyectosDelEmpleado);
+        model.addAttribute("reuniones", reuniones);
+        model.addAttribute("username", nombreCompleto); // Importante para el layout
+
+        return "calendario/calendario"; // Apunta al archivo en la subcarpeta
     }
 }

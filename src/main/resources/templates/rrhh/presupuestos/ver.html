@@ -11,11 +11,12 @@
 
     <div th:replace="~{fragments/layout :: messages}"></div>
 
-    <div class="card mb-4">
+    <div class="card shadow-sm mb-4">
         <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Presupuesto #<span th:text="${presupuesto.id}"></span></h5>
+            <h5 class="mb-0">Presupuesto <span th:text="${presupuesto.id}"></span></h5>
             <span th:class="${presupuesto.estado == 'BORRADOR' ? 'badge bg-warning' :
-                            (presupuesto.estado == 'APROBADO' ? 'badge bg-success' : 'badge bg-danger')}"
+                          (presupuesto.estado == 'ENVIADO' ? 'badge bg-info' :
+                          (presupuesto.estado == 'APROBADO' ? 'badge bg-success' : 'badge bg-danger'))}"
                   th:text="${presupuesto.estado}"></span>
         </div>
         <div class="card-body">
@@ -49,7 +50,7 @@
             </div>
 
             <!-- Historial de cambios si existe -->
-            <div class="row mb-4" th:if="${!#lists.isEmpty(historialCambios)}">
+            <div class="row mb-4" th:if="${historialCambios != null && !#lists.isEmpty(historialCambios)}">
                 <div class="col-md-12">
                     <h6 class="fw-bold">Historial de Cambios</h6>
                     <div class="table-responsive">
@@ -79,30 +80,50 @@
             <div class="d-flex justify-content-between mt-4">
                 <div>
                     <a th:href="@{/rrhh/presupuestos}" class="btn btn-secondary">Volver a Presupuestos</a>
-                    <a th:href="@{/templates/rrhh/proyectos/{id}(id=${presupuesto.proyectoId})}" class="btn btn-info">Ver Proyecto</a>
                 </div>
+
+                <!-- Botones para estado BORRADOR -->
                 <div th:if="${presupuesto.estado == 'BORRADOR'}">
                     <form th:action="@{/rrhh/presupuestos/{id}/editar(id=${presupuesto.id})}" method="get" class="d-inline">
-                        <button type="submit" class="btn btn-warning">Editar</button>
+                        <button type="submit" class="btn btn-info">
+                            <i class="fas fa-edit me-1"></i>Editar
+                        </button>
                     </form>
-                    <form th:action="@{/rrhh/presupuestos/{id}/aprobar(id=${presupuesto.id})}" method="post" class="d-inline">
-                        <button type="submit" class="btn btn-success">Aprobar</button>
-                    </form>
-                    <form th:action="@{/rrhh/presupuestos/{id}/rechazar(id=${presupuesto.id})}" method="post" class="d-inline">
-                        <button type="submit" class="btn btn-danger">Rechazar</button>
+                    <form th:action="@{/rrhh/presupuestos/{id}/aprobar(id=${presupuesto.id})}" method="post" class="d-inline ms-2">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-check me-1"></i>Aprobar y enviar
+                        </button>
                     </form>
                 </div>
+
+                <!-- Mensaje para estado ENVIADO -->
+                <div th:if="${presupuesto.estado == 'ENVIADO'}">
+                    <div class="alert alert-success mb-0 px-4 py-2">
+                        <i class="fas fa-check-circle me-1"></i>
+                        <strong>Enviado</strong>
+                    </div>
+                </div>
+
+                <!-- Botones para estado RECHAZADO -->
                 <div th:if="${presupuesto.estado == 'RECHAZADO'}">
                     <form th:action="@{/rrhh/presupuestos/{id}/reactivar(id=${presupuesto.id})}" method="post" class="d-inline">
-                        <button type="submit" class="btn btn-primary">Reactivar</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-redo me-1"></i>Reactivar
+                        </button>
                     </form>
                 </div>
+
+                <!-- Botones para estado APROBADO -->
                 <div th:if="${presupuesto.estado == 'APROBADO'}">
                     <form th:action="@{/rrhh/presupuestos/{id}/generar-pdf(id=${presupuesto.id})}" method="get" class="d-inline">
-                        <button type="submit" class="btn btn-primary">Generar PDF</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-file-pdf me-1"></i>Generar PDF
+                        </button>
                     </form>
-                    <form th:action="@{/rrhh/presupuestos/{id}/enviar-email(id=${presupuesto.id})}" method="post" class="d-inline">
-                        <button type="submit" class="btn btn-info">Enviar por Email</button>
+                    <form th:action="@{/rrhh/presupuestos/{id}/enviar-email(id=${presupuesto.id})}" method="post" class="d-inline ms-2">
+                        <button type="submit" class="btn btn-info">
+                            <i class="fas fa-envelope me-1"></i>Enviar por Email
+                        </button>
                     </form>
                 </div>
             </div>

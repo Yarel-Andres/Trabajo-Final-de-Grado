@@ -141,6 +141,48 @@ public class PresupuestoService {
         }
     }
 
+    // Edicion de presupuesto para rrhh
+    @Transactional
+    public PresupuestoDTO update(PresupuestoDTO presupuestoDTO, String nombreUsuario) {
+        Presupuesto presupuesto = presupuestoRepository.findById(presupuestoDTO.getId())
+                .orElseThrow(() -> new RuntimeException("Presupuesto no encontrado con ID: " + presupuestoDTO.getId()));
+
+        // Actualizar los campos editables
+        presupuesto.setNombreCliente(presupuestoDTO.getNombreCliente());
+        presupuesto.setDescripcion(presupuestoDTO.getDescripcion());
+        presupuesto.setTarifaHora(presupuestoDTO.getTarifaHora());
+        presupuesto.setHorasEstimadas(presupuestoDTO.getHorasEstimadas());
+        presupuesto.setCostoTotal(presupuestoDTO.getCostoTotal());
+
+        // Guardar el presupuesto actualizado
+        Presupuesto presupuestoActualizado = presupuestoRepository.save(presupuesto);
+
+        // Registrar la actualización en el historial si existe esa funcionalidad
+        // historialService.registrarCambio(presupuesto.getId(), nombreUsuario, "ACTUALIZACIÓN", "Presupuesto actualizado");
+
+        return presupuestoMapper.toDto(presupuestoActualizado);
+    }
+
+
+    // Cambio de estado borrador / enviado en presupuesto de rrhh
+    @Transactional
+    public PresupuestoDTO cambiarEstado(Long id, String nuevoEstado, String nombreUsuario) {
+        Presupuesto presupuesto = presupuestoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Presupuesto no encontrado con ID: " + id));
+
+        // Cambiar el estado
+        presupuesto.setEstado(nuevoEstado);
+
+        // Guardar el presupuesto actualizado
+        Presupuesto presupuestoActualizado = presupuestoRepository.save(presupuesto);
+
+        // Registrar el cambio en el historial si existe esa funcionalidad
+        // historialService.registrarCambio(presupuesto.getId(), nombreUsuario, "CAMBIO_ESTADO",
+        //     "Estado cambiado a " + nuevoEstado);
+
+        return presupuestoMapper.toDto(presupuestoActualizado);
+    }
+
     public void deleteById(Long id) {
         presupuestoRepository.deleteById(id);
     }

@@ -9,48 +9,63 @@
 <div class="container">
     <div th:replace="fragments/layout :: messages"></div>
 
-    <div class="card shadow-sm">
+    <div class="card shadow-sm border-0 mb-4">
         <div class="card-body">
-            <h2 class="card-title mb-4"><i class="fas fa-chart-bar me-2"></i>Informes de Tiempo</h2>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="d-flex align-items-center">
+                    <div class="section-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <div>
+                        <h1 class="h3 mb-0 fw-bold">Informes de Tiempo</h1>
+                        <p class="text-muted mb-0">Analiza los registros de tiempo por empleado o proyecto</p>
+                    </div>
+                </div>
+                <a th:href="@{/dashboard}" class="btn btn-outline-primary btn-icon">
+                    <i class="fas fa-arrow-left"></i> Volver al Dashboard
+                </a>
+            </div>
 
             <div class="row mb-4">
                 <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header bg-light">
-                            <h5 class="mb-0">Por Empleado</h5>
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-light d-flex align-items-center">
+                            <i class="fas fa-user me-2 text-primary"></i>
+                            <h5 class="mb-0 fw-bold">Por Empleado</h5>
                         </div>
                         <div class="card-body">
+                            <p class="text-muted mb-3">Selecciona un empleado para ver sus registros de tiempo:</p>
                             <div class="mb-3">
-                                <label for="empleadoSelect" class="form-label">Seleccionar Empleado:</label>
                                 <select id="empleadoSelect" class="form-select">
                                     <option value="">-- Seleccionar Empleado --</option>
                                     <option th:each="empleado : ${empleados}" th:value="${empleado.id}" th:text="${empleado.nombreCompleto}"></option>
                                 </select>
                             </div>
                             <div class="d-grid">
-                                <button id="verEmpleadoBtn" class="btn btn-primary">
-                                    <i class="fas fa-search me-2"></i>Ver Informe
+                                <button id="verEmpleadoBtn" class="btn btn-primary btn-icon">
+                                    <i class="fas fa-search"></i> Ver Informe
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header bg-light">
-                            <h5 class="mb-0">Por Proyecto</h5>
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-light d-flex align-items-center">
+                            <i class="fas fa-project-diagram me-2 text-success"></i>
+                            <h5 class="mb-0 fw-bold">Por Proyecto</h5>
                         </div>
                         <div class="card-body">
+                            <p class="text-muted mb-3">Selecciona un proyecto para ver sus registros de tiempo:</p>
                             <div class="mb-3">
-                                <label for="proyectoSelect" class="form-label">Seleccionar Proyecto:</label>
                                 <select id="proyectoSelect" class="form-select">
                                     <option value="">-- Seleccionar Proyecto --</option>
                                     <option th:each="proyecto : ${proyectos}" th:value="${proyecto.id}" th:text="${proyecto.nombre}"></option>
                                 </select>
                             </div>
                             <div class="d-grid">
-                                <button id="verProyectoBtn" class="btn btn-success">
-                                    <i class="fas fa-search me-2"></i>Ver Informe
+                                <button id="verProyectoBtn" class="btn btn-success btn-icon">
+                                    <i class="fas fa-search"></i> Ver Informe
                                 </button>
                             </div>
                         </div>
@@ -58,39 +73,78 @@
                 </div>
             </div>
 
-            <div class="mt-4">
-                <a th:href="@{/dashboard}" class="btn btn-primary">
-                    <i class="fas fa-arrow-left me-2"></i>Volver al Dashboard
-                </a>
+            <!-- Mensaje de ayuda -->
+            <div class="alert alert-info d-flex align-items-center mt-4">
+                <i class="fas fa-info-circle me-3 fa-lg"></i>
+                <div>
+                    <h5 class="alert-heading mb-1">¿Cómo usar los informes?</h5>
+                    <p class="mb-0">Selecciona un empleado o proyecto de las listas desplegables y haz clic en "Ver Informe" para visualizar los registros de tiempo correspondientes. Podrás ver detalles como horas trabajadas, fechas y actividades realizadas.</p>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
+<div th:replace="fragments/layout :: footer"></div>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        console.log('Script de informes de tiempo cargado');
+
         const empleadoSelect = document.getElementById('empleadoSelect');
         const proyectoSelect = document.getElementById('proyectoSelect');
         const verEmpleadoBtn = document.getElementById('verEmpleadoBtn');
         const verProyectoBtn = document.getElementById('verProyectoBtn');
 
-        verEmpleadoBtn.addEventListener('click', function() {
-            const empleadoId = empleadoSelect.value;
-            if (empleadoId) {
-                window.location.href = `/registros-tiempo/informes/empleado/${empleadoId}`;
-            } else {
-                alert('Por favor, selecciona un empleado');
-            }
-        });
+        if (verEmpleadoBtn) {
+            verEmpleadoBtn.addEventListener('click', function() {
+                const empleadoId = empleadoSelect.value;
+                if (empleadoId) {
+                    window.location.href = `/registros-tiempo/informes/empleado/${empleadoId}`;
+                } else {
+                    showMessage('Por favor, selecciona un empleado', 'warning');
+                }
+            });
+        }
 
-        verProyectoBtn.addEventListener('click', function() {
-            const proyectoId = proyectoSelect.value;
-            if (proyectoId) {
-                window.location.href = `/registros-tiempo/informes/proyecto/${proyectoId}`;
-            } else {
-                alert('Por favor, selecciona un proyecto');
-            }
-        });
+        if (verProyectoBtn) {
+            verProyectoBtn.addEventListener('click', function() {
+                const proyectoId = proyectoSelect.value;
+                if (proyectoId) {
+                    window.location.href = `/registros-tiempo/informes/proyecto/${proyectoId}`;
+                } else {
+                    showMessage('Por favor, selecciona un proyecto', 'warning');
+                }
+            });
+        }
+
+        function showMessage(message, type) {
+            // Crear elemento de alerta
+            var alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-' + type + ' alert-dismissible fade show';
+            alertDiv.role = 'alert';
+
+            var icon = type === 'success' ? 'fa-check-circle' :
+                type === 'warning' ? 'fa-exclamation-triangle' : 'fa-exclamation-circle';
+            alertDiv.innerHTML =
+                '<div class="d-flex align-items-center">' +
+                '<i class="fas ' + icon + ' me-2"></i>' +
+                '<span>' + message + '</span>' +
+                '</div>' +
+                '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
+
+            // Insertar la alerta al principio del contenedor de mensajes
+            var messagesContainer = document.querySelector('.container > div:first-child');
+            messagesContainer.appendChild(alertDiv);
+
+            // Eliminar automáticamente después de 5 segundos
+            setTimeout(function() {
+                alertDiv.classList.remove('show');
+                setTimeout(function() {
+                    alertDiv.remove();
+                }, 150);
+            }, 5000);
+        }
     });
 </script>
 </body>

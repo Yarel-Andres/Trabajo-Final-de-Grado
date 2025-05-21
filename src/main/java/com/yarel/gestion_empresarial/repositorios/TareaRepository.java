@@ -13,5 +13,6 @@ import java.util.List;
 public interface TareaRepository extends JpaRepository<Tarea, Long> {
     List<Tarea> findByEmpleado(Empleado empleado);
     List<Tarea> findByJefe(Jefe jefe);
+    List<Tarea> findByJefeAndCompletada(Jefe jefe, boolean completada);
     List<Tarea> findByProyecto(Proyecto proyecto);
 }

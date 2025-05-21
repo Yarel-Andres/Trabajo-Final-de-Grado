@@ -44,6 +44,13 @@ public class RRHHProyectoController {
 
                 horasPorProyecto.put(proyecto.getId(), totalHoras);
                 registrosPorProyecto.put(proyecto.getId(), registros);
+
+                // Formatear el estado para la vista de RRHH
+                if ("EN_PROGRESO".equals(proyecto.getEstado())) {
+                    proyecto.setEstado("En proceso");
+                } else if ("FINALIZADO".equals(proyecto.getEstado())) {
+                    proyecto.setEstado("Finalizado");
+                }
             }
 
             model.addAttribute("proyectos", proyectos);
@@ -54,33 +61,6 @@ public class RRHHProyectoController {
         } catch (Exception e) {
             e.printStackTrace();
             model.addAttribute("error", "Error al cargar proyectos: " + e.getMessage());
-            return "error/general";
-        }
-    }
-
-    @GetMapping("/{id}/horas")
-    public String verHorasProyecto(@PathVariable Long id, Model model) {
-        try {
-            Optional<ProyectoDTO> proyecto = proyectoService.findById(id);
-            if (proyecto.isPresent()) {
-                model.addAttribute("proyecto", proyecto.get());
-
-                // Obtener todos los registros de tiempo para este proyecto
-                List<RegistroTiempoDTO> registros = registroTiempoService.findByProyectoId(id);
-                model.addAttribute("registros", registros);
-
-                // Calcular el total de horas
-                double totalHoras = registros.stream()
-                        .mapToDouble(RegistroTiempoDTO::getHorasTrabajadas)
-                        .sum();
-                model.addAttribute("totalHoras", totalHoras);
-
-                return "rrhh/proyectos/horas";
-            }
-            return "redirect:/rrhh/proyectos";
-        } catch (Exception e) {
-            e.printStackTrace();
-            model.addAttribute("error", "Error al cargar horas del proyecto: " + e.getMessage());
             return "error/general";
         }
     }

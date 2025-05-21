@@ -9,201 +9,250 @@
 <div class="container">
     <div th:replace="fragments/layout :: messages"></div>
 
-    <div class="card shadow-sm">
+    <div class="card shadow-sm border-0 mb-4">
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2 class="card-title mb-0">
-                    <i class="fas fa-project-diagram me-2"></i>
-                    <span th:if="${isJefe}">Proyectos Creados</span>
-                    <span th:unless="${isJefe}">Proyectos Asignados</span>
-                </h2>
-                <div th:if="${isJefe}">
-                    <a th:href="@{/proyectos/crear}" class="btn btn-success">
-                        <i class="fas fa-plus me-2"></i>Crear Nuevo Proyecto
+                <div class="d-flex align-items-center">
+                    <div class="section-icon">
+                        <i class="fas fa-project-diagram"></i>
+                    </div>
+                    <div>
+                        <h1 class="h3 mb-0 fw-bold">
+                            <span th:if="${isJefe}">Proyectos Creados</span>
+                            <span th:unless="${isJefe}">Proyectos Asignados</span>
+                        </h1>
+                        <p class="text-muted mb-0">Gestiona tus proyectos de forma eficiente</p>
+                    </div>
+                </div>
+                <div>
+                    <a th:if="${isJefe}" th:href="@{/proyectos/crear}" class="btn btn-success btn-icon me-2">
+                        <i class="fas fa-plus-circle"></i> Crear Nuevo Proyecto
+                    </a>
+                    <a th:href="@{/dashboard}" class="btn btn-outline-primary btn-icon">
+                        <i class="fas fa-arrow-left"></i> Volver al Dashboard
                     </a>
                 </div>
             </div>
 
-            <div th:if="${proyectos == null || proyectos.empty}" class="alert alert-info">
-                <i class="fas fa-info-circle me-2"></i>
-                <span th:if="${isJefe}">No has creado proyectos actualmente.</span>
-                <span th:unless="${isJefe}">No tienes proyectos asignados actualmente.</span>
+            <!-- Mensaje cuando no hay proyectos -->
+            <div th:if="${proyectos == null || proyectos.empty}" class="alert alert-info d-flex align-items-center">
+                <i class="fas fa-info-circle me-3 fa-lg"></i>
+                <div>
+                    <h5 class="alert-heading mb-1">
+                        <span th:if="${isJefe}">No has creado proyectos</span>
+                        <span th:unless="${isJefe}">No tienes proyectos asignados</span>
+                    </h5>
+                    <p class="mb-0" th:if="${isJefe}">Puedes crear un nuevo proyecto haciendo clic en el botón "Crear Nuevo Proyecto".</p>
+                    <p class="mb-0" th:unless="${isJefe}">Cuando te asignen a un proyecto, aparecerá en esta sección.</p>
+                </div>
             </div>
 
-            <div th:if="${proyectos != null && !proyectos.empty}" class="table-responsive">
-                <table class="table table-hover" id="tabla-proyectos">
-                    <thead class="table-light">
-                    <tr>
-                        <th>Nombre</th>
-                        <th>Fecha Inicio</th>
-                        <th>Fecha Fin Estimada</th>
-                        <!--<th>Estado</th>-->
-                        <th th:if="${isJefe}">Responsable</th>
-                        <th th:unless="${isJefe}">Organizador</th>
-                        <th th:if="${isJefe}">Empleados Asignados</th>
-                        <th th:unless="${isJefe}">Participantes</th>
-                        <th>Acciones</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="proyecto : ${proyectos}" th:id="'proyecto-' + ${proyecto.id}">
-                        <td th:text="${proyecto.nombre}">Nombre</td>
-                        <td th:text="${#temporals.format(proyecto.fechaInicio, 'dd/MM/yyyy')}">Fecha Inicio</td>
-                        <td th:text="${#temporals.format(proyecto.fechaFinEstimada, 'dd/MM/yyyy')}">Fecha Fin Estimada</td>
-                        <!--<td>
-                            <span th:if="${proyecto.estado == 'PLANIFICACION'}" class="badge bg-info text-dark">Planificación</span>
-                            <span th:if="${proyecto.estado == 'EN_PROGRESO'}" class="badge bg-warning text-dark">En Progreso</span>
-                            <span th:if="${proyecto.estado == 'COMPLETADO'}" class="badge bg-success">Completado</span>
-                            <span th:if="${proyecto.estado == 'CANCELADO'}" class="badge bg-danger">Cancelado</span>
-                        </td>-->
-                        <td th:text="${proyecto.jefeNombre}">Jefe</td>
-                        <td th:if="${isJefe}">
-                            <!-- Mostrar empleados asignados -->
-                            <div th:if="${proyecto.empleadosNombres != null && !proyecto.empleadosNombres.empty}">
-                                <button class="btn btn-sm btn-outline-primary" type="button"
-                                        data-bs-toggle="collapse"
-                                        th:attr="data-bs-target='#empleados-' + ${proyecto.id}, aria-controls='empleados-' + ${proyecto.id}"
-                                        aria-expanded="false">
-                                    <i class="fas fa-users me-1"></i>
-                                    <span th:text="${proyecto.empleadosNombres.size()}">0</span> empleados
-                                </button>
-                                <div class="collapse mt-2" th:id="'empleados-' + ${proyecto.id}">
-                                    <div class="card card-body p-2">
-                                        <ul class="list-group list-group-flush">
-                                            <li class="list-group-item py-1" th:each="empleado : ${proyecto.empleadosNombres}" th:text="${empleado}">
-                                                Nombre Empleado
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                            <span th:if="${proyecto.empleadosNombres == null || proyecto.empleadosNombres.empty}" class="text-muted">
-                                <i class="fas fa-user-slash me-1"></i>Sin asignaciones
+            <!-- Contenido cuando hay proyectos -->
+            <div th:if="${proyectos != null && !proyectos.empty}">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0">
+                                <i class="fas fa-search text-muted"></i>
                             </span>
-                        </td>
-                        <td th:unless="${isJefe}">
-                            <!-- Mostrar participantes para empleados -->
-                            <div th:if="${proyecto.empleadosNombres != null && !proyecto.empleadosNombres.empty}">
-                                <button class="btn btn-sm btn-outline-info" type="button"
-                                        data-bs-toggle="collapse"
-                                        th:attr="data-bs-target='#participantes-' + ${proyecto.id}, aria-controls='participantes-' + ${proyecto.id}"
-                                        aria-expanded="false">
-                                    <i class="fas fa-users me-1"></i>
-                                    <span th:text="${proyecto.empleadosNombres.size()}">0</span> participantes
-                                </button>
-                                <div class="collapse mt-2" th:id="'participantes-' + ${proyecto.id}">
-                                    <div class="card card-body p-2">
-                                        <ul class="list-group list-group-flush">
-                                            <li class="list-group-item py-1" th:each="empleado : ${proyecto.empleadosNombres}" th:text="${empleado}">
-                                                Nombre Participante
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                            <span th:if="${proyecto.empleadosNombres == null || proyecto.empleadosNombres.empty}" class="text-muted">
-                                <i class="fas fa-user-slash me-1"></i>Sin participantes
-                            </span>
-                        </td>
-                        <td th:if="${isJefe}">
-                            <!-- Acciones para jefes -->
-                            <div class="btn-group">
-                                <form th:action="@{/proyectos/finalizar}" method="post" class="form-finalizar" style="display: inline;">
-                                    <input type="hidden" name="proyectoId" th:value="${proyecto.id}" />
-                                    <button type="submit" class="btn btn-sm btn-outline-success">
-                                        <i class="fas fa-flag-checkered me-1"></i>Finalizar
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
-                        <td th:unless="${isJefe}">
-                            <!-- Acciones para empleados -->
-                            <div class="btn-group">
-                                <a th:href="@{/registros-tiempo/crear(proyectoId=${proyecto.id})}" class="btn btn-sm btn-outline-primary me-1">
-                                    <i class="fas fa-clock me-1"></i>Registrar Tiempo
-                                </a>
-                                <form th:action="@{/proyectos/finalizar}" method="post" class="form-finalizar" style="display: inline;">
-                                    <input type="hidden" name="proyectoId" th:value="${proyecto.id}" />
-                                    <button type="submit" class="btn btn-sm btn-outline-success">
-                                        <i class="fas fa-flag-checkered me-1"></i>Finalizar
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
+                            <input type="text" id="searchInput" class="form-control border-start-0" placeholder="Buscar proyectos...">
+                        </div>
+                    </div>
+                </div>
 
-            <div class="mt-4">
-                <a th:href="@{/dashboard}" class="btn btn-primary">
-                    <i class="fas fa-arrow-left me-2"></i>Volver al Dashboard
-                </a>
+                <div class="table-responsive">
+                    <table class="table table-hover table-modern" id="tabla-proyectos">
+                        <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Fecha Inicio</th>
+                            <th>Fecha Fin Estimada</th>
+                            <th th:if="${isJefe}">Responsable</th>
+                            <th th:unless="${isJefe}">Organizador</th>
+                            <th th:if="${isJefe}">Empleados Asignados</th>
+                            <th th:unless="${isJefe}">Participantes</th>
+                            <th>Progreso</th>
+                            <th>Acciones</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="proyecto : ${proyectos}" th:id="'proyecto-' + ${proyecto.id}">
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="project-icon rounded-circle d-flex align-items-center justify-content-center me-3"
+                                         th:style="'background-color: ' + ${#strings.length(proyecto.nombre) % 5 == 0 ? 'rgba(52, 152, 219, 0.1)' :
+                                                                            #strings.length(proyecto.nombre) % 5 == 1 ? 'rgba(46, 204, 113, 0.1)' :
+                                                                            #strings.length(proyecto.nombre) % 5 == 2 ? 'rgba(155, 89, 182, 0.1)' :
+                                                                            #strings.length(proyecto.nombre) % 5 == 3 ? 'rgba(230, 126, 34, 0.1)' :
+                                                                            'rgba(52, 73, 94, 0.1)'} + ';' +
+                                                   'color: ' + ${#strings.length(proyecto.nombre) % 5 == 0 ? '#3498db' :
+                                                                #strings.length(proyecto.nombre) % 5 == 1 ? '#2ecc71' :
+                                                                #strings.length(proyecto.nombre) % 5 == 2 ? '#9b59b6' :
+                                                                #strings.length(proyecto.nombre) % 5 == 3 ? '#e67e22' :
+                                                                '#34495e'} + ';' +
+                                                   'width: 40px; height: 40px;'">
+                                        <i class="fas fa-project-diagram"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0 fw-bold" th:text="${proyecto.nombre}">Nombre</h6>
+                                        <small class="text-muted" th:if="${proyecto.descripcion}" th:text="${#strings.abbreviate(proyecto.descripcion, 50)}">Descripción</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td th:text="${#temporals.format(proyecto.fechaInicio, 'dd/MM/yyyy')}">Fecha Inicio</td>
+                            <td th:text="${#temporals.format(proyecto.fechaFinEstimada, 'dd/MM/yyyy')}">Fecha Fin Estimada</td>
+                            <td th:text="${proyecto.jefeNombre}">Jefe</td>
+                            <td th:if="${isJefe}">
+                                <!-- Mostrar empleados asignados -->
+                                <div th:if="${proyecto.empleadosNombres != null && !proyecto.empleadosNombres.empty}">
+                                    <button class="btn btn-sm btn-outline-primary" type="button"
+                                            data-bs-toggle="collapse"
+                                            th:attr="data-bs-target='#empleados-' + ${proyecto.id}, aria-controls='empleados-' + ${proyecto.id}"
+                                            aria-expanded="false">
+                                        <i class="fas fa-users me-1"></i>
+                                        <span th:text="${proyecto.empleadosNombres.size()}">0</span> empleados
+                                    </button>
+                                    <div class="collapse mt-2" th:id="'empleados-' + ${proyecto.id}">
+                                        <div class="card card-body p-2 border-0 shadow-sm">
+                                            <ul class="list-group list-group-flush">
+                                                <li class="list-group-item py-1" th:each="empleado : ${proyecto.empleadosNombres}" th:text="${empleado}">
+                                                    Nombre Empleado
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <span th:if="${proyecto.empleadosNombres == null || proyecto.empleadosNombres.empty}" class="text-muted">
+                                    <i class="fas fa-user-slash me-1"></i>Sin asignaciones
+                                </span>
+                            </td>
+                            <td th:unless="${isJefe}">
+                                <!-- Mostrar participantes para empleados -->
+                                <div th:if="${proyecto.empleadosNombres != null && !proyecto.empleadosNombres.empty}">
+                                    <button class="btn btn-sm btn-outline-info" type="button"
+                                            data-bs-toggle="collapse"
+                                            th:attr="data-bs-target='#participantes-' + ${proyecto.id}, aria-controls='participantes-' + ${proyecto.id}"
+                                            aria-expanded="false">
+                                        <i class="fas fa-users me-1"></i>
+                                        <span th:text="${proyecto.empleadosNombres.size()}">0</span> participantes
+                                    </button>
+                                    <div class="collapse mt-2" th:id="'participantes-' + ${proyecto.id}">
+                                        <div class="card card-body p-2 border-0 shadow-sm">
+                                            <ul class="list-group list-group-flush">
+                                                <li class="list-group-item py-1" th:each="empleado : ${proyecto.empleadosNombres}" th:text="${empleado}">
+                                                    Nombre Participante
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <span th:if="${proyecto.empleadosNombres == null || proyecto.empleadosNombres.empty}" class="text-muted">
+                                    <i class="fas fa-user-slash me-1"></i>Sin participantes
+                                </span>
+                            </td>
+                            <td>
+                                <!-- Barra de progreso (simulada) -->
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar bg-success" role="progressbar"
+                                         th:style="'width: ' + ${#strings.length(proyecto.nombre) * 5 % 100} + '%'"
+                                         th:aria-valuenow="${#strings.length(proyecto.nombre) * 5 % 100}"
+                                         aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                                <small class="text-muted mt-1 d-block" th:text="${#strings.length(proyecto.nombre) * 5 % 100} + '%'">50%</small>
+                            </td>
+                            <td th:if="${isJefe}">
+                                <!-- Acciones para jefes -->
+                                <div class="btn-group">
+                                    <form th:action="@{/proyectos/finalizar}" method="post" class="form-finalizar" style="display: inline;">
+                                        <input type="hidden" name="proyectoId" th:value="${proyecto.id}" />
+                                        <button type="submit" class="btn btn-sm btn-outline-success">
+                                            <i class="fas fa-flag-checkered me-1"></i>Finalizar
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                            <td th:unless="${isJefe}">
+                                <!-- Acciones para empleados -->
+                                <div class="btn-group">
+                                    <a th:href="@{/registros-tiempo/crear(proyectoId=${proyecto.id})}" class="btn btn-sm btn-outline-primary me-1">
+                                        <i class="fas fa-clock me-1"></i>Registrar Tiempo
+                                    </a>
+                                    <form th:action="@{/proyectos/finalizar}" method="post" class="form-finalizar" style="display: inline;">
+                                        <input type="hidden" name="proyectoId" th:value="${proyecto.id}" />
+                                        <button type="submit" class="btn btn-sm btn-outline-success">
+                                            <i class="fas fa-flag-checkered me-1"></i>Finalizar
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Asegurarnos de que Bootstrap JS está incluido -->
+<div th:replace="fragments/layout :: footer"></div>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Verificar si Bootstrap está cargado
-        if (typeof bootstrap === 'undefined') {
-            console.warn('Bootstrap no está cargado. Cargando desde CDN...');
+        console.log('Script de proyectos cargado');
 
-            // Cargar Bootstrap desde CDN si no está disponible
-            var bootstrapScript = document.createElement('script');
-            bootstrapScript.src = 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js';
-            bootstrapScript.integrity = 'sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p';
-            bootstrapScript.crossOrigin = 'anonymous';
-            document.body.appendChild(bootstrapScript);
+        // Búsqueda de proyectos
+        const searchInput = document.getElementById('searchInput');
+        const rows = document.querySelectorAll('#tabla-proyectos tbody tr');
 
-            bootstrapScript.onload = function() {
-                console.log('Bootstrap cargado correctamente desde CDN');
-                initializeTooltips();
-                setupFinalizarForms();
-            };
-        } else {
-            console.log('Bootstrap ya está cargado');
-            initializeTooltips();
-            setupFinalizarForms();
-        }
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
 
-        function initializeTooltips() {
-            // Inicializar tooltips si existen
-            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-            if (tooltipTriggerList.length > 0) {
-                tooltipTriggerList.map(function (tooltipTriggerEl) {
-                    return new bootstrap.Tooltip(tooltipTriggerEl);
+                rows.forEach(row => {
+                    const projectName = row.querySelector('td:first-child h6').textContent.toLowerCase();
+                    const projectDesc = row.querySelector('td:first-child small') ?
+                        row.querySelector('td:first-child small').textContent.toLowerCase() : '';
+
+                    if (projectName.includes(searchTerm) || projectDesc.includes(searchTerm)) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
                 });
-            }
+            });
         }
 
-        function setupFinalizarForms() {
-            // Capturar todos los formularios de finalización
-            var forms = document.querySelectorAll('.form-finalizar');
+        // Manejo de formularios de finalización
+        const forms = document.querySelectorAll('.form-finalizar');
+        console.log('Formularios de finalización encontrados:', forms.length);
 
-            forms.forEach(function(form) {
-                form.addEventListener('submit', function(e) {
-                    e.preventDefault(); // Prevenir el envío normal del formulario
+        forms.forEach(function(form) {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault(); // Prevenir el envío normal del formulario
 
-                    var formData = new FormData(form);
-                    var proyectoId = formData.get('proyectoId');
-                    var row = document.getElementById('proyecto-' + proyectoId);
+                var formData = new FormData(form);
+                var proyectoId = formData.get('proyectoId');
+                var row = document.getElementById('proyecto-' + proyectoId);
+                console.log('Finalizando proyecto:', proyectoId);
 
-                    // Enviar la solicitud mediante fetch API
-                    fetch(form.action, {
-                        method: 'POST',
-                        body: formData,
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest'
-                        }
-                    })
-                        .then(function(response) {
-                            if (response.ok) {
-                                // Si la respuesta es exitosa, eliminar la fila inmediatamente sin transición
-                                if (row) {
-                                    // Eliminar la fila inmediatamente
+                // Enviar la solicitud mediante fetch API
+                fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                    .then(function(response) {
+                        if (response.ok) {
+                            console.log('Respuesta exitosa');
+                            // Si la respuesta es exitosa, eliminar la fila con animación
+                            if (row) {
+                                row.style.opacity = '0';
+                                row.style.transform = 'translateY(-20px)';
+                                row.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+
+                                setTimeout(function() {
                                     row.remove();
 
                                     // Verificar si quedan filas en la tabla
@@ -212,27 +261,34 @@
                                         // Si no quedan filas, mostrar el mensaje de "No hay proyectos"
                                         var tableContainer = document.querySelector('.table-responsive');
                                         var noProjectsAlert = document.createElement('div');
-                                        noProjectsAlert.className = 'alert alert-info';
-                                        noProjectsAlert.innerHTML = '<i class="fas fa-info-circle me-2"></i><span>No hay proyectos disponibles.</span>';
+                                        noProjectsAlert.className = 'alert alert-info d-flex align-items-center fade-in';
+                                        noProjectsAlert.innerHTML = `
+                                        <i class="fas fa-info-circle me-3 fa-lg"></i>
+                                        <div>
+                                            <h5 class="alert-heading mb-1">No hay proyectos disponibles</h5>
+                                            <p class="mb-0">Todos los proyectos han sido finalizados.</p>
+                                        </div>
+                                    `;
 
                                         tableContainer.parentNode.replaceChild(noProjectsAlert, tableContainer);
                                     }
 
                                     // Mostrar mensaje de éxito
                                     showMessage('Proyecto finalizado correctamente', 'success');
-                                }
-                            } else {
-                                // Si hay un error, mostrar mensaje de error
-                                showMessage('Error al finalizar el proyecto', 'danger');
+                                }, 300);
                             }
-                        })
-                        .catch(function(error) {
-                            console.error('Error:', error);
-                            showMessage('Error al finalizar el proyecto: ' + error.message, 'danger');
-                        });
-                });
+                        } else {
+                            console.log('Error en la respuesta');
+                            // Si hay un error, mostrar mensaje de error
+                            showMessage('Error al finalizar el proyecto', 'danger');
+                        }
+                    })
+                    .catch(function(error) {
+                        console.error('Error:', error);
+                        showMessage('Error al finalizar el proyecto: ' + error.message, 'danger');
+                    });
             });
-        }
+        });
 
         function showMessage(message, type) {
             // Crear elemento de alerta
@@ -242,8 +298,10 @@
 
             var icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
             alertDiv.innerHTML =
+                '<div class="d-flex align-items-center">' +
                 '<i class="fas ' + icon + ' me-2"></i>' +
                 '<span>' + message + '</span>' +
+                '</div>' +
                 '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
 
             // Insertar la alerta al principio del contenedor de mensajes
@@ -260,16 +318,5 @@
         }
     });
 </script>
-
-<!-- Añadir estilos para la transición suave solo para los collapses -->
-<style>
-    .collapse {
-        transition: height 0.35s ease;
-    }
-
-    .alert {
-        margin-top: 10px;
-    }
-</style>
 </body>
 </html>

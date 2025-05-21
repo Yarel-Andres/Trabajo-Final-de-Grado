@@ -176,4 +176,21 @@ public class TareaService {
                         tarea -> tarea.getNombreProyecto() != null ? tarea.getNombreProyecto() : "Sin proyecto"
                 ));
     }
+
+
+    // Eliminar tarea
+    @Transactional
+    public void eliminarTarea(Long tareaId) {
+        // Verificar que la tarea existe
+        Tarea tarea = tareaRepository.findById(tareaId)
+                .orElseThrow(() -> new RuntimeException("Tarea no encontrada con ID: " + tareaId));
+
+        // Verificar que la tarea está completada
+        if (!tarea.isCompletada()) {
+            throw new RuntimeException("Solo se pueden eliminar tareas completadas");
+        }
+
+        // Eliminar la tarea
+        tareaRepository.delete(tarea);
+    }
 }

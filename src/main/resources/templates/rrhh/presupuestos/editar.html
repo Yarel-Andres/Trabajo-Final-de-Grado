@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Editar Presupuesto - RRHH')}">
+    <title>Editar Presupuesto - RRHH</title>
+</head>
+<body>
+<header th:replace="~{fragments/layout :: header(${#authentication.name})}"></header>
+
+<div class="container mt-4">
+    <h2>Editar Presupuesto</h2>
+
+    <div th:replace="~{fragments/layout :: messages}"></div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="card-title mb-0">Presupuesto <span th:text="${presupuesto.id}"></span></h3>
+            </div>
+
+            <form th:action="@{/rrhh/presupuestos/{id}/actualizar(id=${presupuesto.id})}" method="post" th:object="${presupuesto}">
+                <input type="hidden" th:field="*{id}" />
+                <input type="hidden" th:field="*{proyectoId}" />
+                <input type="hidden" th:field="*{proyectoNombre}" />
+                <input type="hidden" th:field="*{fechaCreacion}" />
+                <input type="hidden" th:field="*{estado}" />
+
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h5>Información del Proyecto</h5>
+                        <div class="mb-3">
+                            <label class="form-label">Proyecto:</label>
+                            <p class="form-control-static" th:text="${presupuesto.proyectoNombre}"></p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Fecha de Creación:</label>
+                            <p class="form-control-static" th:text="${#temporals.format(presupuesto.fechaCreacion, 'dd/MM/yyyy')}"></p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h5>Información del Cliente</h5>
+                        <div class="mb-3">
+                            <label for="nombreCliente" class="form-label">Nombre del Cliente:</label>
+                            <input type="text" class="form-control" id="nombreCliente" th:field="*{nombreCliente}" required />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h5>Descripción</h5>
+                        <div class="mb-3">
+                            <textarea class="form-control" id="descripcion" th:field="*{descripcion}" rows="4"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <h5>Información Financiera</h5>
+                        <div class="mb-3">
+                            <label for="tarifaHora" class="form-label">Tarifa por Hora (€):</label>
+                            <input type="number" class="form-control" id="tarifaHora" th:field="*{tarifaHora}" step="0.01" min="0" required />
+                        </div>
+                        <div class="mb-3">
+                            <label for="horasEstimadas" class="form-label">Horas Estimadas:</label>
+                            <input type="number" class="form-control" id="horasEstimadas" th:field="*{horasEstimadas}" step="0.5" min="0" required />
+                        </div>
+                        <div class="mb-3">
+                            <label for="costoTotal" class="form-label">Costo Total (€):</label>
+                            <input type="number" class="form-control" id="costoTotal" th:field="*{costoTotal}" readonly />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end">
+                    <a th:href="@{/rrhh/presupuestos/{id}(id=${presupuesto.id})}" class="btn btn-secondary me-2">Cancelar</a>
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap Bundle with Popper -->
+<script th:src="@{/webjars/bootstrap/5.3.2/js/bootstrap.bundle.min.js}"></script>
+
+<!-- Script para calcular el costo total automáticamente -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const tarifaHoraInput = document.getElementById('tarifaHora');
+        const horasEstimadasInput = document.getElementById('horasEstimadas');
+        const costoTotalInput = document.getElementById('costoTotal');
+
+        function calcularCostoTotal() {
+            const tarifaHora = parseFloat(tarifaHoraInput.value) || 0;
+            const horasEstimadas = parseFloat(horasEstimadasInput.value) || 0;
+            const costoTotal = tarifaHora * horasEstimadas;
+            costoTotalInput.value = costoTotal.toFixed(2);
+        }
+
+        tarifaHoraInput.addEventListener('input', calcularCostoTotal);
+        horasEstimadasInput.addEventListener('input', calcularCostoTotal);
+
+        // Calcular al cargar la página
+        calcularCostoTotal();
+    });
+</script>
+</body>
+</html>

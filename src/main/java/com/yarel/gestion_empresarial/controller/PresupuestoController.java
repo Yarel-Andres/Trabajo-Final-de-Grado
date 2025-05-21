@@ -164,6 +164,135 @@ public class PresupuestoController {
         }
     }
 
+    @GetMapping("/{id}/editar")
+    public String mostrarFormularioEdicion(@PathVariable Long id, Model model) {
+        logger.info("Accediendo a mostrarFormularioEdicion con id: {}", id);
+        try {
+            Optional<PresupuestoDTO> presupuestoOpt = presupuestoService.findById(id);
+
+            if (presupuestoOpt.isEmpty()) {
+                model.addAttribute("error", "No se pudo encontrar el presupuesto");
+                return "redirect:/rrhh/presupuestos";
+            }
+
+            PresupuestoDTO presupuesto = presupuestoOpt.get();
+
+            // Verificar que el presupuesto esté en estado BORRADOR
+            if (!"BORRADOR".equals(presupuesto.getEstado())) {
+                model.addAttribute("error", "Solo se pueden editar presupuestos en estado borrador");
+                return "redirect:/rrhh/presupuestos/" + id;
+            }
+
+            // Obtener información del proyecto
+            Optional<ProyectoDTO> proyectoOpt = proyectoService.findById(presupuesto.getProyectoId());
+            if (proyectoOpt.isPresent()) {
+                model.addAttribute("proyecto", proyectoOpt.get());
+            }
+
+            model.addAttribute("presupuesto", presupuesto);
+            model.addAttribute("esEdicion", true);
+
+            return "rrhh/presupuestos/editar";
+        } catch (Exception e) {
+            logger.error("Error al mostrar formulario de edición", e);
+            model.addAttribute("error", "Error al cargar el formulario: " + e.getMessage());
+            return "error/general";
+        }
+    }
+
+    // Edicion de presupuesto para rrhh
+    @PostMapping("/{id}/actualizar")
+    public String actualizarPresupuesto(@PathVariable Long id, @ModelAttribute PresupuestoDTO presupuesto,
+                                        BindingResult result, RedirectAttributes redirectAttributes) {
+        logger.info("Actualizando presupuesto con ID: {}", id);
+
+        if (result.hasErrors()) {
+            logger.warn("Errores de validación: {}", result.getAllErrors());
+            return "rrhh/presupuestos/editar";
+        }
+
+        try {
+            // Verificar que el presupuesto existe
+            Optional<PresupuestoDTO> presupuestoExistenteOpt = presupuestoService.findById(id);
+            if (presupuestoExistenteOpt.isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "No se pudo encontrar el presupuesto");
+                return "redirect:/rrhh/presupuestos";
+            }
+
+            PresupuestoDTO presupuestoExistente = presupuestoExistenteOpt.get();
+
+            // Verificar que el presupuesto esté en estado BORRADOR
+            if (!"BORRADOR".equals(presupuestoExistente.getEstado())) {
+                redirectAttributes.addFlashAttribute("error", "Solo se pueden editar presupuestos en estado borrador");
+                return "redirect:/rrhh/presupuestos/" + id;
+            }
+
+            // Mantener valores que no deben cambiar
+            presupuesto.setId(id);
+            presupuesto.setProyectoId(presupuestoExistente.getProyectoId());
+            presupuesto.setProyectoNombre(presupuestoExistente.getProyectoNombre());
+            presupuesto.setFechaCreacion(presupuestoExistente.getFechaCreacion());
+            presupuesto.setEstado("BORRADOR");
+
+            // Calcular el costo total
+            presupuesto.setCostoTotal(presupuesto.getTarifaHora() * presupuesto.getHorasEstimadas());
+
+            // Guardar el presupuesto actualizado
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String nombreUsuario = auth.getName();
+
+            PresupuestoDTO presupuestoActualizado = presupuestoService.update(presupuesto, nombreUsuario);
+            logger.info("Presupuesto actualizado con ID: {}", presupuestoActualizado.getId());
+
+            redirectAttributes.addFlashAttribute("mensaje", "Presupuesto actualizado correctamente");
+            return "redirect:/rrhh/presupuestos/" + id;
+        } catch (Exception e) {
+            logger.error("Error al actualizar presupuesto", e);
+            redirectAttributes.addFlashAttribute("error", "Error al actualizar el presupuesto: " + e.getMessage());
+            return "redirect:/rrhh/presupuestos/" + id;
+        }
+    }
+
+
+
+    // Aprobar presupuesto siendo rrhh
+    @PostMapping("/{id}/aprobar")
+    public String aprobarPresupuesto(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        logger.info("Aprobando presupuesto con ID: {}", id);
+
+        try {
+            // Verificar que el presupuesto existe
+            Optional<PresupuestoDTO> presupuestoOpt = presupuestoService.findById(id);
+            if (presupuestoOpt.isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "No se pudo encontrar el presupuesto");
+                return "redirect:/rrhh/presupuestos";
+            }
+
+            PresupuestoDTO presupuesto = presupuestoOpt.get();
+
+            // Verificar que el presupuesto esté en estado BORRADOR
+            if (!"BORRADOR".equals(presupuesto.getEstado())) {
+                redirectAttributes.addFlashAttribute("error", "Solo se pueden aprobar presupuestos en estado borrador");
+                return "redirect:/rrhh/presupuestos/" + id;
+            }
+
+            // Cambiar el estado a ENVIADO
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String nombreUsuario = auth.getName();
+
+            presupuestoService.cambiarEstado(id, "ENVIADO", nombreUsuario);
+
+            redirectAttributes.addFlashAttribute("mensaje", "Presupuesto aprobado y enviado correctamente");
+            return "redirect:/rrhh/presupuestos/" + id;
+        } catch (Exception e) {
+            logger.error("Error al aprobar presupuesto", e);
+            redirectAttributes.addFlashAttribute("error", "Error al aprobar el presupuesto: " + e.getMessage());
+            return "redirect:/rrhh/presupuestos/" + id;
+        }
+    }
+
+
+
     @GetMapping("/debug-auth")
     @ResponseBody
     public String debugAuth() {

@@ -9,34 +9,43 @@
 <div class="container">
     <div th:replace="fragments/layout :: messages"></div>
 
-    <div class="card shadow-sm mb-4">
+    <div class="card shadow-sm border-0 mb-4">
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2 class="card-title mb-0">
-                    <i class="fas fa-tasks me-2"></i>Tareas Asignadas
-                </h2>
-                <a th:href="@{/tareas/asignar}" class="btn btn-success">
-                    <i class="fas fa-plus me-2"></i>Asignar Nueva Tarea
+                <div class="d-flex align-items-center">
+                    <div class="section-icon">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <div>
+                        <h1 class="h3 mb-0 fw-bold">Tareas Asignadas</h1>
+                        <p class="text-muted mb-0">Gestiona las tareas que has asignado a tu equipo</p>
+                    </div>
+                </div>
+                <a th:href="@{/tareas/asignar}" class="btn btn-success btn-icon">
+                    <i class="fas fa-plus-circle"></i> Asignar Nueva Tarea
                 </a>
             </div>
 
-            <div th:if="${tareasAgrupadas == null || tareasAgrupadas.isEmpty()}" class="alert alert-info">
-                <i class="fas fa-info-circle me-2"></i>
-                <span>No has asignado tareas actualmente.</span>
+            <!-- Mensaje cuando no hay tareas -->
+            <div th:if="${tareasAgrupadas == null || tareasAgrupadas.isEmpty()}" class="alert alert-info d-flex align-items-center">
+                <i class="fas fa-info-circle me-3 fa-lg"></i>
+                <div>
+                    <h5 class="alert-heading mb-1">No has asignado tareas</h5>
+                    <p class="mb-0">Actualmente no tienes tareas asignadas a tu equipo. Puedes crear una nueva tarea usando el botón "Asignar Nueva Tarea".</p>
+                </div>
             </div>
 
+            <!-- Contenido cuando hay tareas -->
             <div th:if="${tareasAgrupadas != null && !tareasAgrupadas.isEmpty()}">
-                <div th:each="entry : ${tareasAgrupadas}" class="card mb-4">
-                    <div class="card-header bg-light">
-                        <h4 class="mb-0">
-                            <i class="fas fa-project-diagram me-2"></i>
-                            <span th:text="${entry.key}">Nombre del Proyecto</span>
-                        </h4>
+                <div th:each="entry : ${tareasAgrupadas}" class="card mb-4 border-0 shadow-sm">
+                    <div class="card-header bg-light d-flex align-items-center">
+                        <i class="fas fa-project-diagram me-2 text-primary"></i>
+                        <h4 class="mb-0 fw-bold" th:text="${entry.key}">Nombre del Proyecto</h4>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead class="table-light">
+                            <table class="table table-hover table-modern">
+                                <thead>
                                 <tr>
                                     <th>Título</th>
                                     <th>Descripción</th>
@@ -44,22 +53,52 @@
                                     <th>Fecha Vencimiento</th>
                                     <th>Prioridad</th>
                                     <th>Estado</th>
+                                    <th>Acciones</th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr th:each="tarea : ${entry.value}">
-                                    <td th:text="${tarea.titulo}">Título</td>
-                                    <td th:text="${tarea.descripcion}">Descripción</td>
-                                    <td th:text="${tarea.empleadoNombre}">Empleado</td>
-                                    <td th:text="${#temporals.format(tarea.fechaVencimiento, 'dd/MM/yyyy HH:mm')}">Fecha</td>
+                                <tr th:each="tarea : ${entry.value}" th:id="'tarea-' + ${tarea.id}">
                                     <td>
-                                        <span th:if="${tarea.prioridad == 'ALTA'}" class="badge bg-danger">Alta</span>
-                                        <span th:if="${tarea.prioridad == 'MEDIA'}" class="badge bg-warning text-dark">Media</span>
-                                        <span th:if="${tarea.prioridad == 'BAJA'}" class="badge bg-info text-dark">Baja</span>
+                                        <span class="fw-medium" th:text="${tarea.titulo}">Título</span>
                                     </td>
                                     <td>
-                                        <span th:if="${tarea.completada}" class="badge bg-success">Completada</span>
-                                        <span th:unless="${tarea.completada}" class="badge bg-secondary">Pendiente</span>
+                                        <span th:text="${#strings.abbreviate(tarea.descripcion, 50)}">Descripción</span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-circle me-2" style="width: 30px; height: 30px; font-size: 0.8rem;">
+                                                <span th:text="${#strings.substring(tarea.empleadoNombre, 0, 1).toUpperCase()}">E</span>
+                                            </div>
+                                            <span th:text="${tarea.empleadoNombre}">Empleado</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-light text-dark">
+                                            <i class="far fa-calendar-alt me-1"></i>
+                                            <span th:text="${#temporals.format(tarea.fechaVencimiento, 'dd/MM/yyyy')}">Fecha</span>
+                                        </span>
+                                        <span class="badge bg-light text-dark">
+                                            <i class="far fa-clock me-1"></i>
+                                            <span th:text="${#temporals.format(tarea.fechaVencimiento, 'HH:mm')}">Hora</span>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span th:if="${tarea.prioridad == 'ALTA'}" class="badge badge-soft-danger">Alta</span>
+                                        <span th:if="${tarea.prioridad == 'MEDIA'}" class="badge badge-soft-warning">Media</span>
+                                        <span th:if="${tarea.prioridad == 'BAJA'}" class="badge badge-soft-info">Baja</span>
+                                    </td>
+                                    <td>
+                                        <span th:if="${tarea.completada}" class="badge badge-soft-success">Completada</span>
+                                        <span th:unless="${tarea.completada}" class="badge badge-soft-primary">Pendiente</span>
+                                    </td>
+                                    <td>
+                                        <!-- Mostrar el botón solo si la tarea está completada -->
+                                        <form th:if="${tarea.completada}" th:action="@{/tareas/eliminar}" method="post" class="form-eliminar">
+                                            <input type="hidden" name="tareaId" th:value="${tarea.id}" />
+                                            <button type="submit" class="btn btn-sm btn-outline-success">
+                                                <i class="fas fa-flag-checkered me-1"></i>Finalizar
+                                            </button>
+                                        </form>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -70,12 +109,114 @@
             </div>
 
             <div class="mt-4">
-                <a th:href="@{/dashboard}" class="btn btn-primary">
-                    <i class="fas fa-arrow-left me-2"></i>Volver al Dashboard
+                <a th:href="@{/dashboard}" class="btn btn-primary btn-icon">
+                    <i class="fas fa-arrow-left"></i> Volver al Dashboard
                 </a>
             </div>
         </div>
     </div>
 </div>
+
+<div th:replace="fragments/layout :: footer"></div>
+
+<!-- Script para manejar la eliminación de tareas sin recargar la página -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Script de tareas asignadas cargado');
+
+        // Capturar todos los formularios de eliminación
+        var forms = document.querySelectorAll('.form-eliminar');
+        console.log('Formularios encontrados:', forms.length);
+
+        forms.forEach(function(form) {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault(); // Prevenir el envío normal del formulario
+
+                var formData = new FormData(form);
+                var tareaId = formData.get('tareaId');
+                var row = document.getElementById('tarea-' + tareaId);
+                console.log('Finalizando tarea:', tareaId);
+
+                // Enviar la solicitud mediante fetch API
+                fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                    .then(function(response) {
+                        if (response.ok) {
+                            console.log('Respuesta exitosa');
+                            // Si la respuesta es exitosa, eliminar la fila
+                            if (row) {
+                                row.style.opacity = '0';
+                                row.style.transform = 'translateY(-20px)';
+                                row.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+
+                                setTimeout(function() {
+                                    row.remove();
+
+                                    // Verificar si quedan filas en la tabla
+                                    var tableBody = form.closest('tbody');
+                                    if (tableBody && tableBody.querySelectorAll('tr').length === 0) {
+                                        // Si no quedan filas, mostrar un mensaje
+                                        var cardBody = tableBody.closest('.card-body');
+                                        var tableResponsive = tableBody.closest('.table-responsive');
+
+                                        if (cardBody && tableResponsive) {
+                                            var noTareasMsg = document.createElement('div');
+                                            noTareasMsg.className = 'alert alert-info d-flex align-items-center';
+                                            noTareasMsg.innerHTML = '<i class="fas fa-info-circle me-3 fa-lg"></i><div><h5 class="alert-heading mb-1">No hay tareas en este proyecto</h5><p class="mb-0">Todas las tareas han sido finalizadas.</p></div>';
+
+                                            cardBody.replaceChild(noTareasMsg, tableResponsive);
+                                        }
+                                    }
+
+                                    // Mostrar mensaje de éxito
+                                    showMessage('Tarea finalizada correctamente', 'success');
+                                }, 300);
+                            }
+                        } else {
+                            console.log('Error en la respuesta');
+                            // Si hay un error, mostrar mensaje de error
+                            showMessage('Error al finalizar la tarea', 'danger');
+                        }
+                    })
+                    .catch(function(error) {
+                        console.error('Error:', error);
+                        showMessage('Error al finalizar la tarea: ' + error.message, 'danger');
+                    });
+            });
+        });
+
+        function showMessage(message, type) {
+            // Crear elemento de alerta
+            var alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-' + type + ' alert-dismissible fade show';
+            alertDiv.role = 'alert';
+
+            var icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+            alertDiv.innerHTML =
+                '<div class="d-flex align-items-center">' +
+                '<i class="fas ' + icon + ' me-2"></i>' +
+                '<span>' + message + '</span>' +
+                '</div>' +
+                '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
+
+            // Insertar la alerta al principio del contenedor de mensajes
+            var messagesContainer = document.querySelector('.container > div:first-child');
+            messagesContainer.appendChild(alertDiv);
+
+            // Eliminar automáticamente después de 5 segundos
+            setTimeout(function() {
+                alertDiv.classList.remove('show');
+                setTimeout(function() {
+                    alertDiv.remove();
+                }, 150);
+            }, 5000);
+        }
+    });
+</script>
 </body>
 </html>
