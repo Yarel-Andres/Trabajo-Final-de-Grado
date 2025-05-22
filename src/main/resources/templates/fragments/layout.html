@@ -3,7 +3,7 @@
 <head th:fragment="head(title)">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${title} + ' - Gestión Empresarial'">Gestión Empresarial</title>
+    <title th:text="${title} + ' - Gestify'">Gestify</title>
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.2/css/bootstrap.min.css}">
@@ -16,11 +16,13 @@
 
     <style>
         :root {
-            --primary-color: #2c3e50;
-            --primary-light: #34495e;
+            /* Colores actualizados para combinar con el login */
+            --primary-color: #345676;
+            --primary-light: #4a6b8a;
+            --primary-dark: #284258;
             --secondary-color: #16a085;
             --secondary-light: #1abc9c;
-            --accent-color: #f39c12;
+            --accent-color: #5b9bd5;
             --light-bg: #f8f9fa;
             --dark-bg: #343a40;
             --success-color: #27ae60;
@@ -40,7 +42,7 @@
         }
 
         .navbar-custom {
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             position: fixed;
             top: 0;
@@ -56,11 +58,17 @@
 
         .nav-link {
             font-weight: 500;
-            transition: all 0.2s ease;
+            transition: color 0.2s ease; /* Solo transición de color, sin movimiento */
         }
 
+        /* Eliminado el efecto de movimiento en hover */
         .nav-link:hover {
-            transform: translateY(-2px);
+            color: rgba(255, 255, 255, 1) !important; /* Solo cambio de color */
+        }
+
+        /* Añadir este estilo para el nombre de usuario */
+        #navbarDropdown {
+            cursor: default;
         }
 
         .card {
@@ -211,16 +219,63 @@
             position: relative;
             z-index: 1;
         }
+
+        /* Estilos para el dashboard */
+        .dashboard-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        }
+
+        .dashboard-card .card-body {
+            padding: 1.5rem;
+        }
+
+        .dashboard-card .card-title {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .dashboard-card .card-text {
+            color: #6c757d;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-icon {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-outline-primary {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
     </style>
 </head>
 <body>
-
+<!-- Header -->
 <header th:fragment="header(username)">
     <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="/dashboard">
                 <i class="fas fa-building me-2"></i>
-                <span>Gestión Empresarial</span>
+                <span>Gestify</span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -229,7 +284,7 @@
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item dropdown">
                         <div class="user-info">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <a class="nav-link" href="#" id="navbarDropdown" role="button" aria-expanded="false">
                                 <i class="fas fa-user-circle me-1"></i> <span th:text="${username}">Usuario</span>
                             </a>
                             <form th:action="@{/logout}" method="post" class="d-inline">
@@ -259,6 +314,7 @@
     </nav>
 </header>
 
+<!-- Sidebar -->
 <div th:fragment="sidebar">
     <aside class="sidebar">
         <div class="sidebar-header">
@@ -366,6 +422,7 @@
     <div class="sidebar-overlay"></div>
 </div>
 
+<!-- Mensajes -->
 <div th:fragment="messages" class="container mb-4">
     <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
         <div class="d-flex align-items-center">
@@ -383,11 +440,12 @@
     </div>
 </div>
 
+<!-- Footer -->
 <div th:fragment="footer" class="container-fluid mt-5 py-4 bg-light border-top">
     <div class="container">
         <div class="row">
             <div class="col-md-6">
-                <p class="mb-0 text-muted">&copy; 2023 Sistema de Gestión Empresarial</p>
+                <p class="mb-0 text-muted">&copy; 2025 Gestify</p>
             </div>
             <div class="col-md-6 text-md-end">
                 <p class="mb-0 text-muted">Versión 1.0</p>
@@ -529,6 +587,5 @@
         });
     </script>
 </div>
-
 </body>
 </html>

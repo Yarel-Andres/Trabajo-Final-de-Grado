@@ -12,7 +12,7 @@
     <div class="row mb-4">
         <div class="col-md-8">
             <h1 class="h3 mb-0 fw-bold">Dashboard</h1>
-            <p class="text-muted">Bienvenido <span th:text="${username}" class="fw-medium text-primary"></span> al Sistema de Gestión Empresarial</p>
+            <p class="text-muted">Bienvenido <span th:text="${username}" class="fw-medium text-primary"></span> a Gestify</p>
         </div>
         <div class="col-md-4 text-md-end">
             <div class="d-inline-block p-3 rounded-circle bg-light text-primary">
@@ -28,9 +28,7 @@
     <!-- Opciones de jefe -->
     <div th:if="${isJefe}" class="mt-4 fade-in">
         <div class="d-flex align-items-center mb-4">
-            <div class="d-flex align-items-center justify-content-center bg-primary bg-opacity-10 rounded-circle p-2 me-3">
-                <i class="fas fa-user-tie text-primary"></i>
-            </div>
+            <i class="fas fa-user-tie text-primary me-3 fa-lg"></i>
             <h2 class="h4 mb-0 fw-bold">Gestión de Jefe</h2>
         </div>
 
@@ -38,9 +36,7 @@
             <div class="col-md-4">
                 <div class="card dashboard-card h-100">
                     <div class="card-body">
-                        <div class="icon-wrapper" style="background-color: rgba(52, 152, 219, 0.1);">
-                            <i class="fas fa-tasks" style="color: #3498db;"></i>
-                        </div>
+                        <i class="fas fa-tasks fa-2x mb-3" style="color: #3498db;"></i>
                         <h5 class="card-title">Gestión de Tareas</h5>
                         <p class="card-text">Asigna y gestiona las tareas de tu equipo de forma eficiente.</p>
                         <div class="d-flex flex-column gap-2">
@@ -58,9 +54,7 @@
             <div class="col-md-4">
                 <div class="card dashboard-card h-100">
                     <div class="card-body">
-                        <div class="icon-wrapper" style="background-color: rgba(155, 89, 182, 0.1);">
-                            <i class="fas fa-calendar-alt" style="color: #9b59b6;"></i>
-                        </div>
+                        <i class="fas fa-calendar-alt fa-2x mb-3" style="color: #9b59b6;"></i>
                         <h5 class="card-title">Reuniones</h5>
                         <p class="card-text">Programa y gestiona reuniones con tu equipo de trabajo.</p>
                         <div class="d-flex flex-column gap-2">
@@ -78,9 +72,7 @@
             <div class="col-md-4">
                 <div class="card dashboard-card h-100">
                     <div class="card-body">
-                        <div class="icon-wrapper" style="background-color: rgba(46, 204, 113, 0.1);">
-                            <i class="fas fa-project-diagram" style="color: #2ecc71;"></i>
-                        </div>
+                        <i class="fas fa-project-diagram fa-2x mb-3" style="color: #2ecc71;"></i>
                         <h5 class="card-title">Proyectos</h5>
                         <p class="card-text">Crea y gestiona tus proyectos de manera organizada.</p>
                         <div class="d-flex flex-column gap-2">
@@ -100,9 +92,7 @@
             <div class="col-md-4">
                 <div class="card dashboard-card h-100">
                     <div class="card-body">
-                        <div class="icon-wrapper" style="background-color: rgba(230, 126, 34, 0.1);">
-                            <i class="fas fa-clock" style="color: #e67e22;"></i>
-                        </div>
+                        <i class="fas fa-clock fa-2x mb-3" style="color: #e67e22;"></i>
                         <h5 class="card-title">Registro de Tiempo</h5>
                         <p class="card-text">Gestiona los registros de tiempo de tu equipo de trabajo.</p>
                         <div class="d-flex flex-column gap-2">
@@ -125,9 +115,7 @@
     <!--Opciones de empleado -->
     <div th:if="${isEmpleado}" class="mt-4 fade-in">
         <div class="d-flex align-items-center mb-4">
-            <div class="d-flex align-items-center justify-content-center bg-success bg-opacity-10 rounded-circle p-2 me-3">
-                <i class="fas fa-user text-success"></i>
-            </div>
+            <i class="fas fa-user text-success me-3 fa-lg"></i>
             <h2 class="h4 mb-0 fw-bold">Mi Espacio de Trabajo</h2>
         </div>
 
@@ -135,9 +123,7 @@
             <div class="col-md-4">
                 <div class="card dashboard-card h-100">
                     <div class="card-body">
-                        <div class="icon-wrapper" style="background-color: rgba(52, 152, 219, 0.1);">
-                            <i class="fas fa-clipboard-list" style="color: #3498db;"></i>
-                        </div>
+                        <i class="fas fa-clipboard-list fa-2x mb-3" style="color: #3498db;"></i>
                         <h5 class="card-title">Mis Tareas</h5>
                         <p class="card-text">Visualiza y gestiona tus tareas asignadas de forma eficiente.</p>
                         <a th:href="@{/tareas/ver}" class="btn btn-primary btn-icon">
@@ -150,9 +136,7 @@
             <div class="col-md-4">
                 <div class="card dashboard-card h-100">
                     <div class="card-body">
-                        <div class="icon-wrapper" style="background-color: rgba(155, 89, 182, 0.1);">
-                            <i class="fas fa-calendar-alt" style="color: #9b59b6;"></i>
-                        </div>
+                        <i class="fas fa-calendar-alt fa-2x mb-3" style="color: #9b59b6;"></i>
                         <h5 class="card-title">Mis Reuniones</h5>
                         <p class="card-text">Consulta las reuniones programadas y mantente al día.</p>
                         <a th:href="@{/reuniones/ver}" class="btn btn-primary btn-icon">
@@ -165,9 +149,7 @@
             <div class="col-md-4">
                 <div class="card dashboard-card h-100">
                     <div class="card-body">
-                        <div class="icon-wrapper" style="background-color: rgba(46, 204, 113, 0.1);">
-                            <i class="fas fa-project-diagram" style="color: #2ecc71;"></i>
-                        </div>
+                        <i class="fas fa-project-diagram fa-2x mb-3" style="color: #2ecc71;"></i>
                         <h5 class="card-title">Mis Proyectos</h5>
                         <p class="card-text">Visualiza los proyectos en los que participas actualmente.</p>
                         <a th:href="@{/proyectos/ver}" class="btn btn-primary btn-icon">
@@ -182,9 +164,7 @@
             <div class="col-md-4">
                 <div class="card dashboard-card h-100">
                     <div class="card-body">
-                        <div class="icon-wrapper" style="background-color: rgba(230, 126, 34, 0.1);">
-                            <i class="fas fa-clock" style="color: #e67e22;"></i>
-                        </div>
+                        <i class="fas fa-clock fa-2x mb-3" style="color: #e67e22;"></i>
                         <h5 class="card-title">Registro de Tiempo</h5>
                         <p class="card-text">Gestiona tus registros de tiempo de trabajo de forma organizada.</p>
                         <div class="d-flex flex-column gap-2">
@@ -202,9 +182,7 @@
             <div class="col-md-4">
                 <div class="card dashboard-card h-100">
                     <div class="card-body">
-                        <div class="icon-wrapper" style="background-color: rgba(52, 73, 94, 0.1);">
-                            <i class="fas fa-check-circle" style="color: #34495e;"></i>
-                        </div>
+                        <i class="fas fa-check-circle fa-2x mb-3" style="color: #34495e;"></i>
                         <h5 class="card-title">Elementos Finalizados</h5>
                         <p class="card-text">Consulta tus tareas, reuniones y proyectos finalizados.</p>
                         <a th:href="@{/finalizados}" class="btn btn-primary btn-icon">
@@ -218,9 +196,7 @@
             <div class="col-md-4">
                 <div class="card dashboard-card h-100">
                     <div class="card-body">
-                        <div class="icon-wrapper" style="background-color: rgba(41, 128, 185, 0.1);">
-                            <i class="fas fa-calendar-week" style="color: #2980b9;"></i>
-                        </div>
+                        <i class="fas fa-calendar-week fa-2x mb-3" style="color: #2980b9;"></i>
                         <h5 class="card-title">Mi Calendario</h5>
                         <p class="card-text">Visualiza tus tareas, reuniones y proyectos en un calendario interactivo.</p>
                         <a th:href="@{/calendario}" class="btn btn-primary btn-icon">
@@ -235,9 +211,7 @@
     <!--Opciones de RRHH -->
     <div th:if="${isRRHH}" class="mt-4 fade-in">
         <div class="d-flex align-items-center mb-4">
-            <div class="d-flex align-items-center justify-content-center bg-info bg-opacity-10 rounded-circle p-2 me-3">
-                <i class="fas fa-users-cog text-info"></i>
-            </div>
+            <i class="fas fa-users-cog text-info me-3 fa-lg"></i>
             <h2 class="h4 mb-0 fw-bold">Gestión de Recursos Humanos</h2>
         </div>
 
@@ -245,9 +219,7 @@
             <div class="col-md-4">
                 <div class="card dashboard-card h-100">
                     <div class="card-body">
-                        <div class="icon-wrapper" style="background-color: rgba(241, 196, 15, 0.1);">
-                            <i class="fas fa-coins" style="color: #f1c40f;"></i>
-                        </div>
+                        <i class="fas fa-coins fa-2x mb-3" style="color: #f1c40f;"></i>
                         <h5 class="card-title">Presupuestos</h5>
                         <p class="card-text">Gestiona los presupuestos de la empresa de manera eficiente.</p>
                         <a href="/rrhh/presupuestos" class="btn btn-primary btn-icon">
@@ -260,9 +232,7 @@
             <div class="col-md-4">
                 <div class="card dashboard-card h-100">
                     <div class="card-body">
-                        <div class="icon-wrapper" style="background-color: rgba(46, 204, 113, 0.1);">
-                            <i class="fas fa-project-diagram" style="color: #2ecc71;"></i>
-                        </div>
+                        <i class="fas fa-project-diagram fa-2x mb-3" style="color: #2ecc71;"></i>
                         <h5 class="card-title">Proyectos</h5>
                         <p class="card-text">Visualiza y gestiona los proyectos de la empresa.</p>
                         <a href="/rrhh/proyectos" class="btn btn-primary btn-icon">
@@ -275,9 +245,7 @@
             <div class="col-md-4">
                 <div class="card dashboard-card h-100">
                     <div class="card-body">
-                        <div class="icon-wrapper" style="background-color: rgba(52, 152, 219, 0.1);">
-                            <i class="fas fa-chart-line" style="color: #3498db;"></i>
-                        </div>
+                        <i class="fas fa-chart-line fa-2x mb-3" style="color: #3498db;"></i>
                         <h5 class="card-title">Informes de Tiempo</h5>
                         <p class="card-text">Consulta los informes de tiempo de los empleados.</p>
                         <a href="/registros-tiempo/informes" class="btn btn-primary btn-icon">
