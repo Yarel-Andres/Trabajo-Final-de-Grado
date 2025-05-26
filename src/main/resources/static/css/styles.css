@@ -717,7 +717,7 @@ a:hover {
 }
 
 .kpi-card:hover {
-    transform: translateY(-5px);
+    transform: none;
     box-shadow: var(--box-shadow-lg);
 }
 
@@ -1125,7 +1125,7 @@ a:hover {
 .shortcut-item:hover {
     background-color: var(--primary-color);
     color: white;
-    transform: translateY(-5px);
+    transform: none;
 }
 
 .shortcut-icon {
@@ -1283,4 +1283,221 @@ a:hover {
 
 .dashboard-card .btn i {
     margin-right: 0.5rem;
+}
+
+/* Estilos específicos para páginas de tareas */
+.task-confirmation-card {
+    background-color: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    transition: all 0.3s ease;
+}
+
+.task-confirmation-card:hover {
+    transform: none;
+    box-shadow: var(--box-shadow);
+}
+
+.task-confirmation-icon {
+    font-size: 4rem;
+    color: var(--success-color);
+    margin-bottom: 1rem;
+}
+
+.task-confirmation-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--text-color);
+}
+
+.task-confirmation-message {
+    margin-bottom: 1.5rem;
+}
+
+.task-confirmation-actions {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+}
+
+.task-confirmation-actions .btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.task-confirmation-actions .btn i {
+    margin-right: 0.5rem;
+}
+
+/* Eliminar efectos de elevación en hover solo para tarjetas y contenedores, mantener en botones */
+.card:hover,
+.dashboard-card:hover,
+.glass-card:hover,
+.shortcut-item:hover,
+.kpi-card:hover,
+.task-confirmation-card:hover {
+    transform: none !important;
+}
+
+/* Mantener efectos de elevación para botones */
+.btn-login:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-card .btn-outline-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-card .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilos para mensajes de confirmación */
+.confirmation-message-container {
+    display: flex;
+    justify-content: center;
+    margin: 1.5rem 0;
+}
+
+.confirmation-message {
+    background-color: rgba(76, 175, 154, 0.1);
+    color: var(--success-color);
+    border-radius: var(--border-radius);
+    padding: 0.75rem 1.5rem;
+    font-size: 1.1rem;
+    font-weight: 500;
+    text-align: center;
+    max-width: 50%;
+    border-left: 4px solid var(--success-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    letter-spacing: 0.01em;
+    line-height: 1.5;
+}
+
+@media (max-width: 767.98px) {
+    .confirmation-message {
+        max-width: 80%;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .confirmation-message {
+        max-width: 100%;
+    }
+}
+
+/* Estilos para páginas de confirmación */
+.confirmation-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: rgba(76, 175, 154, 0.1);
+    color: var(--success-color);
+}
+
+.confirmation-icon i {
+    font-size: 3rem;
+}
+
+.confirmation-title {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.confirmation-details {
+    background-color: var(--light-gray);
+    border-radius: var(--border-radius);
+    padding: 1.25rem;
+    margin: 1.5rem 0;
+}
+
+.confirmation-details h5 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+}
+
+.confirmation-details p {
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.confirmation-details p:last-child {
+    margin-bottom: 0;
+}
+
+.confirmation-details p strong {
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.confirmation-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.confirmation-actions .btn {
+    min-width: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.confirmation-actions .btn i {
+    margin-right: 0.5rem;
+}
+
+/* Estilos para encabezados de formularios */
+.form-header {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background-color: var(--primary-dark);
+    color: white;
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+    margin-bottom: 0;
+}
+
+.form-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.form-header i {
+    font-size: 1.75rem;
+    margin-right: 0.75rem;
+}
+
+.form-card {
+    background-color: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    margin-bottom: 2rem;
+    overflow: hidden;
+}
+
+.form-card .card-body {
+    padding: 1.5rem;
 }

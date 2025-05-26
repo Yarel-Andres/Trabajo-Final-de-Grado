@@ -65,7 +65,7 @@ public class Tarea {
     private String prioridad;
     // permite que cualquier cambio en Tarea afecte también a RegistroTiempo
     // (por ejemplo, si se elimina una tarea, también se eliminan sus registros de tiempo)
-    @OneToMany(mappedBy = "tarea", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "tarea", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     private Set<RegistroTiempo> registrosTiempo = new HashSet<>();
 
     // Implementación personalizada de hashCode para evitar ciclos infinitos

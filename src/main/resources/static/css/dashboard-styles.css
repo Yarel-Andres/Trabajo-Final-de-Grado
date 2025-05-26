@@ -60,8 +60,8 @@
 }
 
 .glass-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 35px 0 var(--glass-shadow);
+    transform: none;
+    box-shadow: 0 8px 32px 0 var(--glass-shadow);
 }
 
 /* Header del dashboard */
@@ -116,6 +116,11 @@
     overflow: hidden;
 }
 
+.dashboard-card:hover {
+    transform: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.05);
+}
+
 .dashboard-card .card-body {
     padding: 1.75rem;
     display: flex;
@@ -154,7 +159,7 @@
 
 .btn-primary:hover {
     background: var(--gradient-accent);
-    transform: translateY(-2px);
+    transform: none;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
@@ -170,7 +175,7 @@
 
 .btn-outline-primary:hover {
     background: rgba(255, 255, 255, 0.2);
-    transform: translateY(-2px);
+    transform: none;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 

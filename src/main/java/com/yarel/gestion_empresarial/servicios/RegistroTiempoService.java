@@ -21,6 +21,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.ArrayList;
 
 @Service
 @RequiredArgsConstructor
@@ -50,6 +51,9 @@ public class RegistroTiempoService {
                 dto.setTipoRegistro("Proyecto");
             } else if (registro.getReunion() != null) {
                 dto.setTipoRegistro("Reunión");
+            } else {
+                // Caso para registros de tareas eliminadas
+                dto.setTipoRegistro("Tarea (Eliminada)");
             }
         }
 
@@ -82,10 +86,35 @@ public class RegistroTiempoService {
             // Determinar el tipo de registro
             if (registro.getTarea() != null) {
                 dto.setTipoRegistro("Tarea");
+                dto.setTareaId(registro.getTarea().getId());
+
+                // No usamos setDescripcion ya que no existe
+                // Podemos usar el campo comentario si es necesario
+                if (registro.getTarea().getTitulo() != null) {
+                    dto.setComentario("Tarea: " + registro.getTarea().getTitulo());
+                }
             } else if (registro.getProyecto() != null) {
                 dto.setTipoRegistro("Proyecto");
+                dto.setProyectoId(registro.getProyecto().getId());
+
+                if (registro.getProyecto().getNombre() != null) {
+                    dto.setComentario("Proyecto: " + registro.getProyecto().getNombre());
+                }
             } else if (registro.getReunion() != null) {
                 dto.setTipoRegistro("Reunión");
+                dto.setReunionId(registro.getReunion().getId());
+
+                if (registro.getReunion().getTitulo() != null) {
+                    dto.setComentario("Reunión: " + registro.getReunion().getTitulo());
+                }
+            } else {
+                // Caso para registros de tareas eliminadas - mantener información básica
+                dto.setTipoRegistro("Tarea (Eliminada)");
+                if (registro.getComentario() != null && !registro.getComentario().isEmpty()) {
+                    dto.setComentario(registro.getComentario());
+                } else {
+                    dto.setComentario("Tiempo registrado en tarea eliminada");
+                }
             }
         }
 
@@ -108,10 +137,16 @@ public class RegistroTiempoService {
 
             if (registro.getUsuario() != null) {
                 dto.setUsuarioId(registro.getUsuario().getId());
+                dto.setUsuarioNombre(registro.getUsuario().getNombreCompleto());
             }
 
             // Establecer el tipo como Tarea
             dto.setTipoRegistro("Tarea");
+
+            // Usar comentario en lugar de descripción
+            if (tarea.getTitulo() != null) {
+                dto.setComentario("Tarea: " + tarea.getTitulo());
+            }
         }
 
         return registrosDTO;
@@ -140,8 +175,25 @@ public class RegistroTiempoService {
             // Determinar el tipo de registro
             if (registro.getTarea() != null) {
                 dto.setTipoRegistro("Tarea");
+                dto.setTareaId(registro.getTarea().getId());
+
+                if (registro.getTarea().getTitulo() != null) {
+                    dto.setComentario("Tarea: " + registro.getTarea().getTitulo());
+                }
+            } else if (registro.getReunion() != null) {
+                dto.setTipoRegistro("Reunión");
+                dto.setReunionId(registro.getReunion().getId());
+
+                if (registro.getReunion().getTitulo() != null) {
+                    dto.setComentario("Reunión: " + registro.getReunion().getTitulo());
+                }
             } else {
+                // Puede ser un registro directo de proyecto o de tarea eliminada
                 dto.setTipoRegistro("Proyecto");
+
+                if (proyecto.getNombre() != null) {
+                    dto.setComentario("Proyecto: " + proyecto.getNombre());
+                }
             }
         }
 
@@ -167,6 +219,10 @@ public class RegistroTiempoService {
 
             // Establecer el tipo como Reunión
             dto.setTipoRegistro("Reunión");
+
+            if (registro.getReunion() != null && registro.getReunion().getTitulo() != null) {
+                dto.setComentario("Reunión: " + registro.getReunion().getTitulo());
+            }
         }
 
         return registrosDTO;
@@ -194,6 +250,18 @@ public class RegistroTiempoService {
             // Si la tarea tiene un proyecto asociado, asignar automáticamente ese proyecto al registro
             if (tarea.getProyecto() != null) {
                 registroTiempo.setProyecto(tarea.getProyecto());
+                registroTiempoDTO.setProyectoId(tarea.getProyecto().getId());
+            }
+
+            // Guardar información de la tarea en el comentario para preservar datos históricos
+            if (tarea.getTitulo() != null) {
+                String comentarioExistente = registroTiempo.getComentario();
+                String comentarioTarea = "Tarea: " + tarea.getTitulo();
+                if (comentarioExistente != null && !comentarioExistente.isEmpty()) {
+                    registroTiempo.setComentario(comentarioTarea + " - " + comentarioExistente);
+                } else {
+                    registroTiempo.setComentario(comentarioTarea);
+                }
             }
         }
 
@@ -282,5 +350,54 @@ public class RegistroTiempoService {
 
         registroTiempoRepository.deleteById(id);
         return true;
+    }
+
+    // NUEVO MÉTODO: Obtener todos los registros de tiempo relacionados con tareas asignadas por un jefe
+    @Transactional(readOnly = true)
+    public List<RegistroTiempoDTO> findByJefeId(Long jefeId) {
+        // Obtener todas las tareas asignadas por este jefe
+        List<Tarea> tareasDelJefe = tareaRepository.findByJefeId(jefeId);
+
+        if (tareasDelJefe.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        // Recopilar todos los registros de tiempo relacionados con estas tareas
+        List<RegistroTiempoDTO> todosLosRegistros = new ArrayList<>();
+
+        for (Tarea tarea : tareasDelJefe) {
+            List<RegistroTiempo> registrosDeTarea = registroTiempoRepository.findByTarea(tarea);
+            List<RegistroTiempoDTO> registrosDTODeTarea = registroTiempoMapper.toDtoList(registrosDeTarea);
+
+            // Enriquecer los DTOs con información adicional
+            for (int i = 0; i < registrosDeTarea.size(); i++) {
+                RegistroTiempo registro = registrosDeTarea.get(i);
+                RegistroTiempoDTO dto = registrosDTODeTarea.get(i);
+
+                // Establecer el ID de usuario y su nombre
+                if (registro.getUsuario() != null) {
+                    dto.setUsuarioId(registro.getUsuario().getId());
+                    dto.setUsuarioNombre(registro.getUsuario().getNombreCompleto());
+                }
+
+                // Establecer el ID de tarea y su título
+                dto.setTareaId(tarea.getId());
+                dto.setTipoRegistro("Tarea");
+
+                // Usar comentario en lugar de descripción
+                if (tarea.getTitulo() != null) {
+                    dto.setComentario("Tarea: " + tarea.getTitulo());
+                }
+
+                // Si la tarea tiene un proyecto, establecer su ID
+                if (tarea.getProyecto() != null) {
+                    dto.setProyectoId(tarea.getProyecto().getId());
+                }
+            }
+
+            todosLosRegistros.addAll(registrosDTODeTarea);
+        }
+
+        return todosLosRegistros;
     }
 }

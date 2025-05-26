@@ -9,67 +9,122 @@
 <div class="container">
     <div th:replace="fragments/layout :: messages"></div>
 
-    <div class="card shadow-sm">
+    <div class="card shadow-sm border-0 mb-4">
         <div class="card-body">
-            <h2 class="card-title mb-4"><i class="fas fa-calendar-alt me-2"></i>Reuniones Asignadas</h2>
-
-            <div th:if="${reuniones == null || reuniones.empty}" class="alert alert-info">
-                <i class="fas fa-info-circle me-2"></i>
-                <span>No has asignado ninguna reunión actualmente.</span>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="d-flex align-items-center">
+                    <div class="section-icon me-3">
+                        <i class="fas fa-calendar-alt fa-lg"></i>
+                    </div>
+                    <div>
+                        <h1 class="h3 mb-0 fw-bold">Reuniones Asignadas</h1>
+                        <p class="text-muted mb-0">Gestiona las reuniones que has programado con tu equipo</p>
+                    </div>
+                </div>
+                <a th:href="@{/reuniones/crear}" class="btn btn-primary btn-icon">
+                    <i class="fas fa-plus-circle"></i> Programar Nueva Reunión
+                </a>
             </div>
 
-            <div th:if="${reuniones != null && !reuniones.empty}">
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead class="table-light">
-                        <tr>
-                            <th>Título</th>
-                            <th>Descripción</th>
-                            <th>Fecha y Hora</th>
-                            <th>Sala</th>
-                            <th>Participantes</th>
-                            <th>Acciones</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr th:each="reunion : ${reuniones}">
-                            <td th:text="${reunion.titulo}">Título</td>
-                            <td th:text="${reunion.descripcion}">Descripción</td>
-                            <td th:text="${#temporals.format(reunion.fechaHora, 'dd/MM/yyyy HH:mm')}">Fecha y Hora</td>
-                            <td th:text="${reunion.sala}">Sala</td>
-                            <td>
-                                <button class="btn btn-outline-info btn-sm" type="button" data-bs-toggle="collapse"
-                                        th:data-bs-target="'#participantesReunion' + ${reunion.id}"
-                                        aria-expanded="false" th:aria-controls="'#participantesReunion' + ${reunion.id}">
-                                    <i class="fas fa-users me-1"></i> Ver Participantes
-                                </button>
-                                <div class="collapse mt-2" th:id="'participantesReunion' + ${reunion.id}">
-                                    <div class="card card-body">
+            <!-- Mensaje cuando no hay reuniones -->
+            <div th:if="${reuniones == null || reuniones.isEmpty()}" class="alert alert-info d-flex align-items-center">
+                <i class="fas fa-info-circle me-3 fa-lg"></i>
+                <div>
+                    <h5 class="alert-heading mb-1">No has programado reuniones</h5>
+                    <p class="mb-0">Actualmente no tienes reuniones programadas con tu equipo. Puedes crear una nueva reunión usando el botón "Programar Nueva Reunión".</p>
+                </div>
+            </div>
+
+            <!-- Contenido cuando hay reuniones -->
+            <div th:if="${reuniones != null && !reuniones.isEmpty()}">
+                <div class="card mb-4 border-0 shadow-sm">
+                    <div class="card-header bg-light d-flex align-items-center">
+                        <i class="fas fa-project-diagram me-2 text-primary"></i>
+                        <h4 class="mb-0 fw-bold">Sistema de Gestión</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-modern">
+                                <thead>
+                                <tr>
+                                    <th>Título</th>
+                                    <th>Descripción</th>
+                                    <th>Participantes</th>
+                                    <th>Fecha y Hora</th>
+                                    <th>Sala</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="reunion : ${reuniones}" th:id="'reunion-' + ${reunion.id}">
+                                    <td>
+                                        <span class="fw-medium" th:text="${reunion.titulo}">Título</span>
+                                    </td>
+                                    <td>
+                                        <span th:text="${#strings.abbreviate(reunion.descripcion, 50)}">Descripción</span>
+                                    </td>
+                                    <td>
+                                        <!-- BOTÓN Y DESPLEGABLE SIN EL TÍTULO -->
                                         <div>
-                                            <div th:if="${__${'participantesNombres_' + reunion.id}__ == null || __${'participantesNombres_' + reunion.id}__.isEmpty()}">
-                                                <span class="text-muted">No hay participantes asignados</span>
+                                            <button class="btn btn-outline-info btn-sm"
+                                                    type="button"
+                                                    th:onclick="'toggleParticipantes(' + ${reunion.id} + ')'">
+                                                <i class="fas fa-users me-1"></i> Participantes
+                                            </button>
+
+                                            <div th:id="'participantes-' + ${reunion.id}"
+                                                 class="participantes-content mt-2"
+                                                 style="display: none;">
+                                                <div class="card card-body">
+                                                    <!-- ELIMINÉ EL H6 CON "Participantes de la reunión:" -->
+                                                    <div th:if="${reunion.participantesNombres != null && !#lists.isEmpty(reunion.participantesNombres)}">
+                                                        <ul class="list-unstyled mb-0">
+                                                            <li th:each="participante : ${reunion.participantesNombres}" class="mb-1">
+                                                                <i class="fas fa-user me-2 text-primary"></i>
+                                                                <span th:text="${participante}">Nombre del Participante</span>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+
+                                                    <div th:if="${reunion.participantesNombres == null || #lists.isEmpty(reunion.participantesNombres)}">
+                                                        <span class="text-muted">No hay participantes asignados a esta reunión</span>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <ul class="list-group list-group-flush" th:unless="${__${'participantesNombres_' + reunion.id}__ == null || __${'participantesNombres_' + reunion.id}__.isEmpty()}">
-                                                <li class="list-group-item" th:each="participante : ${__${'participantesNombres_' + reunion.id}__}">
-                                                    <i class="fas fa-user me-2"></i>
-                                                    <span th:text="${participante}">Nombre del Participante</span>
-                                                </li>
-                                            </ul>
                                         </div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                <form th:action="@{/reuniones/finalizar}" method="post" style="display: inline;">
-                                    <input type="hidden" name="reunionId" th:value="${reunion.id}" />
-                                    <button type="submit" class="btn btn-sm btn-outline-success">
-                                        <i class="fas fa-flag-checkered me-1"></i>Finalizar
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-light text-dark">
+                                            <i class="far fa-calendar-alt me-1"></i>
+                                            <span th:text="${#temporals.format(reunion.fechaHora, 'dd/MM/yyyy')}">Fecha</span>
+                                        </span>
+                                        <br>
+                                        <span class="badge bg-light text-dark">
+                                            <i class="far fa-clock me-1"></i>
+                                            <span th:text="${#temporals.format(reunion.fechaHora, 'HH:mm')}">Hora</span>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span th:text="${reunion.sala}">Sala</span>
+                                    </td>
+                                    <td>
+                                        <span th:if="${reunion.completada}" class="badge badge-soft-success">Completada</span>
+                                        <span th:unless="${reunion.completada}" class="badge badge-soft-primary">Pendiente</span>
+                                    </td>
+                                    <td>
+                                        <form th:if="${!reunion.completada}" th:action="@{/reuniones/finalizar}" method="post" class="form-eliminar">
+                                            <input type="hidden" name="reunionId" th:value="${reunion.id}" />
+                                            <button type="submit" class="btn btn-sm btn-outline-success">
+                                                <i class="fas fa-flag-checkered me-1"></i>Finalizar
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -82,37 +137,187 @@
     </div>
 </div>
 
-<!-- Estilos para animación suave -->
-<style>
-    .collapse {
-        transition: height 0.35s ease;
-    }
-</style>
+<div th:replace="fragments/layout :: footer"></div>
 
-<!-- Script para manejar los collapses -->
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Asegurarse de que Bootstrap esté cargado
-        if (typeof bootstrap === 'undefined') {
-            console.log('Bootstrap no está cargado, cargando desde CDN...');
-            var script = document.createElement('script');
-            script.src = 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js';
-            script.integrity = 'sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p';
-            script.crossOrigin = 'anonymous';
-            document.head.appendChild(script);
+    // Función para mostrar/ocultar participantes CON TRANSICIONES SUAVES
+    function toggleParticipantes(reunionId) {
+        var content = document.getElementById('participantes-' + reunionId);
 
-            // Esperar a que Bootstrap se cargue
-            script.onload = initializeCollapses;
+        if (content.style.display === 'none' || content.style.display === '') {
+            // Mostrar con transición suave como en proyectos asignados
+            content.style.display = 'block';
+            content.style.height = '0px';
+            content.style.opacity = '0';
+            content.style.overflow = 'hidden';
+            content.style.transition = 'height 0.35s ease, opacity 0.35s ease';
+
+            // Calcular altura real
+            var realHeight = content.scrollHeight;
+
+            setTimeout(function() {
+                content.style.height = realHeight + 'px';
+                content.style.opacity = '1';
+            }, 10);
+
+            // Limpiar estilos después de la transición
+            setTimeout(function() {
+                content.style.height = 'auto';
+                content.style.overflow = 'visible';
+            }, 350);
         } else {
-            initializeCollapses();
-        }
+            // Ocultar con transición suave
+            var currentHeight = content.offsetHeight;
+            content.style.height = currentHeight + 'px';
+            content.style.overflow = 'hidden';
+            content.style.transition = 'height 0.35s ease, opacity 0.35s ease';
 
-        function initializeCollapses() {
-            console.log('Inicializando collapses...');
-            // No necesitamos inicializar manualmente los collapses
-            // Bootstrap 5 los inicializa automáticamente con los atributos data-bs-toggle="collapse"
+            setTimeout(function() {
+                content.style.height = '0px';
+                content.style.opacity = '0';
+            }, 10);
+
+            setTimeout(function() {
+                content.style.display = 'none';
+                content.style.height = 'auto';
+                content.style.overflow = 'visible';
+            }, 350);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Página cargada correctamente');
+
+        // Script para finalizar reuniones
+        var forms = document.querySelectorAll('.form-eliminar');
+
+        forms.forEach(function(form) {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                var formData = new FormData(form);
+                var reunionId = formData.get('reunionId');
+                var row = document.getElementById('reunion-' + reunionId);
+
+                fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                    .then(function(response) {
+                        if (response.ok) {
+                            if (row) {
+                                row.style.opacity = '0';
+                                row.style.transition = 'opacity 0.3s ease';
+
+                                setTimeout(function() {
+                                    row.remove();
+
+                                    var tableBody = form.closest('tbody');
+                                    if (tableBody && tableBody.querySelectorAll('tr').length === 0) {
+                                        var cardBody = tableBody.closest('.card-body');
+                                        var tableResponsive = tableBody.closest('.table-responsive');
+
+                                        if (cardBody && tableResponsive) {
+                                            var noReunionesMsg = document.createElement('div');
+                                            noReunionesMsg.className = 'alert alert-info d-flex align-items-center';
+                                            noReunionesMsg.innerHTML = '<i class="fas fa-info-circle me-3 fa-lg"></i><div><h5 class="alert-heading mb-1">No hay reuniones programadas</h5><p class="mb-0">Todas las reuniones han sido finalizadas.</p></div>';
+
+                                            cardBody.replaceChild(noReunionesMsg, tableResponsive);
+                                        }
+                                    }
+
+                                    showMessage('Reunión finalizada correctamente', 'success');
+                                }, 300);
+                            }
+                        } else {
+                            showMessage('Error al finalizar la reunión', 'danger');
+                        }
+                    })
+                    .catch(function(error) {
+                        console.error('Error:', error);
+                        showMessage('Error al finalizar la reunión: ' + error.message, 'danger');
+                    });
+            });
+        });
+
+        function showMessage(message, type) {
+            var alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-' + type + ' alert-dismissible fade show';
+            alertDiv.role = 'alert';
+
+            var icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+            alertDiv.innerHTML =
+                '<div class="d-flex align-items-center">' +
+                '<i class="fas ' + icon + ' me-2"></i>' +
+                '<span>' + message + '</span>' +
+                '</div>' +
+                '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
+
+            var messagesContainer = document.querySelector('.container > div:first-child');
+            messagesContainer.appendChild(alertDiv);
+
+            setTimeout(function() {
+                alertDiv.classList.remove('show');
+                setTimeout(function() {
+                    alertDiv.remove();
+                }, 150);
+            }, 5000);
         }
     });
 </script>
+
+<style>
+    .btn-primary {
+        background-color: #345676 !important;
+        border-color: #345676 !important;
+        transition: all 0.2s ease !important;
+    }
+
+    .btn-primary:hover {
+        background-color: #2d4a66 !important;
+        border-color: #2d4a66 !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
+    }
+
+    .btn-primary:focus,
+    .btn-primary:active {
+        background-color: #345676 !important;
+        border-color: #345676 !important;
+        box-shadow: none !important;
+        transform: none !important;
+    }
+
+    .badge-soft-success {
+        background-color: #e8f5e9 !important;
+        color: #388e3c !important;
+    }
+
+    .badge-soft-primary {
+        background-color: #fff3cd !important;
+        color: #856404 !important;
+        border: 1px solid #ffeaa7 !important;
+    }
+
+    /* Estilos para el contenido de participantes CON TRANSICIONES COMO PROYECTOS */
+    .participantes-content .card-body {
+        border: 1px solid #dee2e6;
+        border-radius: 0.375rem;
+        background-color: #f8f9fa;
+    }
+
+    /* Estilos del botón como en proyectos asignados */
+    .btn-outline-info {
+        transition: all 0.2s ease;
+    }
+
+    .btn-outline-info:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+</style>
 </body>
 </html>

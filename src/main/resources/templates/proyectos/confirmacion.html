@@ -7,21 +7,19 @@
 </header>
 
 <div class="container">
-    <div class="card shadow-sm">
+    <div class="card shadow-sm task-confirmation-card">
         <div class="card-body text-center">
-            <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
-            <h2 class="mt-3 mb-4">Proyecto Creado Correctamente</h2>
+            <h2 class="confirmation-title">Proyecto Creado Correctamente</h2>
 
-            <div class="alert alert-success">
-                <p class="mb-0" th:text="${mensaje ?: 'El proyecto ha sido creado correctamente.'}">El proyecto ha sido creado correctamente.</p>
+            <div class="confirmation-message-container">
+                <div class="confirmation-message" th:text="${mensaje ?: 'El proyecto ha sido creado correctamente.'}">
+                    El proyecto ha sido creado correctamente.
+                </div>
             </div>
 
-            <div class="d-flex justify-content-center gap-2 mt-4">
+            <div class="confirmation-actions">
                 <a th:href="@{/proyectos/crear}" class="btn btn-primary">
                     <i class="fas fa-plus me-2"></i>Crear Otro Proyecto
-                </a>
-                <a th:href="@{/proyectos/ver}" class="btn btn-success">
-                    <i class="fas fa-eye me-2"></i>Ver Mis Proyectos
                 </a>
                 <a th:href="@{/dashboard}" class="btn btn-secondary">
                     <i class="fas fa-home me-2"></i>Volver al Dashboard

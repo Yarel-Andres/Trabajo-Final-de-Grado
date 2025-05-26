@@ -13,12 +13,14 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+// Controlador REST para gestionar Registros de Tiempo
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/registros-tiempo")
 @Slf4j
 public class RegistroTiempoController {
 
+    // Inyección del servicio de registros de tiempo
     private final RegistroTiempoService registroTiempoService;
 
     // Obtener todos los registros de tiempo
@@ -91,7 +93,7 @@ public class RegistroTiempoController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // Eliminar un registro
+    // Eliminar un registro por ID
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteRegistroTiempo(@PathVariable Long id) {
         boolean deleted = registroTiempoService.deleteById(id);

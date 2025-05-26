@@ -190,6 +190,12 @@ public class TareaService {
             throw new RuntimeException("Solo se pueden eliminar tareas completadas");
         }
 
+        // Desasociar los registros de tiempo de esta tarea (establecer tarea_id a null)
+        // pero mantener los registros para informes de RRHH
+        if (tarea.getRegistrosTiempo() != null && !tarea.getRegistrosTiempo().isEmpty()) {
+            tarea.getRegistrosTiempo().forEach(registro -> registro.setTarea(null));
+        }
+
         // Eliminar la tarea
         tareaRepository.delete(tarea);
     }

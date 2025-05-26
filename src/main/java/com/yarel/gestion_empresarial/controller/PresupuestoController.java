@@ -3,14 +3,9 @@ package com.yarel.gestion_empresarial.controller;
 import com.yarel.gestion_empresarial.dto.presupuesto.PresupuestoDTO;
 import com.yarel.gestion_empresarial.dto.proyecto.ProyectoDTO;
 import com.yarel.gestion_empresarial.dto.registroTiempo.RegistroTiempoDTO;
-import com.yarel.gestion_empresarial.entidades.Usuario;
-import com.yarel.gestion_empresarial.repositorios.UsuarioRepository;
 import com.yarel.gestion_empresarial.servicios.PresupuestoService;
 import com.yarel.gestion_empresarial.servicios.ProyectoService;
 import com.yarel.gestion_empresarial.servicios.RegistroTiempoService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -23,46 +18,44 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+// Controlador para gestionar Presupuestos de RRHH
 @Controller
 @RequestMapping("/rrhh/presupuestos")
 public class PresupuestoController {
 
-    private static final Logger logger = LoggerFactory.getLogger(PresupuestoController.class);
+    private final PresupuestoService presupuestoService;
+    private final ProyectoService proyectoService;
+    private final RegistroTiempoService registroTiempoService;
 
-    @Autowired
-    private PresupuestoService presupuestoService;
+    // Inyección de servicios necesarios
+    public PresupuestoController(PresupuestoService presupuestoService,
+                                 ProyectoService proyectoService,
+                                 RegistroTiempoService registroTiempoService) {
+        this.presupuestoService = presupuestoService;
+        this.proyectoService = proyectoService;
+        this.registroTiempoService = registroTiempoService;
+    }
 
-    @Autowired
-    private ProyectoService proyectoService;
-
-    @Autowired
-    private RegistroTiempoService registroTiempoService;
-
-    @Autowired
-    private UsuarioRepository usuarioRepository;
-
+    // Listar todos los presupuestos
     @GetMapping
     public String listarPresupuestos(Model model) {
-        logger.info("Accediendo a listarPresupuestos");
         try {
             List<PresupuestoDTO> presupuestos = presupuestoService.findAll();
             model.addAttribute("presupuestos", presupuestos);
             return "rrhh/presupuestos/listar";
         } catch (Exception e) {
-            logger.error("Error al listar presupuestos", e);
             model.addAttribute("error", "Error al cargar presupuestos: " + e.getMessage());
             return "error/general";
         }
     }
 
+    // Mostrar formulario de creación de presupuesto
     @GetMapping("/crear/{proyectoId}")
     public String mostrarFormularioCreacion(@PathVariable Long proyectoId, Model model) {
-        logger.info("Accediendo a mostrarFormularioCreacion con proyectoId: {}", proyectoId);
         try {
             Optional<ProyectoDTO> proyectoOpt = proyectoService.findById(proyectoId);
 
             if (proyectoOpt.isEmpty()) {
-                logger.warn("Proyecto no encontrado: {}", proyectoId);
                 model.addAttribute("error", "El proyecto no existe");
                 return "redirect:/rrhh/proyectos";
             }
@@ -89,41 +82,29 @@ public class PresupuestoController {
 
             return "rrhh/presupuestos/crear";
         } catch (Exception e) {
-            logger.error("Error al mostrar formulario de creación", e);
             model.addAttribute("error", "Error al cargar el formulario: " + e.getMessage());
             return "error/general";
         }
     }
 
+    // Guardar un nuevo presupuesto
     @PostMapping("/guardar")
     public String guardarPresupuesto(@ModelAttribute PresupuestoDTO presupuesto,
                                      BindingResult result,
                                      RedirectAttributes redirectAttributes,
                                      Model model) {
-        logger.info("Guardando presupuesto para proyecto: {}", presupuesto.getProyectoId());
         if (result.hasErrors()) {
-            logger.warn("Errores de validación: {}", result.getAllErrors());
             return "rrhh/presupuestos/crear";
         }
 
         try {
-            // Obtener el nombre de usuario actual
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             String nombreUsuario = auth.getName();
-            logger.info("Usuario autenticado: {} con roles: {}", nombreUsuario,
-                    auth.getAuthorities().stream()
-                            .map(a -> a.getAuthority())
-                            .collect(java.util.stream.Collectors.joining(", ")));
 
-            // Guardar el presupuesto
-            PresupuestoDTO presupuestoGuardado = presupuestoService.save(presupuesto, nombreUsuario);
-            logger.info("Presupuesto guardado con ID: {}", presupuestoGuardado.getId());
-
+            presupuestoService.save(presupuesto, nombreUsuario);
             redirectAttributes.addFlashAttribute("mensaje", "Presupuesto creado correctamente");
             return "redirect:/rrhh/presupuestos";
         } catch (Exception e) {
-            logger.error("Error al guardar presupuesto", e);
-            // Añadir el error al modelo para mostrarlo en la misma página
             model.addAttribute("error", "Error al guardar el presupuesto: " + e.getMessage());
 
             // Recuperar información del proyecto para volver a mostrar el formulario
@@ -134,7 +115,7 @@ public class PresupuestoController {
                         model.addAttribute("proyecto", proyectoOpt.get());
                     }
                 } catch (Exception ex) {
-                    logger.error("Error al recuperar información del proyecto", ex);
+                    // Error silencioso al recuperar proyecto
                 }
             }
 
@@ -143,14 +124,13 @@ public class PresupuestoController {
         }
     }
 
+    // Ver detalles de un presupuesto
     @GetMapping("/{id}")
     public String verPresupuesto(@PathVariable Long id, Model model) {
-        logger.info("Accediendo a verPresupuesto con id: {}", id);
         try {
             Optional<PresupuestoDTO> presupuesto = presupuestoService.findById(id);
 
             if (presupuesto.isEmpty()) {
-                logger.warn("Presupuesto no encontrado: {}", id);
                 model.addAttribute("error", "El presupuesto no existe");
                 return "redirect:/rrhh/presupuestos";
             }
@@ -158,15 +138,14 @@ public class PresupuestoController {
             model.addAttribute("presupuesto", presupuesto.get());
             return "rrhh/presupuestos/ver";
         } catch (Exception e) {
-            logger.error("Error al ver presupuesto", e);
             model.addAttribute("error", "Error al cargar el presupuesto: " + e.getMessage());
             return "error/general";
         }
     }
 
+    // Mostrar formulario de edición de presupuesto
     @GetMapping("/{id}/editar")
     public String mostrarFormularioEdicion(@PathVariable Long id, Model model) {
-        logger.info("Accediendo a mostrarFormularioEdicion con id: {}", id);
         try {
             Optional<PresupuestoDTO> presupuestoOpt = presupuestoService.findById(id);
 
@@ -194,20 +173,16 @@ public class PresupuestoController {
 
             return "rrhh/presupuestos/editar";
         } catch (Exception e) {
-            logger.error("Error al mostrar formulario de edición", e);
             model.addAttribute("error", "Error al cargar el formulario: " + e.getMessage());
             return "error/general";
         }
     }
 
-    // Edicion de presupuesto para rrhh
+    // Actualizar un presupuesto existente
     @PostMapping("/{id}/actualizar")
     public String actualizarPresupuesto(@PathVariable Long id, @ModelAttribute PresupuestoDTO presupuesto,
                                         BindingResult result, RedirectAttributes redirectAttributes) {
-        logger.info("Actualizando presupuesto con ID: {}", id);
-
         if (result.hasErrors()) {
-            logger.warn("Errores de validación: {}", result.getAllErrors());
             return "rrhh/presupuestos/editar";
         }
 
@@ -241,25 +216,18 @@ public class PresupuestoController {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             String nombreUsuario = auth.getName();
 
-            PresupuestoDTO presupuestoActualizado = presupuestoService.update(presupuesto, nombreUsuario);
-            logger.info("Presupuesto actualizado con ID: {}", presupuestoActualizado.getId());
-
+            presupuestoService.update(presupuesto, nombreUsuario);
             redirectAttributes.addFlashAttribute("mensaje", "Presupuesto actualizado correctamente");
             return "redirect:/rrhh/presupuestos/" + id;
         } catch (Exception e) {
-            logger.error("Error al actualizar presupuesto", e);
             redirectAttributes.addFlashAttribute("error", "Error al actualizar el presupuesto: " + e.getMessage());
             return "redirect:/rrhh/presupuestos/" + id;
         }
     }
 
-
-
-    // Aprobar presupuesto siendo rrhh
+    // Aprobar un presupuesto
     @PostMapping("/{id}/aprobar")
     public String aprobarPresupuesto(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-        logger.info("Aprobando presupuesto con ID: {}", id);
-
         try {
             // Verificar que el presupuesto existe
             Optional<PresupuestoDTO> presupuestoOpt = presupuestoService.findById(id);
@@ -281,48 +249,11 @@ public class PresupuestoController {
             String nombreUsuario = auth.getName();
 
             presupuestoService.cambiarEstado(id, "ENVIADO", nombreUsuario);
-
             redirectAttributes.addFlashAttribute("mensaje", "Presupuesto aprobado y enviado correctamente");
             return "redirect:/rrhh/presupuestos/" + id;
         } catch (Exception e) {
-            logger.error("Error al aprobar presupuesto", e);
             redirectAttributes.addFlashAttribute("error", "Error al aprobar el presupuesto: " + e.getMessage());
             return "redirect:/rrhh/presupuestos/" + id;
         }
-    }
-
-
-
-    @GetMapping("/debug-auth")
-    @ResponseBody
-    public String debugAuth() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        StringBuilder sb = new StringBuilder();
-        sb.append("Usuario autenticado: ").append(auth.getName()).append("\n");
-        sb.append("Roles: ").append(auth.getAuthorities()).append("\n");
-        sb.append("Detalles: ").append(auth.getDetails()).append("\n");
-        sb.append("Principal: ").append(auth.getPrincipal()).append("\n");
-
-        // Intentar buscar el usuario en la base de datos
-        Optional<Usuario> usuarioByNombre = usuarioRepository.findByNombreUsuario(auth.getName());
-        Optional<Usuario> usuarioByCompleto = usuarioRepository.findByNombreCompleto(auth.getName());
-
-        sb.append("Usuario por nombreUsuario: ").append(usuarioByNombre.isPresent() ? "Encontrado" : "No encontrado").append("\n");
-        if (usuarioByNombre.isPresent()) {
-            Usuario u = usuarioByNombre.get();
-            sb.append("  ID: ").append(u.getId()).append("\n");
-            sb.append("  Rol: ").append(u.getRol()).append("\n");
-            sb.append("  Nombre Completo: ").append(u.getNombreCompleto()).append("\n");
-        }
-
-        sb.append("Usuario por nombreCompleto: ").append(usuarioByCompleto.isPresent() ? "Encontrado" : "No encontrado").append("\n");
-        if (usuarioByCompleto.isPresent()) {
-            Usuario u = usuarioByCompleto.get();
-            sb.append("  ID: ").append(u.getId()).append("\n");
-            sb.append("  Rol: ").append(u.getRol()).append("\n");
-            sb.append("  Nombre Usuario: ").append(u.getNombreUsuario()).append("\n");
-        }
-
-        return sb.toString();
     }
 }

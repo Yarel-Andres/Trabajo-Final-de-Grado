@@ -66,8 +66,6 @@ SELECT 'App Móvil', 'Aplicación móvil para clientes', id, '2023-05-15', '2023
 UNION ALL
 SELECT 'Portal Web Corporativo', 'Rediseño del portal web corporativo', id, '2023-03-01', '2023-09-30', 'EN_PROGRESO', false FROM jefes WHERE id = (SELECT id FROM usuarios WHERE nombre_usuario = 'jefe3')
 UNION ALL
-SELECT 'Sistema de Análisis de Datos', 'Plataforma de análisis de datos para toma de decisiones', id, '2023-06-01', '2024-02-28', 'PLANIFICACION', false FROM jefes WHERE id = (SELECT id FROM usuarios WHERE nombre_usuario = 'jefe4')
-UNION ALL
 SELECT 'Integración CRM', 'Integración del sistema CRM con otras plataformas', id, '2023-04-15', '2023-10-15', 'EN_PROGRESO', false FROM jefes WHERE id = (SELECT id FROM usuarios WHERE nombre_usuario = 'jefe5');
 
 -- Insertar tareas (usando subqueries para obtener los IDs) - AHORA CON PROYECTO_ID

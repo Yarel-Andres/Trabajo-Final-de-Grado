@@ -100,8 +100,8 @@
                     </select>
                 </div>
 
-                <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-success">
+                <div class="d-flex mt-4">
+                    <button type="submit" class="btn btn-primary me-2">
                         <i class="fas fa-save me-2"></i>Asignar Tarea
                     </button>
                     <a th:href="@{/dashboard}" class="btn btn-secondary">
@@ -112,7 +112,6 @@
         </div>
     </div>
 </div>
-
 
 <!-- Para establecer fecha actual por defecto y 09 como valor predeterminado para la hora-->
 <script>
@@ -135,5 +134,41 @@
         }
     });
 </script>
+
+<style>
+    /* Eliminar el efecto de elevación para la tarjeta de asignar tarea */
+    .card {
+        transition: none !important;
+    }
+
+    .card:hover {
+        transform: none !important;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.05) !important;
+    }
+
+    /* Estilo para el botón principal igual que en programar reunión */
+    .btn-primary {
+        background-color: #345676 !important;
+        border-color: #345676 !important;
+        transition: all 0.2s ease !important;
+    }
+
+    .btn-primary:hover {
+        background-color: #2d4a66 !important;
+        border-color: #2d4a66 !important;
+    }
+
+    /* Estilo para el botón secundario igual que en programar reunión */
+    .btn-secondary {
+        background-color: #6c757d !important;
+        border-color: #6c757d !important;
+        transition: all 0.2s ease !important;
+    }
+
+    .btn-secondary:hover {
+        background-color: #5a6268 !important;
+        border-color: #5a6268 !important;
+    }
+</style>
 </body>
 </html>

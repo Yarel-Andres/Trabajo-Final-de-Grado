@@ -11,44 +11,13 @@
 
     <div class="card shadow-sm border-0 mb-4">
         <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div class="d-flex align-items-center">
-                    <div class="d-flex align-items-center justify-content-center bg-primary bg-opacity-10 rounded-circle p-3 me-3">
-                        <i class="fas fa-tasks text-primary fa-lg"></i>
-                    </div>
-                    <div>
-                        <h1 class="h3 mb-0 fw-bold">Mis Tareas</h1>
-                        <p class="text-muted mb-0">Gestiona tus tareas asignadas</p>
-                    </div>
+            <div class="d-flex align-items-center mb-4">
+                <div class="d-flex align-items-center justify-content-center bg-primary bg-opacity-10 rounded-circle p-3 me-3">
+                    <i class="fas fa-tasks text-primary fa-lg"></i>
                 </div>
                 <div>
-                    <a th:href="@{/dashboard}" class="btn btn-outline-primary btn-icon">
-                        <i class="fas fa-arrow-left"></i> Volver al Dashboard
-                    </a>
-                </div>
-            </div>
-
-            <div class="row mb-4">
-                <div class="col-md-6">
-                    <div class="input-group">
-                        <span class="input-group-text bg-white border-end-0">
-                            <i class="fas fa-search text-muted"></i>
-                        </span>
-                        <input type="text" id="searchInput" class="form-control border-start-0" placeholder="Buscar tareas...">
-                    </div>
-                </div>
-                <div class="col-md-6 text-md-end mt-3 mt-md-0">
-                    <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-outline-primary active" data-filter="all">
-                            <i class="fas fa-list-ul me-1"></i> Todas
-                        </button>
-                        <button type="button" class="btn btn-outline-warning" data-filter="false">
-                            <i class="fas fa-clock me-1"></i> Pendientes
-                        </button>
-                        <button type="button" class="btn btn-outline-success" data-filter="true">
-                            <i class="fas fa-check-circle me-1"></i> Completadas
-                        </button>
-                    </div>
+                    <h1 class="h3 mb-0 fw-bold">Mis Tareas</h1>
+                    <p class="text-muted mb-0">Gestiona tus tareas asignadas</p>
                 </div>
             </div>
 
@@ -61,8 +30,8 @@
             </div>
 
             <div th:if="${tareas != null && !tareas.empty}" class="table-responsive">
-                <table class="table table-custom align-middle" id="tareas-table">
-                    <thead>
+                <table class="table table-hover">
+                    <thead class="table-light">
                     <tr>
                         <th>Título</th>
                         <th>Descripción</th>
@@ -74,9 +43,7 @@
                     </thead>
                     <tbody>
                     <tr th:each="tarea : ${tareas}" th:data-estado="${tarea.completada}">
-                        <td>
-                            <span class="fw-medium" th:text="${tarea.titulo}">Título</span>
-                        </td>
+                        <td th:text="${tarea.titulo}">Título</td>
                         <td>
                             <span th:text="${#strings.abbreviate(tarea.descripcion, 50)}">Descripción</span>
                             <button th:if="${#strings.length(tarea.descripcion) > 50}" class="btn btn-sm btn-link p-0 ms-1"
@@ -84,52 +51,49 @@
                                 <i class="fas fa-info-circle"></i>
                             </button>
                         </td>
+                        <td th:text="${#temporals.format(tarea.fechaVencimiento, 'dd/MM/yyyy')}">Fecha Límite</td>
                         <td>
-                            <span th:text="${#temporals.format(tarea.fechaVencimiento, 'dd/MM/yyyy')}">Fecha Límite</span>
-                            <span th:if="${#temporals.createToday().isAfter(tarea.fechaVencimiento) && !tarea.completada}"
-                                  class="badge bg-danger ms-1" data-bs-toggle="tooltip" data-bs-title="Vencida">
-                                <i class="fas fa-exclamation-circle"></i>
-                            </span>
-                        </td>
-                        <td>
-                            <span th:if="${tarea.prioridad == 'ALTA'}" class="badge badge-soft-danger px-3 py-2">
+                            <span th:if="${tarea.prioridad == 'ALTA'}" class="badge bg-danger">
                                 <i class="fas fa-arrow-up me-1"></i> Alta
                             </span>
-                            <span th:if="${tarea.prioridad == 'MEDIA'}" class="badge badge-soft-warning px-3 py-2">
+                            <span th:if="${tarea.prioridad == 'MEDIA'}" class="badge bg-warning text-dark">
                                 <i class="fas fa-minus me-1"></i> Media
                             </span>
-                            <span th:if="${tarea.prioridad == 'BAJA'}" class="badge badge-soft-info px-3 py-2">
+                            <span th:if="${tarea.prioridad == 'BAJA'}" class="badge bg-info">
                                 <i class="fas fa-arrow-down me-1"></i> Baja
                             </span>
                         </td>
                         <td>
-                            <span th:if="${!tarea.completada}" class="badge bg-warning text-dark px-3 py-2">
+                            <span th:if="${!tarea.completada}" class="badge bg-warning text-dark">
                                 <i class="fas fa-hourglass-half me-1"></i> Pendiente
                             </span>
-                            <span th:if="${tarea.completada}" class="badge bg-success px-3 py-2">
+                            <span th:if="${tarea.completada}" class="badge bg-success">
                                 <i class="fas fa-check-circle me-1"></i> Completada
                             </span>
                         </td>
                         <td>
-                            <div class="btn-group">
-                                <a th:if="${!tarea.completada}" th:href="@{/registros-tiempo/crear(tareaId=${tarea.id})}"
-                                   class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="tooltip" data-bs-title="Registrar Tiempo">
-                                    <i class="fas fa-clock"></i>
-                                </a>
-                                <form th:if="${!tarea.completada}" th:action="@{/tareas/finalizar}" method="post" class="d-inline">
-                                    <input type="hidden" name="tareaId" th:value="${tarea.id}" />
-                                    <button type="submit" class="btn btn-sm btn-outline-success" data-bs-toggle="tooltip" data-bs-title="Finalizar Tarea">
-                                        <i class="fas fa-check"></i>
-                                    </button>
-                                </form>
-                                <button th:if="${tarea.completada}" class="btn btn-sm btn-outline-secondary" disabled>
-                                    <i class="fas fa-check-double"></i>
+                            <a th:if="${!tarea.completada}" th:href="@{/registros-tiempo/crear(tareaId=${tarea.id})}" class="btn btn-sm btn-outline-primary me-1">
+                                <i class="fas fa-clock me-1"></i>Registrar Tiempo
+                            </a>
+                            <form th:if="${!tarea.completada}" th:action="@{/tareas/finalizar}" method="post" class="d-inline">
+                                <input type="hidden" name="tareaId" th:value="${tarea.id}" />
+                                <button type="submit" class="btn btn-sm btn-outline-success">
+                                    <i class="fas fa-flag-checkered me-1"></i>Finalizar
                                 </button>
-                            </div>
+                            </form>
+                            <button th:if="${tarea.completada}" class="btn btn-sm btn-outline-secondary" disabled>
+                                <i class="fas fa-check-double me-1"></i>Finalizada
+                            </button>
                         </td>
                     </tr>
                     </tbody>
                 </table>
+            </div>
+
+            <div class="mt-4">
+                <a th:href="@{/dashboard}" class="btn btn-primary">
+                    <i class="fas fa-arrow-left me-2"></i>Volver al Dashboard
+                </a>
             </div>
         </div>
     </div>
@@ -137,46 +101,79 @@
 
 <div th:replace="fragments/layout :: footer"></div>
 
+<!-- Estilos para animación suave -->
+<style>
+    .btn-outline-primary {
+        color: #345676;
+        border-color: #345676;
+        transition: all 0.2s ease;
+    }
+
+    .btn-outline-primary:hover {
+        background-color: #345676;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px rgba(52, 86, 118, 0.2);
+    }
+
+    .btn-outline-success {
+        color: #28a745;
+        border-color: #28a745;
+        transition: all 0.2s ease;
+    }
+
+    .btn-outline-success:hover {
+        background-color: #28a745;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px rgba(40, 167, 69, 0.2);
+    }
+
+    .btn-primary {
+        background-color: #345676;
+        border-color: #345676;
+        transition: all 0.2s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #2a4560;
+        border-color: #2a4560;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px rgba(52, 86, 118, 0.2);
+    }
+
+    .badge {
+        font-weight: 500;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(52, 86, 118, 0.05);
+    }
+
+    .badge.bg-warning {
+        background-color: #fff3cd !important;
+        color: #856404 !important;
+        border: 1px solid #ffeaa7;
+    }
+
+    .badge.bg-info {
+        background-color: #d1ecf1 !important;
+        color: #0c5460 !important;
+    }
+
+    .badge.bg-danger {
+        background-color: #f8d7da !important;
+        color: #721c24 !important;
+    }
+
+    .badge.bg-success {
+        background-color: #d4edda !important;
+        color: #155724 !important;
+    }
+</style>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Filtrado de tareas
-        const filterButtons = document.querySelectorAll('[data-filter]');
-        const searchInput = document.getElementById('searchInput');
-        const rows = document.querySelectorAll('#tareas-table tbody tr');
-
-        // Función para filtrar tareas
-        function filterTasks() {
-            const activeFilter = document.querySelector('[data-filter].active').getAttribute('data-filter');
-            const searchTerm = searchInput.value.toLowerCase();
-
-            rows.forEach(row => {
-                const estado = row.getAttribute('data-estado');
-                const title = row.querySelector('td:first-child').textContent.toLowerCase();
-                const description = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
-
-                const matchesFilter = activeFilter === 'all' || estado === activeFilter;
-                const matchesSearch = title.includes(searchTerm) || description.includes(searchTerm);
-
-                if (matchesFilter && matchesSearch) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
-            });
-        }
-
-        // Event listeners para filtros
-        filterButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                filterButtons.forEach(btn => btn.classList.remove('active'));
-                this.classList.add('active');
-                filterTasks();
-            });
-        });
-
-        // Event listener para búsqueda
-        searchInput.addEventListener('input', filterTasks);
-
         // Inicializar tooltips
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
         var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {

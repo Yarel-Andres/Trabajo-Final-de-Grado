@@ -4,26 +4,27 @@ import com.yarel.gestion_empresarial.dto.proyecto.ProyectoDTO;
 import com.yarel.gestion_empresarial.dto.registroTiempo.RegistroTiempoDTO;
 import com.yarel.gestion_empresarial.servicios.ProyectoService;
 import com.yarel.gestion_empresarial.servicios.RegistroTiempoService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
+// Controlador para gestionar las funcionalidades de RRHH
+@Slf4j
 @Controller
 @RequestMapping("/rrhh/proyectos")
-public class RRHHProyectoController {
+@RequiredArgsConstructor
+public class RRHHController {
 
-    @Autowired
-    private ProyectoService proyectoService;
+    // Inyección del servicio de proyectos y registros de tiempo
+    private final ProyectoService proyectoService;
+    private final RegistroTiempoService registroTiempoService;
 
-    @Autowired
-    private RegistroTiempoService registroTiempoService;
-
+    // Listar todos los proyectos con información de horas trabajadas
     @GetMapping
     public String listarProyectos(Model model) {
         try {
@@ -59,7 +60,6 @@ public class RRHHProyectoController {
 
             return "rrhh/proyectos/listar";
         } catch (Exception e) {
-            e.printStackTrace();
             model.addAttribute("error", "Error al cargar proyectos: " + e.getMessage());
             return "error/general";
         }

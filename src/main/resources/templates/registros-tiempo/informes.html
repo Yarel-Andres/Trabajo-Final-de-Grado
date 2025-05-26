@@ -11,19 +11,14 @@
 
     <div class="card shadow-sm border-0 mb-4">
         <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div class="d-flex align-items-center">
-                    <div class="section-icon">
-                        <i class="fas fa-chart-bar"></i>
-                    </div>
-                    <div>
-                        <h1 class="h3 mb-0 fw-bold">Informes de Tiempo</h1>
-                        <p class="text-muted mb-0">Analiza los registros de tiempo por empleado o proyecto</p>
-                    </div>
+            <div class="d-flex align-items-center mb-4">
+                <div class="section-icon me-3">
+                    <i class="fas fa-chart-bar fa-lg"></i>
                 </div>
-                <a th:href="@{/dashboard}" class="btn btn-outline-primary btn-icon">
-                    <i class="fas fa-arrow-left"></i> Volver al Dashboard
-                </a>
+                <div>
+                    <h1 class="h3 mb-0 fw-bold">Informes de Tiempo</h1>
+                    <p class="text-muted mb-0">Analiza los registros de tiempo por empleado o proyecto</p>
+                </div>
             </div>
 
             <div class="row mb-4">
@@ -64,7 +59,7 @@
                                 </select>
                             </div>
                             <div class="d-grid">
-                                <button id="verProyectoBtn" class="btn btn-success btn-icon">
+                                <button id="verProyectoBtn" class="btn btn-primary btn-icon">
                                     <i class="fas fa-search"></i> Ver Informe
                                 </button>
                             </div>
@@ -73,13 +68,12 @@
                 </div>
             </div>
 
-            <!-- Mensaje de ayuda -->
-            <div class="alert alert-info d-flex align-items-center mt-4">
-                <i class="fas fa-info-circle me-3 fa-lg"></i>
-                <div>
-                    <h5 class="alert-heading mb-1">¿Cómo usar los informes?</h5>
-                    <p class="mb-0">Selecciona un empleado o proyecto de las listas desplegables y haz clic en "Ver Informe" para visualizar los registros de tiempo correspondientes. Podrás ver detalles como horas trabajadas, fechas y actividades realizadas.</p>
-                </div>
+
+            <!-- Botón Volver al Dashboard -->
+            <div class="text-start mt-4 ms-2">
+                <a th:href="@{/dashboard}" class="btn btn-primary">
+                    <i class="fas fa-arrow-left me-2"></i> Volver al Dashboard
+                </a>
             </div>
         </div>
     </div>
@@ -147,5 +141,26 @@
         }
     });
 </script>
+
+<style>
+    .btn-primary {
+        background-color: #345676 !important;
+        border-color: #345676 !important;
+        transition: all 0.2s ease !important;
+    }
+
+    .btn-primary:hover {
+        background-color: #2d4a66 !important;
+        border-color: #2d4a66 !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .section-icon {
+        display: flex;
+        align-items: flex-start;
+        padding-top: 0.5rem;
+    }
+</style>
 </body>
 </html>

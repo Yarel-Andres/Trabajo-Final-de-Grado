@@ -14,7 +14,6 @@
     <div class="card mb-4">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0">Presupuestos</h5>
-            <a th:href="@{/dashboard}" class="btn btn-primary btn-sm">Volver al Dashboard</a>
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -55,11 +54,31 @@
                     </tbody>
                 </table>
             </div>
+            <!-- Botón Volver al Dashboard -->
+            <div class="mt-4 ms-2 text-start">
+                <a th:href="@{/dashboard}" class="btn btn-primary">
+                    <i class="fas fa-arrow-left me-2"></i>Volver al Dashboard
+                </a>
+            </div>
         </div>
     </div>
 </div>
 
 <!-- Bootstrap Bundle with Popper -->
 <script th:src="@{/webjars/bootstrap/5.3.2/js/bootstrap.bundle.min.js}"></script>
+<style>
+    .btn-primary {
+        background-color: #345676;
+        border-color: #345676;
+        transition: all 0.2s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #2a4560;
+        border-color: #2a4560;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+</style>
 </body>
 </html>

@@ -3,7 +3,6 @@ package com.yarel.gestion_empresarial.controller;
 import com.yarel.gestion_empresarial.dto.jefe.JefeDTO;
 import com.yarel.gestion_empresarial.servicios.JefeService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,10 +14,9 @@ import java.util.List;
 @RequestMapping("/api/jefes")
 public class JefeController {
 
+    // Inyección del servicio de jefes
     private final JefeService jefeService;
 
-    // Inyección del servicio de jefes
-    @Autowired
     public JefeController(JefeService jefeService) {
         this.jefeService = jefeService;
     }
