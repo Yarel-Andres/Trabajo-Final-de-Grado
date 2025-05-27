@@ -6,18 +6,23 @@ import java.time.LocalDateTime;
 
 @Data
 public class RegistroTiempoDTO {
+    // Datos básicos del registro
     private Long id;
+    private LocalDate fechaRegistro;
+    private Double horasTrabajadas;
+    private String comentario;
+
+    // Fechas y horas de trabajo
+    private LocalDateTime horaInicio;
+    private LocalDateTime horaFin;
+
+    // Relaciones - IDs
     private Long usuarioId;
     private Long tareaId;
     private Long proyectoId;
     private Long reunionId;
-    private LocalDate fechaRegistro;
 
-    // Campos originales que causan el problema
-    private LocalDateTime horaInicio;
-    private LocalDateTime horaFin;
-
-    // Campos temporales para el binding del formulario (no se mapean a la base de datos)
+    // Campos temporales para formularios web (no se mapean a BD)
     private transient String fechaInicioTemp;
     private transient Integer horaInicioTemp;
     private transient Integer minutosInicioTemp;
@@ -25,12 +30,7 @@ public class RegistroTiempoDTO {
     private transient Integer horaFinTemp;
     private transient Integer minutosFinTemp;
 
-    private Double horasTrabajadas;
-    private String comentario;
-
-    // Campo adicional para mostrar el nombre del usuario en los informes
+    // Información adicional para vistas e informes
     private String usuarioNombre;
-
-    // Nuevo campo para almacenar el tipo de registro
     private String tipoRegistro;
 }

@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 
-// Controlador REST para gestionar Reuniones
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/reuniones")
@@ -24,12 +23,6 @@ public class ReunionController {
     // Inyección del servicio de reuniones
     private final ReunionService reunionService;
 
-    // Obtener todas las reuniones
-    @GetMapping
-    public ResponseEntity<List<ReunionDTO>> getAllReuniones() {
-        List<ReunionDTO> reuniones = reunionService.findAll();
-        return ResponseEntity.ok(reuniones);
-    }
 
     // Obtener una reunión por su ID
     @GetMapping("/{id}")

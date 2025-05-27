@@ -9,6 +9,7 @@ import java.util.HashSet;
 
 @Data
 public class ReunionDTO {
+    // Datos básicos de la reunión
     private Long id;
 
     @NotBlank(message = "El título es obligatorio")
@@ -22,45 +23,22 @@ public class ReunionDTO {
     @NotBlank(message = "La sala es obligatoria")
     private String sala;
 
-    // Añadir estos campos a la clase ReunionDTO
+    // Estado de la reunión
     private boolean completada = false;
     private LocalDateTime fechaCompletada;
 
+    // Relaciones - Organizador
     private Long organizadorId;
+    private String organizadorNombre; // Para mostrar en vistas
 
-    // Lo utilizaremos para que en el campo de organizador de reuniones
-    // Apareza el nombre del dicho organizador en vez de jefe
-    private String organizadorNombre;
-
+    // Relaciones - Participantes
     private Set<Long> participantesIds;
+    private Set<String> participantesNombres = new HashSet<>(); // Para mostrar en vistas
 
-    // Nombres de los participantes (no se mapea directamente, se usa para la vista)
-    private Set<String> participantesNombres = new HashSet<>();
-
-    // Getter para participantesNombres
-    public Set<String> getParticipantesNombres() {
-        if (participantesNombres == null) {
-            participantesNombres = new HashSet<>();
-        }
-        return participantesNombres;
-    }
+    // Registros de tiempo asociados
     private Set<Long> registrosTiempoIds;
 
-    @Override
-    public String toString() {
-        return "ReunionDTO{" +
-                "id=" + id +
-                ", titulo='" + titulo + '\'' +
-                ", descripcion='" + descripcion + '\'' +
-                ", fechaHora=" + fechaHora +
-                ", sala='" + sala + '\'' +
-                ", organizadorId=" + organizadorId +
-                ", organizadorNombre='" + organizadorNombre + '\'' +
-                ", participantesIds=" + participantesIds +
-                '}';
-    }
-
-    // Asegúrate de que participantesIds nunca sea null
+    // Asegurar que participantesIds nunca sea null
     public Set<Long> getParticipantesIds() {
         if (participantesIds == null) {
             participantesIds = new HashSet<>();
@@ -68,5 +46,11 @@ public class ReunionDTO {
         return participantesIds;
     }
 
-
+    // Asegurar que participantesNombres nunca sea null
+    public Set<String> getParticipantesNombres() {
+        if (participantesNombres == null) {
+            participantesNombres = new HashSet<>();
+        }
+        return participantesNombres;
+    }
 }

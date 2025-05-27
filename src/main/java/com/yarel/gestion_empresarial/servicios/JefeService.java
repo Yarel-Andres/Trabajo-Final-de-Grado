@@ -23,44 +23,15 @@ public class JefeService {
         this.jefeMapper = jefeMapper;
     }
 
+    // Obtiene todos los jefes para listas desplegables
     @Transactional(readOnly = true)
     public List<JefeDTO> findAll() {
-        List<Jefe> jefes = jefeRepository.findAll();
-        return jefeMapper.toDtoList(jefes);
+        return jefeMapper.toDtoList(jefeRepository.findAll());
     }
 
+    // Busca jefe por ID para validaciones
     @Transactional(readOnly = true)
     public Optional<JefeDTO> findById(Long id) {
-        return jefeRepository.findById(id)
-                .map(jefeMapper::toDto);
-    }
-
-    @Transactional
-    public JefeDTO save(JefeDTO jefeDTO) {
-        Jefe jefe = jefeMapper.toEntity(jefeDTO);
-        jefe = jefeRepository.save(jefe);
-        return jefeMapper.toDto(jefe);
-    }
-
-    @Transactional
-    public Optional<JefeDTO> update(Long id, JefeDTO jefeDTO) {
-        if (!jefeRepository.existsById(id)) {
-            return Optional.empty();
-        }
-
-        jefeDTO.setId(id);
-        Jefe jefe = jefeMapper.toEntity(jefeDTO);
-        jefe = jefeRepository.save(jefe);
-        return Optional.of(jefeMapper.toDto(jefe));
-    }
-
-    @Transactional
-    public boolean deleteById(Long id) {
-        if (!jefeRepository.existsById(id)) {
-            return false;
-        }
-
-        jefeRepository.deleteById(id);
-        return true;
+        return jefeRepository.findById(id).map(jefeMapper::toDto);
     }
 }

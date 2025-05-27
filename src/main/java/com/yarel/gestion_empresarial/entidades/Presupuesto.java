@@ -3,6 +3,7 @@ package com.yarel.gestion_empresarial.entidades;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
@@ -13,6 +14,7 @@ import java.util.Objects;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 public class Presupuesto {
 
     @Id
@@ -22,10 +24,12 @@ public class Presupuesto {
     @Column(nullable = false)
     private String nombreCliente;
 
+    // Proyecto asociado al presupuesto
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "proyecto_id")
     private Proyecto proyecto;
 
+    // Usuario RRHH que crea el presupuesto
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "rrhh_id")
     private RRHH creador;
@@ -45,8 +49,9 @@ public class Presupuesto {
     @Column
     private String descripcion;
 
+    // Estados: BORRADOR, ENVIADO, ACEPTADO, RECHAZADO
     @Column
-    private String estado = "BORRADOR"; // BORRADOR, ENVIADO, ACEPTADO, RECHAZADO
+    private String estado = "BORRADOR";
 
     @Override
     public boolean equals(Object o) {

@@ -30,102 +30,93 @@ public class TareaService {
     private final JefeRepository jefeRepository;
     private final ProyectoRepository proyectoRepository; // Nuevo repositorio
 
-    // Metodo para obtener todas las tareas
+    // Obtiene todas las tareas
     @Transactional(readOnly = true)
     public List<TareaDTO> findAll() {
-        List<Tarea> tareas = tareaRepository.findAll();
-        return tareaMapper.toDtoList(tareas);
+        return tareaMapper.toDtoList(tareaRepository.findAll());
     }
 
-    // Metodo para guardar una tarea (sin jefe especificado)
+    // Guarda una tarea nueva
     @Transactional
     public TareaDTO save(TareaDTO tareaDTO) {
         Tarea tarea = tareaMapper.toEntity(tareaDTO);
 
-        // Buscar el empleado por ID
+        // Buscar empleado por ID
         Empleado empleado = empleadoRepository.findById(tareaDTO.getEmpleadoId())
                 .orElseThrow(() -> new RuntimeException("Empleado no encontrado con ID: " + tareaDTO.getEmpleadoId()));
 
-        // Buscar el jefe por ID
+        // Buscar jefe por ID
         Jefe jefe = jefeRepository.findById(tareaDTO.getJefeId())
                 .orElseThrow(() -> new RuntimeException("Jefe no encontrado con ID: " + tareaDTO.getJefeId()));
 
-        // Buscar el proyecto por ID (si se proporciona)
+        // Buscar proyecto si se proporciona
         if (tareaDTO.getProyectoId() != null) {
             Proyecto proyecto = proyectoRepository.findById(tareaDTO.getProyectoId())
                     .orElseThrow(() -> new RuntimeException("Proyecto no encontrado con ID: " + tareaDTO.getProyectoId()));
             tarea.setProyecto(proyecto);
         }
 
-        // Asignar las referencias a la entidad
         tarea.setEmpleado(empleado);
         tarea.setJefe(jefe);
 
-        tarea = tareaRepository.save(tarea);
-        return tareaMapper.toDto(tarea);
+        return tareaMapper.toDto(tareaRepository.save(tarea));
     }
 
-    // Metodo para guardar una tarea asignada por un jefe
+    // Guarda tarea asignada por un jefe
     @Transactional
     public TareaDTO saveTareaForJefe(TareaDTO tareaDTO, String jefeNombreUsuario) {
         Tarea tarea = tareaMapper.toEntity(tareaDTO);
 
-        // Buscar el empleado por ID
+        // Buscar empleado por ID
         Empleado empleado = empleadoRepository.findById(tareaDTO.getEmpleadoId())
                 .orElseThrow(() -> new RuntimeException("Empleado no encontrado con ID: " + tareaDTO.getEmpleadoId()));
 
-        // Buscar el jefe por nombre de usuario
+        // Buscar jefe por nombre de usuario
         Jefe jefe = jefeRepository.findByNombreUsuario(jefeNombreUsuario)
                 .orElseThrow(() -> new RuntimeException("Jefe no encontrado con nombre de usuario: " + jefeNombreUsuario));
 
-        // Buscar el proyecto por ID (si se proporciona)
+        // Buscar proyecto si se proporciona
         if (tareaDTO.getProyectoId() != null) {
             Proyecto proyecto = proyectoRepository.findById(tareaDTO.getProyectoId())
                     .orElseThrow(() -> new RuntimeException("Proyecto no encontrado con ID: " + tareaDTO.getProyectoId()));
             tarea.setProyecto(proyecto);
 
-            // Verificar que el empleado esté asignado al proyecto
+            // Añadir empleado al proyecto si no está asignado
             if (!proyecto.getEmpleados().contains(empleado)) {
-                // Opcionalmente, añadir el empleado al proyecto si  {
-                // Opcionalmente, añadir el empleado al proyecto si no está asignado
                 proyecto.getEmpleados().add(empleado);
                 proyectoRepository.save(proyecto);
             }
         }
 
-        // Asignar las referencias
         tarea.setEmpleado(empleado);
         tarea.setJefe(jefe);
 
-        tarea = tareaRepository.save(tarea);
-        return tareaMapper.toDto(tarea);
+        return tareaMapper.toDto(tareaRepository.save(tarea));
     }
 
-    // Metodo para buscar tareas de un empleado
+    // Busca tareas de un empleado
     @Transactional(readOnly = true)
     public List<TareaDTO> findByEmpleadoId(Long empleadoId) {
         Empleado empleado = empleadoRepository.findById(empleadoId)
                 .orElseThrow(() -> new RuntimeException("Empleado no encontrado con ID: " + empleadoId));
 
-        List<Tarea> tareas = tareaRepository.findByEmpleado(empleado);
-        return tareaMapper.toDtoList(tareas);
+        return tareaMapper.toDtoList(tareaRepository.findByEmpleado(empleado));
     }
 
-    // Método para buscar tareas completadas de un empleado
+    // Busca tareas completadas de un empleado
     @Transactional(readOnly = true)
     public List<TareaDTO> findCompletadasByEmpleadoId(Long empleadoId) {
         Empleado empleado = empleadoRepository.findById(empleadoId)
                 .orElseThrow(() -> new RuntimeException("Empleado no encontrado con ID: " + empleadoId));
 
-        List<Tarea> tareas = tareaRepository.findByEmpleado(empleado);
-        // Filtrar para obtener solo las tareas completadas
-        List<Tarea> tareasCompletadas = tareas.stream()
+        List<Tarea> tareasCompletadas = tareaRepository.findByEmpleado(empleado).stream()
                 .filter(Tarea::isCompletada)
                 .collect(Collectors.toList());
+
         return tareaMapper.toDtoList(tareasCompletadas);
     }
 
-    // Método para finalizar una tarea
+    // Finaliza una tarea
     @Transactional
     public TareaDTO finalizarTarea(Long tareaId) {
         Tarea tarea = tareaRepository.findById(tareaId)
@@ -134,38 +125,34 @@ public class TareaService {
         tarea.setCompletada(true);
         tarea.setFechaCompletada(LocalDateTime.now());
 
-        tarea = tareaRepository.save(tarea);
-        return tareaMapper.toDto(tarea);
+        return tareaMapper.toDto(tareaRepository.save(tarea));
     }
 
-    // Método para buscar tareas por proyecto
+    // Busca tareas por proyecto
     @Transactional(readOnly = true)
     public List<TareaDTO> findByProyectoId(Long proyectoId) {
         Proyecto proyecto = proyectoRepository.findById(proyectoId)
                 .orElseThrow(() -> new RuntimeException("Proyecto no encontrado con ID: " + proyectoId));
 
-        List<Tarea> tareas = tareaRepository.findByProyecto(proyecto);
-        return tareaMapper.toDtoList(tareas);
+        return tareaMapper.toDtoList(tareaRepository.findByProyecto(proyecto));
     }
 
-    // Método para obtener una tarea por ID
+    // Obtiene una tarea por ID
     @Transactional(readOnly = true)
     public Optional<TareaDTO> findById(Long id) {
-        return tareaRepository.findById(id)
-                .map(tareaMapper::toDto);
+        return tareaRepository.findById(id).map(tareaMapper::toDto);
     }
 
-    // Método para buscar tareas asignadas por un jefe
+    // Busca tareas asignadas por un jefe
     @Transactional(readOnly = true)
     public List<TareaDTO> findByJefeId(Long jefeId) {
         Jefe jefe = jefeRepository.findById(jefeId)
                 .orElseThrow(() -> new RuntimeException("Jefe no encontrado con ID: " + jefeId));
 
-        List<Tarea> tareas = tareaRepository.findByJefe(jefe);
-        return tareaMapper.toDtoList(tareas);
+        return tareaMapper.toDtoList(tareaRepository.findByJefe(jefe));
     }
 
-    // Método para agrupar tareas por proyecto
+    // Agrupa tareas por proyecto
     @Transactional(readOnly = true)
     public Map<String, List<TareaDTO>> findByJefeIdGroupByProyecto(Long jefeId) {
         List<TareaDTO> tareas = findByJefeId(jefeId);
@@ -176,7 +163,6 @@ public class TareaService {
                         tarea -> tarea.getNombreProyecto() != null ? tarea.getNombreProyecto() : "Sin proyecto"
                 ));
     }
-
 
     // Eliminar tarea
     @Transactional

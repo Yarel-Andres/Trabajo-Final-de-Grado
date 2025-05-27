@@ -83,15 +83,6 @@ public class RegistroTiempoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdRegistro);
     }
 
-    // Actualizar un registro existente
-    @PutMapping("/{id}")
-    public ResponseEntity<RegistroTiempoDTO> updateRegistroTiempo(
-            @PathVariable Long id,
-            @Valid @RequestBody RegistroTiempoDTO registroTiempoDTO) {
-        return registroTiempoService.update(id, registroTiempoDTO)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
 
     // Eliminar un registro por ID
     @DeleteMapping("/{id}")

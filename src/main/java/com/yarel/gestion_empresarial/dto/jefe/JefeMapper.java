@@ -1,14 +1,9 @@
 package com.yarel.gestion_empresarial.dto.jefe;
 
 import com.yarel.gestion_empresarial.entidades.Jefe;
-
 import org.mapstruct.CollectionMappingStrategy;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-
 import java.util.List;
-import java.util.Set;
-
 
 @Mapper(
         componentModel = "spring",
@@ -16,10 +11,11 @@ import java.util.Set;
 )
 public interface JefeMapper {
 
-    JefeDTO toDto(Jefe entity);
-    Jefe toEntity(JefeDTO dto);
+    // Conversiones individuales
+    JefeDTO toDto(Jefe jefe);
+    Jefe toEntity(JefeDTO jefeDto);
 
-    List<JefeDTO> toDtoList(List<Jefe> list);
-    List<Jefe> toEntityList(List<JefeDTO> list);
-
+    // Conversiones de listas
+    List<JefeDTO> toDtoList(List<Jefe> jefes);
+    List<Jefe> toEntityList(List<JefeDTO> jefeDtos);
 }

@@ -120,7 +120,7 @@ public class ProyectoService {
         proyectoRepository.save(proyecto);
     }
 
-    // Añadir método para obtener proyectos completados por empleado
+    // Obtener proyectos completados por empleado
     @Transactional(readOnly = true)
     public List<ProyectoDTO> findCompletadosByEmpleadoId(Long empleadoId) {
         Empleado empleado = empleadoRepository.findById(empleadoId)

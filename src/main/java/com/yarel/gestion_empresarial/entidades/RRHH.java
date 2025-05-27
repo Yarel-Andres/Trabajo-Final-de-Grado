@@ -17,12 +17,15 @@ import java.time.LocalDate;
 @DiscriminatorValue("RRHH")
 public class RRHH extends Usuario {
 
+    // Área de especialización del personal de RRHH
     @Column(name = "area_especializacion")
     private String areaEspecializacion;
 
+    // Certificaciones profesionales obtenidas
     @Column(name = "certificaciones")
     private String certificaciones;
 
+    // Fecha de incorporación al departamento de RRHH
     @Column(name = "fecha_incorporacion_rrhh")
     private LocalDate fechaIncorporacionRRHH;
 }

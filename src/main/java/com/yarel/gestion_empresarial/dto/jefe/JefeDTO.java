@@ -9,4 +9,3 @@ public class JefeDTO extends UsuarioDTO {
     private LocalDate fechaNombramiento;
     private String nivelResponsabilidad;
 }
-

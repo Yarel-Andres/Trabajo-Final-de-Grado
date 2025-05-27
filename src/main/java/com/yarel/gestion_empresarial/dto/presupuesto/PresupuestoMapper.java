@@ -13,18 +13,21 @@ import java.util.List;
 )
 public interface PresupuestoMapper {
 
+    // Conversión de entidad a DTO
     @Mapping(source = "proyecto.id", target = "proyectoId")
     @Mapping(source = "proyecto.nombre", target = "proyectoNombre")
     @Mapping(source = "creador.id", target = "creadorId")
     @Mapping(source = "creador.nombreCompleto", target = "creadorNombre")
-    PresupuestoDTO toDto(Presupuesto entity);
+    PresupuestoDTO toDto(Presupuesto presupuesto);
 
+    // Conversión de DTO a entidad
     @Mapping(source = "proyectoId", target = "proyecto.id")
     @Mapping(source = "creadorId", target = "creador.id")
     @Mapping(target = "proyecto.nombre", ignore = true)
     @Mapping(target = "creador.nombreCompleto", ignore = true)
-    Presupuesto toEntity(PresupuestoDTO dto);
+    Presupuesto toEntity(PresupuestoDTO presupuestoDto);
 
-    List<PresupuestoDTO> toDtoList(List<Presupuesto> list);
-    List<Presupuesto> toEntityList(List<PresupuestoDTO> list);
+    // Conversiones de listas
+    List<PresupuestoDTO> toDtoList(List<Presupuesto> presupuestos);
+    List<Presupuesto> toEntityList(List<PresupuestoDTO> presupuestoDtos);
 }

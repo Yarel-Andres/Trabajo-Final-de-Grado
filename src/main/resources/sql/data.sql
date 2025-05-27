@@ -1,27 +1,19 @@
--- Insertar usuarios base (jefes)
-INSERT INTO usuarios (nombre_usuario, contraseña, correo, nombre_completo, rol, activo, tipo_usuario)
-VALUES
+-- Orden: Usuarios -> Roles específicos, Proyectos, Tareas, Reuniones, Registros
+
+
+-- 1. USUARIOS
+
+-- Jefes
+INSERT INTO usuarios (nombre_usuario, contraseña, correo, nombre_completo, rol, activo, tipo_usuario) VALUES
     ('jefe1', 'pass', 'jefe1@empresa.com', 'Yarel', 'JEFE', true, 'JEFE'),
     ('jefe2', 'pass', 'jefe2@empresa.com', 'Amado', 'JEFE', true, 'JEFE'),
     ('jefe3', 'pass', 'jefe3@empresa.com', 'Moises', 'JEFE', true, 'JEFE'),
     ('jefe4', 'pass', 'jefe4@empresa.com', 'Zacarias', 'JEFE', true, 'JEFE'),
     ('jefe5', 'pass', 'jefe5@empresa.com', 'Efren', 'JEFE', true, 'JEFE');
 
--- Insertar jefes (usando SELECT para obtener los IDs de los usuarios recién insertados)
-INSERT INTO jefes (id, fecha_nombramiento, nivel_responsabilidad)
-SELECT id, '2022-01-15', 'Senior' FROM usuarios WHERE nombre_usuario = 'jefe1'
-UNION ALL
-SELECT id, '2023-03-10', 'Medio' FROM usuarios WHERE nombre_usuario = 'jefe2'
-UNION ALL
-SELECT id, '2021-05-20', 'Senior' FROM usuarios WHERE nombre_usuario = 'jefe3'
-UNION ALL
-SELECT id, '2022-08-15', 'Junior' FROM usuarios WHERE nombre_usuario = 'jefe4'
-UNION ALL
-SELECT id, '2023-01-05', 'Medio' FROM usuarios WHERE nombre_usuario = 'jefe5';
 
--- Insertar usuarios base (empleados)
-INSERT INTO usuarios (nombre_usuario, contraseña, correo, nombre_completo, rol, activo, tipo_usuario)
-VALUES
+-- Empleados
+INSERT INTO usuarios (nombre_usuario, contraseña, correo, nombre_completo, rol, activo, tipo_usuario) VALUES
     ('empleado1', 'pass', 'empleado1@empresa.com', 'Edson', 'EMPLEADO', true, 'EMPLEADO'),
     ('empleado2', 'pass', 'empleado2@empresa.com', 'Jose', 'EMPLEADO', true, 'EMPLEADO'),
     ('empleado3', 'pass', 'empleado3@empresa.com', 'Ramiro', 'EMPLEADO', true, 'EMPLEADO'),
@@ -29,280 +21,133 @@ VALUES
     ('empleado5', 'pass', 'empleado5@empresa.com', 'Erick', 'EMPLEADO', true, 'EMPLEADO'),
     ('empleado6', 'pass', 'empleado6@empresa.com', 'Jaime', 'EMPLEADO', true, 'EMPLEADO');
 
--- Insertar empleados (usando SELECT para obtener los IDs de los usuarios recién insertados)
-INSERT INTO empleados (id, fecha_contratacion, puesto, telefono, salario)
-SELECT id, '2023-02-20', 'Desarrollador', '666111222', 32000.0 FROM usuarios WHERE nombre_usuario = 'empleado1'
-UNION ALL
-SELECT id, '2022-11-05', 'Diseñador UX', '666333444', 29000.0 FROM usuarios WHERE nombre_usuario = 'empleado2'
-UNION ALL
-SELECT id, '2023-06-15', 'Analista', '666555666', 27500.0 FROM usuarios WHERE nombre_usuario = 'empleado3'
-UNION ALL
-SELECT id, '2023-03-10', 'Desarrollador Frontend', '666777888', 31000.0 FROM usuarios WHERE nombre_usuario = 'empleado4'
-UNION ALL
-SELECT id, '2022-09-01', 'Desarrollador Backend', '666999000', 33000.0 FROM usuarios WHERE nombre_usuario = 'empleado5'
-UNION ALL
-SELECT id, '2023-04-05', 'QA Tester', '666123456', 28500.0 FROM usuarios WHERE nombre_usuario = 'empleado6';
 
--- Insertar usuarios base (RRHH)
-INSERT INTO usuarios (nombre_usuario, contraseña, correo, nombre_completo, rol, activo, tipo_usuario)
-VALUES
-    ('rrhh1', 'pass', 'rrhh1@empresa.com', 'Elena Ruiz', 'RRHH', true, 'RRHH'),
-    ('rrhh2', 'pass', 'rrhh2@empresa.com', 'Pablo Moreno', 'RRHH', true, 'RRHH'),
-    ('rrhh3', 'pass', 'rrhh3@empresa.com', 'Carmen Jiménez', 'RRHH', true, 'RRHH');
+-- RRHH
+INSERT INTO usuarios (nombre_usuario, contraseña, correo, nombre_completo, rol, activo, tipo_usuario) VALUES
+    ('rrhh1', 'pass', 'rrhh1@empresa.com', 'Elena', 'RRHH', true, 'RRHH'),
+    ('rrhh2', 'pass', 'rrhh2@empresa.com', 'Ana', 'RRHH', true, 'RRHH'),
+    ('rrhh3', 'pass', 'rrhh3@empresa.com', 'Sara', 'RRHH', true, 'RRHH');
 
--- Insertar RRHH (usando SELECT para obtener el ID del usuario recién insertado)
-INSERT INTO rrhh (id, area_especializacion, certificaciones, fecha_incorporacion_rrhh)
-SELECT id, 'Contratación', 'CIPD Level 5', '2022-05-12' FROM usuarios WHERE nombre_usuario = 'rrhh1'
-UNION ALL
-SELECT id, 'Formación', 'HR Management', '2021-08-15' FROM usuarios WHERE nombre_usuario = 'rrhh2'
-UNION ALL
-SELECT id, 'Selección', 'Talent Acquisition', '2022-11-10' FROM usuarios WHERE nombre_usuario = 'rrhh3';
 
--- Insertar proyectos
-INSERT INTO proyectos (nombre, descripcion, jefe_id, fecha_inicio, fecha_fin_estimada, estado, completado)
-SELECT 'Sistema de Gestión', 'Sistema para gestión empresarial', id, '2023-01-20', '2023-12-31', 'EN_PROGRESO', false FROM jefes WHERE id = (SELECT id FROM usuarios WHERE nombre_usuario = 'jefe1')
-UNION ALL
-SELECT 'App Móvil', 'Aplicación móvil para clientes', id, '2023-05-15', '2023-11-30', 'EN_PROGRESO', false FROM jefes WHERE id = (SELECT id FROM usuarios WHERE nombre_usuario = 'jefe2')
-UNION ALL
-SELECT 'Portal Web Corporativo', 'Rediseño del portal web corporativo', id, '2023-03-01', '2023-09-30', 'EN_PROGRESO', false FROM jefes WHERE id = (SELECT id FROM usuarios WHERE nombre_usuario = 'jefe3')
-UNION ALL
-SELECT 'Integración CRM', 'Integración del sistema CRM con otras plataformas', id, '2023-04-15', '2023-10-15', 'EN_PROGRESO', false FROM jefes WHERE id = (SELECT id FROM usuarios WHERE nombre_usuario = 'jefe5');
 
--- Insertar tareas (usando subqueries para obtener los IDs) - AHORA CON PROYECTO_ID
-INSERT INTO tareas (titulo, descripcion, empleado_id, jefe_id, fecha_creacion, fecha_vencimiento, completada, prioridad, proyecto_id)
-SELECT
-    'Desarrollar API',
-    'Implementar endpoints de la API REST',
-    (SELECT id FROM usuarios WHERE nombre_usuario = 'empleado1'),
-    (SELECT id FROM usuarios WHERE nombre_usuario = 'jefe1'),
-    NOW() - INTERVAL 5 DAY,
-    CURDATE() + INTERVAL 10 DAY,
-    false,
-    'MEDIA',
-    (SELECT id FROM proyectos WHERE nombre = 'Sistema de Gestión');
+-- 2. ROLES ESPECÍFICOS (utilizando IDs conocidos)
 
-INSERT INTO tareas (titulo, descripcion, empleado_id, jefe_id, fecha_creacion, fecha_vencimiento, completada, prioridad, proyecto_id)
-SELECT
-    'Diseñar interfaz',
-    'Diseñar la interfaz principal del sistema',
-    (SELECT id FROM usuarios WHERE nombre_usuario = 'empleado2'),
-    (SELECT id FROM usuarios WHERE nombre_usuario = 'jefe1'),
-    NOW() - INTERVAL 7 DAY,
-    CURDATE() + INTERVAL 5 DAY,
-    false,
-    'ALTA',
-    (SELECT id FROM proyectos WHERE nombre = 'Sistema de Gestión');
+-- Jefes (IDs 1-5)
+INSERT INTO jefes (id, fecha_nombramiento, nivel_responsabilidad) VALUES
+    (1, '2022-01-15', 'Senior'),
+    (2, '2023-03-10', 'Medio'),
+    (3, '2021-05-20', 'Senior'),
+    (4, '2022-08-15', 'Junior'),
+    (5, '2023-01-05', 'Medio');
 
-INSERT INTO tareas (titulo, descripcion, empleado_id, jefe_id, fecha_creacion, fecha_vencimiento, completada, fecha_completada, prioridad, proyecto_id)
-SELECT
-    'Análisis de requisitos',
-    'Analizar requisitos del cliente',
-    (SELECT id FROM usuarios WHERE nombre_usuario = 'empleado3'),
-    (SELECT id FROM usuarios WHERE nombre_usuario = 'jefe2'),
-    NOW() - INTERVAL 10 DAY,
-    CURDATE() - INTERVAL 3 DAY,
-    true,
-    NOW() - INTERVAL 1 DAY,
-    'BAJA',
-    (SELECT id FROM proyectos WHERE nombre = 'App Móvil');
 
--- Nuevas tareas con proyecto_id
-INSERT INTO tareas (titulo, descripcion, empleado_id, jefe_id, fecha_creacion, fecha_vencimiento, completada, prioridad, proyecto_id)
-SELECT
-    'Implementar autenticación',
-    'Implementar sistema de autenticación OAuth2',
-    (SELECT id FROM usuarios WHERE nombre_usuario = 'empleado4'),
-    (SELECT id FROM usuarios WHERE nombre_usuario = 'jefe3'),
-    NOW() - INTERVAL 3 DAY,
-    CURDATE() + INTERVAL 7 DAY,
-    false,
-    'ALTA',
-    (SELECT id FROM proyectos WHERE nombre = 'Portal Web Corporativo');
+-- Empleados (IDs 6-11)
+INSERT INTO empleados (id, fecha_contratacion, puesto, telefono, salario) VALUES
+    (6, '2023-02-20', 'Desarrollador', '666111222', 32000.0),
+    (7, '2022-11-05', 'Diseñador UX', '666333444', 29000.0),
+    (8, '2023-06-15', 'Analista', '666555666', 27500.0),
+    (9, '2023-03-10', 'Desarrollador Frontend', '666777888', 31000.0),
+    (10, '2022-09-01', 'Desarrollador Backend', '666999000', 33000.0),
+    (11, '2023-04-05', 'QA Tester', '666123456', 28500.0);
 
-INSERT INTO tareas (titulo, descripcion, empleado_id, jefe_id, fecha_creacion, fecha_vencimiento, completada, prioridad, proyecto_id)
-SELECT
-    'Optimizar consultas SQL',
-    'Revisar y optimizar consultas SQL para mejorar rendimiento',
-    (SELECT id FROM usuarios WHERE nombre_usuario = 'empleado5'),
-    (SELECT id FROM usuarios WHERE nombre_usuario = 'jefe4'),
-    NOW() - INTERVAL 2 DAY,
-    CURDATE() + INTERVAL 4 DAY,
-    false,
-    'MEDIA',
-    (SELECT id FROM proyectos WHERE nombre = 'Sistema de Análisis de Datos');
 
-INSERT INTO tareas (titulo, descripcion, empleado_id, jefe_id, fecha_creacion, fecha_vencimiento, completada, prioridad, proyecto_id)
-SELECT
-    'Pruebas de integración',
-    'Realizar pruebas de integración del módulo de pagos',
-    (SELECT id FROM usuarios WHERE nombre_usuario = 'empleado6'),
-    (SELECT id FROM usuarios WHERE nombre_usuario = 'jefe5'),
-    NOW() - INTERVAL 4 DAY,
-    CURDATE() + INTERVAL 3 DAY,
-    false,
-    'ALTA',
-    (SELECT id FROM proyectos WHERE nombre = 'Integración CRM');
+-- RRHH (IDs 12-14)
+INSERT INTO rrhh (id, area_especializacion, certificaciones, fecha_incorporacion_rrhh) VALUES
+    (12, 'Contratación', 'CIPD Level 5', '2022-05-12'),
+    (13, 'Formación', 'HR Management', '2021-08-15'),
+    (14, 'Selección', 'Talent Acquisition', '2022-11-10');
 
--- Insertar reuniones
-INSERT INTO reuniones (titulo, descripcion, fecha_hora, sala, organizador_id)
-SELECT
-    'Kickoff proyecto',
-    'Reunión inicial del proyecto',
-    NOW() + INTERVAL 3 DAY + INTERVAL 10 HOUR,
-    'Sala A',
-    (SELECT id FROM usuarios WHERE nombre_usuario = 'jefe1');
 
-INSERT INTO reuniones (titulo, descripcion, fecha_hora, sala, organizador_id)
-SELECT
-    'Revisión de avances',
-    'Revisión semanal de avances',
-    NOW() + INTERVAL 7 DAY + INTERVAL 11 HOUR,
-    'Sala B',
-    (SELECT id FROM usuarios WHERE nombre_usuario = 'jefe2');
 
--- Nuevas reuniones
-INSERT INTO reuniones (titulo, descripcion, fecha_hora, sala, organizador_id)
-SELECT
-    'Planificación sprint',
-    'Planificación del próximo sprint',
-    NOW() + INTERVAL 2 DAY + INTERVAL 9 HOUR + INTERVAL 30 MINUTE,
-    'Sala C',
-    (SELECT id FROM usuarios WHERE nombre_usuario = 'jefe3');
 
-INSERT INTO reuniones (titulo, descripcion, fecha_hora, sala, organizador_id)
-SELECT
-    'Revisión de diseño',
-    'Revisión de los diseños de la interfaz',
-    NOW() + INTERVAL 4 DAY + INTERVAL 15 HOUR,
-    'Sala A',
-    (SELECT id FROM usuarios WHERE nombre_usuario = 'jefe4');
+-- 3. PROYECTOS
 
-INSERT INTO reuniones (titulo, descripcion, fecha_hora, sala, organizador_id)
-SELECT
-    'Retrospectiva',
-    'Retrospectiva del último sprint',
-    NOW() + INTERVAL 1 DAY + INTERVAL 16 HOUR + INTERVAL 30 MINUTE,
-    'Sala D',
-    (SELECT id FROM usuarios WHERE nombre_usuario = 'jefe5');
+INSERT INTO proyectos (nombre, descripcion, jefe_id, fecha_inicio, fecha_fin_estimada, estado, completado) VALUES
+    ('Sistema de Gestión', 'Sistema para gestión empresarial', 1, '2023-01-20', '2023-12-31', 'EN_PROGRESO', false),
+    ('App Móvil', 'Aplicación móvil para clientes', 2, '2023-05-15', '2023-11-30', 'EN_PROGRESO', false),
+    ('Portal Web Corporativo', 'Rediseño del portal web corporativo', 3, '2023-03-01', '2023-09-30', 'EN_PROGRESO', false),
+    ('Integración CRM', 'Integración del sistema CRM con otras plataformas', 5, '2023-04-15', '2023-10-15', 'EN_PROGRESO', false),
+    ('Proyecto Colaborativo', 'Proyecto para demostrar la colaboración entre equipos', 2, '2023-04-10', '2023-12-15', 'EN_PROGRESO', false);
 
--- Insertar participantes de reuniones (ahora usando subqueries para los IDs)
-INSERT INTO reunion_participantes (reunion_id, usuario_id)
-SELECT
-    (SELECT id FROM reuniones WHERE titulo = 'Kickoff proyecto'),
-    (SELECT id FROM usuarios WHERE nombre_usuario = 'jefe1');
 
-INSERT INTO reunion_participantes (reunion_id, usuario_id)
-SELECT
-    (SELECT id FROM reuniones WHERE titulo = 'Kickoff proyecto'),
-    (SELECT id FROM usuarios WHERE nombre_usuario = 'empleado1');
+-- Asignación de empleados a proyectos
+INSERT INTO proyecto_empleados (proyecto_id, empleado_id) VALUES
+    (5, 6),
+    (5, 7),
+    (5, 8),
+    (5, 9);
 
-INSERT INTO reunion_participantes (reunion_id, usuario_id)
-SELECT
-    (SELECT id FROM reuniones WHERE titulo = 'Kickoff proyecto'),
-    (SELECT id FROM usuarios WHERE nombre_usuario = 'empleado2');
 
-INSERT INTO reunion_participantes (reunion_id, usuario_id)
-SELECT
-    (SELECT id FROM reuniones WHERE titulo = 'Revisión de avances'),
-    (SELECT id FROM usuarios WHERE nombre_usuario = 'jefe2');
 
-INSERT INTO reunion_participantes (reunion_id, usuario_id)
-SELECT
-    (SELECT id FROM reuniones WHERE titulo = 'Revisión de avances'),
-    (SELECT id FROM usuarios WHERE nombre_usuario = 'empleado3');
+-- 5. TAREAS
 
--- Participantes para las nuevas reuniones
-INSERT INTO reunion_participantes (reunion_id, usuario_id)
-SELECT
-    (SELECT id FROM reuniones WHERE titulo = 'Planificación sprint'),
-    (SELECT id FROM usuarios WHERE nombre_usuario = 'jefe3');
+INSERT INTO tareas (titulo, descripcion, empleado_id, jefe_id, fecha_creacion, fecha_vencimiento, completada, prioridad, proyecto_id) VALUES
+    -- Tareas del Sistema de Gestión
+    ('Desarrollar API', 'Implementar endpoints de la API REST', 6, 1, NOW() - INTERVAL 5 DAY, CURDATE() + INTERVAL 10 DAY, false, 'MEDIA', 1),
+    ('Diseñar interfaz', 'Diseñar la interfaz principal del sistema', 7, 1, NOW() - INTERVAL 7 DAY, CURDATE() + INTERVAL 5 DAY, false, 'ALTA', 1),
 
-INSERT INTO reunion_participantes (reunion_id, usuario_id)
-SELECT
-    (SELECT id FROM reuniones WHERE titulo = 'Planificación sprint'),
-    (SELECT id FROM usuarios WHERE nombre_usuario = 'empleado4');
+    -- Tareas de App Móvil
+    ('Análisis de requisitos', 'Analizar requisitos del cliente', 8, 2, NOW() - INTERVAL 10 DAY, CURDATE() + INTERVAL 7 DAY, false, 'BAJA', 2),
 
-INSERT INTO reunion_participantes (reunion_id, usuario_id)
-SELECT
-    (SELECT id FROM reuniones WHERE titulo = 'Planificación sprint'),
-    (SELECT id FROM usuarios WHERE nombre_usuario = 'empleado5');
+    -- Tareas del Portal Web
+    ('Implementar autenticación', 'Implementar sistema de autenticación OAuth2', 9, 3, NOW() - INTERVAL 3 DAY, CURDATE() + INTERVAL 7 DAY, false, 'ALTA', 3),
 
-INSERT INTO reunion_participantes (reunion_id, usuario_id)
-SELECT
-    (SELECT id FROM reuniones WHERE titulo = 'Revisión de diseño'),
-    (SELECT id FROM usuarios WHERE nombre_usuario = 'jefe4');
+    -- Tareas de Integración CRM
+    ('Pruebas de integración', 'Realizar pruebas de integración del módulo de pagos', 11, 5, NOW() - INTERVAL 4 DAY, CURDATE() + INTERVAL 3 DAY, false, 'ALTA', 4),
 
-INSERT INTO reunion_participantes (reunion_id, usuario_id)
-SELECT
-    (SELECT id FROM reuniones WHERE titulo = 'Revisión de diseño'),
-    (SELECT id FROM usuarios WHERE nombre_usuario = 'empleado2');
+    -- Tarea adicional para Sistema de Gestión
+    ('Optimizar consultas SQL', 'Revisar y optimizar consultas SQL para mejorar rendimiento', 10, 1, NOW() - INTERVAL 2 DAY, CURDATE() + INTERVAL 4 DAY, false, 'MEDIA', 1);
 
-INSERT INTO reunion_participantes (reunion_id, usuario_id)
-SELECT
-    (SELECT id FROM reuniones WHERE titulo = 'Revisión de diseño'),
-    (SELECT id FROM usuarios WHERE nombre_usuario = 'empleado6');
 
-INSERT INTO reunion_participantes (reunion_id, usuario_id)
-SELECT
-    (SELECT id FROM reuniones WHERE titulo = 'Retrospectiva'),
-    (SELECT id FROM usuarios WHERE nombre_usuario = 'jefe5');
 
-INSERT INTO reunion_participantes (reunion_id, usuario_id)
-SELECT
-    (SELECT id FROM reuniones WHERE titulo = 'Retrospectiva'),
-    (SELECT id FROM usuarios WHERE nombre_usuario = 'empleado1');
+-- 6. REUNIONES
 
-INSERT INTO reunion_participantes (reunion_id, usuario_id)
-SELECT
-    (SELECT id FROM reuniones WHERE titulo = 'Retrospectiva'),
-    (SELECT id FROM usuarios WHERE nombre_usuario = 'empleado3');
+INSERT INTO reuniones (titulo, descripcion, fecha_hora, sala, organizador_id) VALUES
+    ('Kickoff proyecto', 'Reunión inicial del proyecto', NOW() + INTERVAL 3 DAY + INTERVAL 10 HOUR, 'Sala A', 1),
+    ('Revisión de avances', 'Revisión semanal de avances', NOW() + INTERVAL 7 DAY + INTERVAL 11 HOUR, 'Sala B', 2),
+    ('Planificación sprint', 'Planificación del próximo sprint', NOW() + INTERVAL 2 DAY + INTERVAL 9 HOUR + INTERVAL 30 MINUTE, 'Sala C', 3),
+    ('Revisión de diseño', 'Revisión de los diseños de la interfaz', NOW() + INTERVAL 4 DAY + INTERVAL 15 HOUR, 'Sala A', 4),
+    ('Retrospectiva', 'Retrospectiva del último sprint', NOW() + INTERVAL 1 DAY + INTERVAL 16 HOUR + INTERVAL 30 MINUTE, 'Sala D', 5);
 
-INSERT INTO reunion_participantes (reunion_id, usuario_id)
-SELECT
-    (SELECT id FROM reuniones WHERE titulo = 'Retrospectiva'),
-    (SELECT id FROM usuarios WHERE nombre_usuario = 'empleado5');
+-- Participantes de reuniones
 
--- Insertar registros de tiempo
-INSERT INTO registros_tiempo (tarea_id, fecha_registro, hora_inicio, hora_fin, horas_trabajadas, comentario)
-SELECT
-    (SELECT id FROM tareas WHERE titulo = 'Desarrollar API'),
-    CURDATE() - INTERVAL 2 DAY,
-    NOW() - INTERVAL 26 HOUR,
-    NOW() - INTERVAL 22 HOUR,
-    4.0,
-    'Avance en la implementación de la API';
+-- Kickoff proyecto
+INSERT INTO reunion_participantes (reunion_id, usuario_id) VALUES
+    (1, 1),  -- Yarel (organizador)
+    (1, 6),  -- Edson
+    (1, 7);  -- Jose
 
-INSERT INTO registros_tiempo (tarea_id, fecha_registro, hora_inicio, hora_fin, horas_trabajadas, comentario)
-SELECT
-    (SELECT id FROM tareas WHERE titulo = 'Diseñar interfaz'),
-    CURDATE() - INTERVAL 1 DAY,
-    NOW() - INTERVAL 25 HOUR,
-    NOW() - INTERVAL 21 HOUR,
-    4.0,
-    'Diseño de la interfaz principal';
+-- Revisión de avances
+INSERT INTO reunion_participantes (reunion_id, usuario_id) VALUES
+    (2, 2),  -- Amado (organizador)
+    (2, 8);  -- Ramiro
 
--- Añadir un nuevo proyecto creado por Amado (jefe2)
-INSERT INTO proyectos (nombre, descripcion, jefe_id, fecha_inicio, fecha_fin_estimada, estado, completado)
-VALUES ('Proyecto Colaborativo', 'Proyecto para demostrar la colaboración entre equipos',
-        (SELECT id FROM jefes WHERE id = (SELECT id FROM usuarios WHERE nombre_usuario = 'jefe2')),
-        '2023-04-10', '2023-12-15', 'EN_PROGRESO', false);
+-- Planificación sprint
+INSERT INTO reunion_participantes (reunion_id, usuario_id) VALUES
+    (3, 3),  -- Moises (organizador)
+    (3, 9),  -- Raul
+    (3, 10); -- Erick
 
--- Añadir a Edson (empleado1) al proyecto
-INSERT INTO proyecto_empleados (proyecto_id, empleado_id)
-VALUES ((SELECT id FROM proyectos WHERE nombre = 'Proyecto Colaborativo'),
-        (SELECT id FROM empleados WHERE id = (SELECT id FROM usuarios WHERE nombre_usuario = 'empleado1')));
+-- Revisión de diseño
+INSERT INTO reunion_participantes (reunion_id, usuario_id) VALUES
+    (4, 4),  -- Zacarias (organizador)
+    (4, 7),  -- Jose
+    (4, 11); -- Jaime
 
--- Añadir a Raul (empleado4) al proyecto
-INSERT INTO proyecto_empleados (proyecto_id, empleado_id)
-VALUES ((SELECT id FROM proyectos WHERE nombre = 'Proyecto Colaborativo'),
-        (SELECT id FROM empleados WHERE id = (SELECT id FROM usuarios WHERE nombre_usuario = 'empleado4')));
+-- Retrospectiva
+INSERT INTO reunion_participantes (reunion_id, usuario_id) VALUES
+    (5, 5),  -- Efren (organizador)
+    (5, 6),  -- Edson
+    (5, 8),  -- Ramiro
+    (5, 10); -- Erick
 
--- Añadir a Jose (empleado2) al proyecto
-INSERT INTO proyecto_empleados (proyecto_id, empleado_id)
-VALUES ((SELECT id FROM proyectos WHERE nombre = 'Proyecto Colaborativo'),
-        (SELECT id FROM empleados WHERE id = (SELECT id FROM usuarios WHERE nombre_usuario = 'empleado2')));
 
--- Añadir a Ramiro (empleado3) al proyecto
-INSERT INTO proyecto_empleados (proyecto_id, empleado_id)
-VALUES ((SELECT id FROM proyectos WHERE nombre = 'Proyecto Colaborativo'),
-        (SELECT id FROM empleados WHERE id = (SELECT id FROM usuarios WHERE nombre_usuario = 'empleado3')));
+
+-- 8. REGISTROS DE TIEMPO
+
+INSERT INTO registros_tiempo (tarea_id, fecha_registro, hora_inicio, hora_fin, horas_trabajadas, comentario) VALUES
+    (1, CURDATE() - INTERVAL 2 DAY, NOW() - INTERVAL 26 HOUR, NOW() - INTERVAL 22 HOUR, 4.0, 'Avance en la implementación de la API'),
+    (2, CURDATE() - INTERVAL 1 DAY, NOW() - INTERVAL 25 HOUR, NOW() - INTERVAL 21 HOUR, 4.0, 'Diseño de la interfaz principal'),
+    (3, CURDATE() - INTERVAL 3 DAY, NOW() - INTERVAL 30 HOUR, NOW() - INTERVAL 26 HOUR, 4.0, 'Análisis de requisitos completado'),
+    (4, CURDATE() - INTERVAL 1 DAY, NOW() - INTERVAL 24 HOUR, NOW() - INTERVAL 20 HOUR, 4.0, 'Implementación de OAuth2'),
+    (5, CURDATE(), NOW() - INTERVAL 8 HOUR, NOW() - INTERVAL 4 HOUR, 4.0, 'Pruebas de integración realizadas');

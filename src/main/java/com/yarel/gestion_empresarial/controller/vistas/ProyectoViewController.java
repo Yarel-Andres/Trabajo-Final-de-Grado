@@ -70,7 +70,7 @@ public class ProyectoViewController {
         return "proyectos/crear";
     }
 
-    // Procesamiento de creación de proyectos: Valida datos y asigna empleados al proyecto
+    // Creación de proyectos: Valida datos y asigna empleados al proyecto
     @PostMapping("/proyectos/crear")
     public String crearProyecto(@ModelAttribute ProyectoDTO proyecto,
                                 @RequestParam(value = "empleadosIds", required = false) List<Long> empleadosIds,

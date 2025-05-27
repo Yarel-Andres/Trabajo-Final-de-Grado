@@ -14,15 +14,10 @@ import java.util.Optional;
                                 // entidad manejada y Long es el tipo de la clave primaria (id)
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
-    // Busca por nombre o correo del usuario, utilizando el parámetro recibido
+    // Busca por nombre del usuario, utilizando el parámetro recibido
     Optional<Usuario> findByNombreUsuario(String nombreUsuario);
-    Optional<Usuario> findByCorreo(String correo);
 
     // Añadimos metodo para buscar por nombre completo
     Optional<Usuario> findByNombreCompleto(String nombreCompleto);
 
-    // Devuelven true o false si el usuario buscado existe o no
-    boolean existsByNombreUsuario(String nombreUsuario);
-    boolean existsByCorreo(String correo);
-    boolean existsByNombreCompleto(String nombreCompleto);
 }

@@ -15,6 +15,7 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+// Excluye colecciones para evitar ciclos infinitos en equals/hashCode
 @EqualsAndHashCode(callSuper = true, exclude = {"tareasAsignadas", "proyectos", "reuniones"})
 @DiscriminatorValue("JEFE")
 public class Jefe extends Usuario {

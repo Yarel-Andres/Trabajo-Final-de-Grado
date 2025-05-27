@@ -9,34 +9,33 @@ import java.util.ArrayList;
 
 @Data
 public class ProyectoDTO {
+    // Datos básicos del proyecto
     private Long id;
     private String nombre;
     private String descripcion;
-    private Long jefeId;
-    private String jefeNombre;
+    private String estado;
+    private boolean completado = false;
+
+    // Fechas del proyecto
     private LocalDate fechaInicio;
     private LocalDate fechaFinEstimada;
     private LocalDate fechaFinReal;
-    private String estado;
 
-    private boolean completado = false;
+    // Relaciones - Jefe responsable
+    private Long jefeId;
+    private String jefeNombre;
 
-    public boolean isCompletado() {
-        return completado;
-    }
-
-    public void setCompletado(boolean completado) {
-        this.completado = completado;
-    }
-
-    private Double presupuesto;
+    // Relaciones - Empleados asignados
     private Set<Long> empleadosIds = new HashSet<>();
-    private Set<Long> registrosTiempoIds;
-
-    // Nuevo campo para almacenar los nombres de los empleados
     private List<String> empleadosNombres = new ArrayList<>();
 
-    // Metodo para asegurar que empleadosIds nunca sea null
+    // Información financiera
+    private Double presupuesto;
+
+    // Registros de tiempo asociados
+    private Set<Long> registrosTiempoIds;
+
+    // Métodos para asegurar que las colecciones nunca sean null
     public Set<Long> getEmpleadosIds() {
         if (empleadosIds == null) {
             empleadosIds = new HashSet<>();
@@ -44,7 +43,6 @@ public class ProyectoDTO {
         return empleadosIds;
     }
 
-    // Método para asegurar que empleadosNombres nunca sea null
     public List<String> getEmpleadosNombres() {
         if (empleadosNombres == null) {
             empleadosNombres = new ArrayList<>();

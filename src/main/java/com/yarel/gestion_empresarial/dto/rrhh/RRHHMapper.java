@@ -1,14 +1,9 @@
 package com.yarel.gestion_empresarial.dto.rrhh;
 
 import com.yarel.gestion_empresarial.entidades.RRHH;
-
 import org.mapstruct.CollectionMappingStrategy;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-
 import java.util.List;
-import java.util.Set;
-
 
 @Mapper(
         componentModel = "spring",
@@ -16,10 +11,11 @@ import java.util.Set;
 )
 public interface RRHHMapper {
 
-    RRHHDTO toDto(RRHH entity);
-    RRHH toEntity(RRHHDTO dto);
+    // Conversiones individuales
+    RRHHDTO toDto(RRHH rrhh);
+    RRHH toEntity(RRHHDTO rrhhDto);
 
-    List<RRHHDTO> toDtoList(List<RRHH> list);
-    List<RRHH> toEntityList(List<RRHHDTO> list);
-
+    // Conversiones de listas
+    List<RRHHDTO> toDtoList(List<RRHH> rrhhList);
+    List<RRHH> toEntityList(List<RRHHDTO> rrhhDtoList);
 }

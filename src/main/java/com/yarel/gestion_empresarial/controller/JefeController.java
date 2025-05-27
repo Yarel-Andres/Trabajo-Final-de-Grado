@@ -36,27 +36,4 @@ public class JefeController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // Crear un nuevo jefe
-    @PostMapping
-    public ResponseEntity<JefeDTO> createJefe(@Valid @RequestBody JefeDTO jefeDTO) {
-        JefeDTO createdJefe = jefeService.save(jefeDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdJefe);
-    }
-
-    // Actualizar un jefe existente
-    @PutMapping("/{id}")
-    public ResponseEntity<JefeDTO> updateJefe(
-            @PathVariable Long id,
-            @Valid @RequestBody JefeDTO jefeDTO) {
-        return jefeService.update(id, jefeDTO)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    // Eliminar un jefe por ID
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteJefe(@PathVariable Long id) {
-        boolean deleted = jefeService.deleteById(id);
-        return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
-    }
 }

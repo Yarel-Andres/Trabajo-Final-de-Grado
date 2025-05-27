@@ -9,13 +9,14 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.Objects;
 
+// Entidad que representa una reunión en el sistema
 @Entity
 @Table(name = "reuniones")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+// Excluye colecciones para evitar ciclos infinitos en equals/hashCode
 @EqualsAndHashCode(exclude = {"participantes", "registrosTiempo"})
 public class Reunion {
 
@@ -32,7 +33,6 @@ public class Reunion {
     @Column(name = "fecha_hora")
     private LocalDateTime fechaHora;
 
-    // Añadir estos campos a la clase Reunion
     @Column(nullable = false)
     private boolean completada = false;
 
@@ -42,11 +42,12 @@ public class Reunion {
     @Column
     private String sala;
 
+    // Jefe que organiza la reunión
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "organizador_id")
     private Jefe organizador;
 
-    // una reunión puede tener múltiples participantes y un usuario puede participar en varias reuniones
+    // Usuarios que participan en la reunión
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "reunion_participantes",
@@ -55,25 +56,7 @@ public class Reunion {
     )
     private Set<Usuario> participantes = new HashSet<>();
 
-    // una reunión puede tener múltiples registros de tiempo asociados
-    // cualquier cambio en Reunion afectará también a RegistroTiempo
+    // Registros de tiempo asociados a la reunión
     @OneToMany(mappedBy = "reunion", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<RegistroTiempo> registrosTiempo = new HashSet<>();
-
-    // Implementación personalizada de hashCode para evitar ciclos infinitos
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, titulo, fechaHora, sala);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Reunion reunion = (Reunion) o;
-        return Objects.equals(id, reunion.id) &&
-                Objects.equals(titulo, reunion.titulo) &&
-                Objects.equals(fechaHora, reunion.fechaHora) &&
-                Objects.equals(sala, reunion.sala);
-    }
 }

@@ -6,12 +6,12 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Objects;
 
+// Entidad que representa una tarea en el sistema
 @Entity
 @Table(name = "tareas")
 @Data
@@ -27,28 +27,27 @@ public class Tarea {
     @Column(nullable = false)
     private String titulo;
 
-    // Se almacena como tipo TEXT en la base de datos, lo que permite grandes cantidades de texto.
+    // Descripción almacenada como TEXT para permitir contenido extenso
     @Column(columnDefinition = "TEXT")
     private String descripcion;
 
-
-    // Eager indica que la relación se cargará inmediatamente con la tarea
+    // Relación con empleado asignado - EAGER para cargar inmediatamente
     @ManyToOne(fetch = FetchType.EAGER)
-    // indica la columna que almacenará la referencia al empleado
     @JoinColumn(name = "empleado_id")
     private Empleado empleado;
 
+    // Relación con jefe que asigna la tarea
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "jefe_id")
     private Jefe jefe;
 
-    // Relación con Proyecto - Una tarea pertenece a un proyecto
+    // Relación con proyecto al que pertenece la tarea
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "proyecto_id")
     private Proyecto proyecto;
 
+    // Fecha de creación automática
     @Column(name = "fecha_creacion")
-    // Se inicializa automáticamente con la fecha y hora actual
     private LocalDateTime fechaCreacion = LocalDateTime.now();
 
     @Column(name = "fecha_vencimiento")
@@ -57,18 +56,18 @@ public class Tarea {
     @Column
     private boolean completada = false;
 
-    // Guarda la fecha en que la tarea fue completada
+    // Fecha en que se completó la tarea
     @Column(name = "fecha_completada")
     private LocalDateTime fechaCompletada;
 
     @Column
     private String prioridad;
-    // permite que cualquier cambio en Tarea afecte también a RegistroTiempo
-    // (por ejemplo, si se elimina una tarea, también se eliminan sus registros de tiempo)
+
+    // Relación con registros de tiempo - LAZY para optimizar rendimiento
     @OneToMany(mappedBy = "tarea", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     private Set<RegistroTiempo> registrosTiempo = new HashSet<>();
 
-    // Implementación personalizada de hashCode para evitar ciclos infinitos
+    // Implementación personalizada para evitar ciclos infinitos
     @Override
     public int hashCode() {
         return Objects.hash(id, titulo, fechaCreacion);

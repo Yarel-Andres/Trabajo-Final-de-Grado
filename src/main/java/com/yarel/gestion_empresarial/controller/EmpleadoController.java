@@ -36,36 +36,4 @@ public class EmpleadoController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
-
-    // Obtener empleado con sus tareas
-    @GetMapping("/{id}/tareas")
-    public ResponseEntity<EmpleadoConTareasDTO> getEmpleadoConTareas(@PathVariable Long id) {
-        return empleadoService.findByIdWithTareas(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    // Crear un nuevo empleado
-    @PostMapping
-    public ResponseEntity<EmpleadoDTO> createEmpleado(@Valid @RequestBody EmpleadoDTO empleadoDTO) {
-        EmpleadoDTO createdEmpleado = empleadoService.save(empleadoDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdEmpleado);
-    }
-
-    // Actualizar un empleado existente
-    @PutMapping("/{id}")
-    public ResponseEntity<EmpleadoDTO> updateEmpleado(
-            @PathVariable Long id,
-            @Valid @RequestBody EmpleadoDTO empleadoDTO) {
-        return empleadoService.update(id, empleadoDTO)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    // Eliminar un empleado por ID
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteEmpleado(@PathVariable Long id) {
-        boolean deleted = empleadoService.deleteById(id);
-        return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
-    }
 }

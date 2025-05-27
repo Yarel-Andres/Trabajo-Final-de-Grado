@@ -16,7 +16,7 @@ import java.util.Objects;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(exclude = {"registrosTiempo", "empleados"})
+@EqualsAndHashCode(exclude = {"registrosTiempo", "empleados", "presupuestos"})
 public class Proyecto {
 
     @Id
@@ -29,6 +29,7 @@ public class Proyecto {
     @Column(columnDefinition = "TEXT")
     private String descripcion;
 
+    // Jefe responsable del proyecto
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "jefe_id")
     private Jefe jefe;
@@ -48,23 +49,14 @@ public class Proyecto {
     @Column
     private Double presupuesto;
 
-
     @Column(name = "completado", nullable = false)
     private boolean completado = false;
 
-    public boolean isCompletado() {
-        return completado;
-    }
-
-    public void setCompletado(boolean completado) {
-        this.completado = completado;
-    }
-
-
+    // Registros de tiempo asociados al proyecto
     @OneToMany(mappedBy = "proyecto", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<RegistroTiempo> registrosTiempo = new HashSet<>();
 
-    // Relación muchos a muchos con Empleado para que se le puedan asginar proyectos
+    // Empleados asignados al proyecto
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "proyecto_empleados",
@@ -73,7 +65,11 @@ public class Proyecto {
     )
     private Set<Empleado> empleados = new HashSet<>();
 
-    // Implementación personalizada de hashCode para evitar ciclos infinitos
+    // Presupuestos asociados al proyecto
+    @OneToMany(mappedBy = "proyecto", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<Presupuesto> presupuestos = new HashSet<>();
+
+    // Implementación personalizada para evitar ciclos infinitos
     @Override
     public int hashCode() {
         return Objects.hash(id, nombre, fechaInicio);
@@ -88,8 +84,4 @@ public class Proyecto {
                 Objects.equals(nombre, proyecto.nombre) &&
                 Objects.equals(fechaInicio, proyecto.fechaInicio);
     }
-
-    // Añade esta relación a la clase Proyecto.java
-    @OneToMany(mappedBy = "proyecto", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<Presupuesto> presupuestos = new HashSet<>();
 }
