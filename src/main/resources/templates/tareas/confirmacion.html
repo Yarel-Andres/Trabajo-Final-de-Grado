@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head th:replace="fragments/layout :: head('Tarea Asignada')">
 </head>
 <body>
@@ -8,8 +8,10 @@
 
 <div class="container">
     <div class="card shadow-sm task-confirmation-card">
+        <!-- Estructura -->
         <div class="card-body text-center">
             <div class="confirmation-icon">
+                <!-- Ícono de éxito -->
                 <i class="fas fa-check-circle"></i>
             </div>
             <h2 class="confirmation-title">Tarea Asignada Correctamente</h2>
@@ -21,7 +23,8 @@
             </div>
 
             <div class="confirmation-actions">
-                <a th:href="@{/tareas/asignar}" class="btn btn-success">
+                <!-- Botones disponibles para el usuario -->
+                <a th:href="@{/tareas/asignar}" class="btn btn-primary">
                     <i class="fas fa-plus me-2"></i>Asignar Otra Tarea
                 </a>
                 <a th:href="@{/dashboard}" class="btn btn-secondary">
@@ -31,5 +34,9 @@
         </div>
     </div>
 </div>
+
+<!-- JS -->
+<link rel="stylesheet" th:href="@{/css/tareas-styles.css}">
+<script th:src="@{/scripts/tareas.js}"></script>
 </body>
 </html>

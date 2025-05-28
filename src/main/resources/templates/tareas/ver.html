@@ -1,16 +1,21 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head th:replace="fragments/layout :: head('Mis Tareas')">
+    <!-- CSS -->
+    <link rel="stylesheet" th:href="@{/css/tareas-styles.css}">
 </head>
 <body>
 <header th:replace="fragments/layout :: header(${#authentication.name})">
 </header>
 
 <div class="container">
+    <!-- Contenedor para mensajes de alerta -->
     <div th:replace="fragments/layout :: messages"></div>
 
+    <!-- Tarjeta principal -->
     <div class="card shadow-sm border-0 mb-4">
         <div class="card-body">
+            <!-- Encabezado de la página -->
             <div class="d-flex align-items-center mb-4">
                 <div class="d-flex align-items-center justify-content-center bg-primary bg-opacity-10 rounded-circle p-3 me-3">
                     <i class="fas fa-tasks text-primary fa-lg"></i>
@@ -21,6 +26,7 @@
                 </div>
             </div>
 
+            <!-- Mensaje cuando no hay tareas -->
             <div th:if="${tareas == null || tareas.empty}" class="alert alert-info d-flex align-items-center">
                 <i class="fas fa-info-circle me-3 fa-lg"></i>
                 <div>
@@ -29,6 +35,7 @@
                 </div>
             </div>
 
+            <!-- Tabla de tareas cuando hay datos -->
             <div th:if="${tareas != null && !tareas.empty}" class="table-responsive">
                 <table class="table table-hover">
                     <thead class="table-light">
@@ -42,16 +49,23 @@
                     </tr>
                     </thead>
                     <tbody>
+                    <!-- Itera por cada tarea del empleado -->
                     <tr th:each="tarea : ${tareas}" th:data-estado="${tarea.completada}">
                         <td th:text="${tarea.titulo}">Título</td>
                         <td>
                             <span th:text="${#strings.abbreviate(tarea.descripcion, 50)}">Descripción</span>
-                            <button th:if="${#strings.length(tarea.descripcion) > 50}" class="btn btn-sm btn-link p-0 ms-1"
-                                    data-bs-toggle="tooltip" th:data-bs-title="${tarea.descripcion}">
+                            <button th:if="${#strings.length(tarea.descripcion) > 50}"
+                                    class="btn btn-sm btn-link p-0 ms-1"
+                                    data-bs-toggle="tooltip"
+                                    th:data-bs-title="${tarea.descripcion}">
                                 <i class="fas fa-info-circle"></i>
                             </button>
                         </td>
+
+                        <!-- Fecha límite -->
                         <td th:text="${#temporals.format(tarea.fechaVencimiento, 'dd/MM/yyyy')}">Fecha Límite</td>
+
+                        <!-- Barra de prioridad con iconos -->
                         <td>
                             <span th:if="${tarea.prioridad == 'ALTA'}" class="badge bg-danger">
                                 <i class="fas fa-arrow-up me-1"></i> Alta
@@ -63,6 +77,8 @@
                                 <i class="fas fa-arrow-down me-1"></i> Baja
                             </span>
                         </td>
+
+                        <!-- Barra de estado -->
                         <td>
                             <span th:if="${!tarea.completada}" class="badge bg-warning text-dark">
                                 <i class="fas fa-hourglass-half me-1"></i> Pendiente
@@ -71,16 +87,25 @@
                                 <i class="fas fa-check-circle me-1"></i> Completada
                             </span>
                         </td>
+
+                        <!-- Botones de acción -->
                         <td>
-                            <a th:if="${!tarea.completada}" th:href="@{/registros-tiempo/crear(tareaId=${tarea.id})}" class="btn btn-sm btn-outline-primary me-1">
+                            <a th:if="${!tarea.completada}"
+                               th:href="@{/registros-tiempo/crear(tareaId=${tarea.id})}"
+                               class="btn btn-sm btn-outline-primary me-1">
                                 <i class="fas fa-clock me-1"></i>Registrar Tiempo
                             </a>
-                            <form th:if="${!tarea.completada}" th:action="@{/tareas/finalizar}" method="post" class="d-inline">
+
+                            <form th:if="${!tarea.completada}"
+                                  th:action="@{/tareas/finalizar}"
+                                  method="post"
+                                  class="d-inline">
                                 <input type="hidden" name="tareaId" th:value="${tarea.id}" />
                                 <button type="submit" class="btn btn-sm btn-outline-success">
                                     <i class="fas fa-flag-checkered me-1"></i>Finalizar
                                 </button>
                             </form>
+
                             <button th:if="${tarea.completada}" class="btn btn-sm btn-outline-secondary" disabled>
                                 <i class="fas fa-check-double me-1"></i>Finalizada
                             </button>
@@ -90,6 +115,7 @@
                 </table>
             </div>
 
+            <!-- Botón para volver al dashboard -->
             <div class="mt-4">
                 <a th:href="@{/dashboard}" class="btn btn-primary">
                     <i class="fas fa-arrow-left me-2"></i>Volver al Dashboard
@@ -99,87 +125,10 @@
     </div>
 </div>
 
+<!-- Footer -->
 <div th:replace="fragments/layout :: footer"></div>
 
-<!-- Estilos para animación suave -->
-<style>
-    .btn-outline-primary {
-        color: #345676;
-        border-color: #345676;
-        transition: all 0.2s ease;
-    }
-
-    .btn-outline-primary:hover {
-        background-color: #345676;
-        color: white;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 6px rgba(52, 86, 118, 0.2);
-    }
-
-    .btn-outline-success {
-        color: #28a745;
-        border-color: #28a745;
-        transition: all 0.2s ease;
-    }
-
-    .btn-outline-success:hover {
-        background-color: #28a745;
-        color: white;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 6px rgba(40, 167, 69, 0.2);
-    }
-
-    .btn-primary {
-        background-color: #345676;
-        border-color: #345676;
-        transition: all 0.2s ease;
-    }
-
-    .btn-primary:hover {
-        background-color: #2a4560;
-        border-color: #2a4560;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 6px rgba(52, 86, 118, 0.2);
-    }
-
-    .badge {
-        font-weight: 500;
-    }
-
-    .table-hover tbody tr:hover {
-        background-color: rgba(52, 86, 118, 0.05);
-    }
-
-    .badge.bg-warning {
-        background-color: #fff3cd !important;
-        color: #856404 !important;
-        border: 1px solid #ffeaa7;
-    }
-
-    .badge.bg-info {
-        background-color: #d1ecf1 !important;
-        color: #0c5460 !important;
-    }
-
-    .badge.bg-danger {
-        background-color: #f8d7da !important;
-        color: #721c24 !important;
-    }
-
-    .badge.bg-success {
-        background-color: #d4edda !important;
-        color: #155724 !important;
-    }
-</style>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Inicializar tooltips
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl);
-        });
-    });
-</script>
+<!-- JS -->
+<script th:src="@{/scripts/tareas.js}"></script>
 </body>
 </html>

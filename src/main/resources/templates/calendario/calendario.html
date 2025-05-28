@@ -1,14 +1,10 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/layout :: head('Calendario de Actividades')">
-    <!-- Este contenido será reemplazado por el fragmento head -->
-</head>
+<head th:replace="fragments/layout :: head('Calendario de Actividades')"></head>
 <body>
-<header th:replace="fragments/layout :: header(${username})">
-    <!-- Este contenido será reemplazado por el fragmento header -->
-</header>
+<header th:replace="fragments/layout :: header(${username})"></header>
 
-<div class="container-fluid" style="max-width: 1200px;">
+<div class="container-fluid calendar-page">
     <div th:replace="fragments/layout :: messages"></div>
 
     <div class="card shadow-sm">
@@ -16,7 +12,7 @@
             <h2 class="card-title mb-4">Calendario de Actividades</h2>
 
             <!-- Filtros -->
-            <div class="mb-4">
+            <div class="mb-4 filter-section">
                 <div class="form-check form-check-inline">
                     <input class="form-check-input" type="checkbox" id="mostrarTareas" checked>
                     <label class="form-check-label" for="mostrarTareas">
@@ -32,17 +28,17 @@
                 <div class="form-check form-check-inline">
                     <input class="form-check-input" type="checkbox" id="mostrarReuniones" checked>
                     <label class="form-check-label" for="mostrarReuniones">
-                        <span class="badge" style="background-color: #8540f5;">Reuniones</span>
+                        <span class="badge badge-reunion">Reuniones</span>
                     </label>
                 </div>
             </div>
 
             <!-- Contenedor del calendario -->
-            <div id="calendario" style="height: 550px;"></div>
+            <div id="calendario" class="calendar-container"></div>
 
-            <!-- Botón Volver al Dashboard -->
+            <!-- Botón Volver -->
             <div class="mt-4 ms-2 text-start">
-                <a href="/dashboard" class="btn btn-primary">
+                <a href="/dashboard" class="btn btn-primary btn-back">
                     <i class="fas fa-arrow-left me-2"></i>Volver al Dashboard
                 </a>
             </div>
@@ -50,283 +46,22 @@
     </div>
 </div>
 
-<!-- Estilo para cambiar el cursor a pointer en los eventos y forzar visualización de puntos -->
-<style>
-    /* Estilos comunes para todos los eventos */
-    .fc-event {
-        cursor: pointer !important;
-        transition: all 0.2s ease !important;
-    }
-
-    /* Forzar visualización como puntos para todos los eventos */
-    .fc-daygrid-event {
-        display: flex !important;
-        white-space: nowrap !important;
-        align-items: center !important;
-        background: transparent !important;
-        border: none !important;
-    }
-
-    /* Crear el punto manualmente para todos los eventos */
-    .fc-daygrid-event::before {
-        content: '';
-        display: inline-block;
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        margin-right: 5px;
-        transition: transform 0.2s ease !important;
-    }
-
-    /* Colores específicos para cada tipo de evento */
-    .fc-event.evento-tarea::before {
-        background-color: #0d6efd; /* Azul para todas las tareas */
-    }
-
-    .fc-event.evento-proyecto::before {
-        background-color: #198754; /* Verde para proyectos */
-    }
-
-    .fc-event.evento-reunion::before {
-        background-color: #8540f5; /* Púrpura para reuniones */
-    }
-
-    /* Ocultar el punto original de FullCalendar */
-    .fc-daygrid-event-dot {
-        display: none !important;
-    }
-
-    /* Estilo para la hora en eventos */
-    .fc-event-time {
-        font-size: 0.85em;
-        opacity: 0.8;
-        margin-right: 3px;
-    }
-
-    /* Estilo para el título de los eventos */
-    .fc-event-title {
-        font-weight: normal;
-        color: #3465a6 !important;
-    }
-
-    /* Estilo para eventos en la vista de semana */
-    .fc-timegrid-event {
-        background: transparent !important;
-        border: none !important;
-        display: flex !important;
-        align-items: center !important;
-    }
-
-    .fc-timegrid-event::before {
-        content: '';
-        display: inline-block;
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        margin-right: 4px;
-    }
-
-    .fc-timegrid-event.evento-tarea::before {
-        background-color: #0d6efd;
-    }
-
-    .fc-timegrid-event.evento-proyecto::before {
-        background-color: #198754;
-    }
-
-    .fc-timegrid-event.evento-reunion::before {
-        background-color: #8540f5;
-    }
-
-    /* Estilo para el botón Volver al Dashboard */
-    .btn-primary {
-        background-color: #345676 !important;
-        border-color: #345676 !important;
-        transition: all 0.2s ease !important;
-    }
-
-    .btn-primary:hover {
-        background-color: #2a4560 !important;
-        border-color: #2a4560 !important;
-        transform: translateY(-2px) !important;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.2) !important;
-    }
-</style>
-
-<!-- FullCalendar CSS y JS -->
+<!-- FullCalendar -->
 <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales/es.js"></script>
 
+<!-- Archivos específicos -->
+<link th:href="@{/css/calendario-styles.css}" rel="stylesheet">
+<script th:src="@{/scripts/calendario.js}"></script>
+
+<!-- Datos del servidor -->
 <script th:inline="javascript">
-    document.addEventListener('DOMContentLoaded', function() {
-        // Obtener los datos del modelo
-        const tareas = /*[[${tareas}]]*/ [];
-        const proyectos = /*[[${proyectos}]]*/ [];
-        const reuniones = /*[[${reuniones}]]*/ [];
-
-        // 1. Convertir las tareas al formato de eventos
-        const eventosTareas = tareas.map(tarea => {
-            // Asegurarse de que la fecha de vencimiento incluya hora
-            let fechaVencimiento = tarea.fechaVencimiento;
-            if (fechaVencimiento && !fechaVencimiento.includes('T')) {
-                // Si la fecha no incluye hora (formato: YYYY-MM-DD), añadir hora
-                fechaVencimiento = fechaVencimiento + 'T18:00:00';
-            }
-
-            return {
-                id: 'tarea-' + tarea.id,
-                title: tarea.titulo,
-                start: fechaVencimiento, // Usar la fecha con hora
-                description: tarea.descripcion,
-                backgroundColor: 'transparent',
-                borderColor: 'transparent',
-                textColor: '#212529',
-                allDay: false, // Cambiar a false para mostrar la hora
-                className: 'evento-tarea',
-                tipo: 'tarea',
-                extendedProps: {
-                    id: tarea.id,
-                    proyectoNombre: tarea.nombreProyecto,
-                    jefeNombre: tarea.jefeNombre,
-                    completada: tarea.completada,
-                    prioridad: tarea.prioridad
-                }
-            };
-        });
-
-        // 2. Convertir los proyectos al formato de eventos
-        const eventosProyectos = proyectos.map(proyecto => {
-            // Asegurarse de que la fecha de fin estimada incluya hora
-            let fechaFinEstimada = proyecto.fechaFinEstimada;
-            if (fechaFinEstimada && !fechaFinEstimada.includes('T')) {
-                // Si la fecha no incluye hora (formato: YYYY-MM-DD), añadir hora
-                fechaFinEstimada = fechaFinEstimada + 'T18:00:00';
-            }
-
-            return {
-                id: 'proyecto-' + proyecto.id,
-                title: proyecto.nombre,
-                start: fechaFinEstimada,
-                description: proyecto.descripcion,
-                backgroundColor: 'transparent',
-                borderColor: 'transparent',
-                textColor: '#212529',
-                allDay: false, // Cambiar a false para mantener consistencia con tareas
-                className: 'evento-proyecto',
-                tipo: 'proyecto',
-                extendedProps: {
-                    id: proyecto.id,
-                    jefeNombre: proyecto.jefeNombre,
-                    fechaInicio: proyecto.fechaInicio,
-                    estado: proyecto.estado,
-                    completado: proyecto.completado
-                }
-            };
-        });
-
-        // 3. Convertir las reuniones al formato de eventos
-        const eventosReuniones = reuniones.map(reunion => {
-            return {
-                id: 'reunion-' + reunion.id,
-                title: reunion.titulo,
-                start: reunion.fechaHora,
-                description: reunion.descripcion,
-                backgroundColor: 'transparent',
-                borderColor: 'transparent',
-                textColor: '#212529',
-                allDay: false, // Ya está como false para mostrar hora específica
-                className: 'evento-reunion',
-                tipo: 'reunion',
-                extendedProps: {
-                    id: reunion.id,
-                    organizadorNombre: reunion.organizadorNombre,
-                    sala: reunion.sala,
-                    participantesNombres: reunion.participantesNombres,
-                    completada: reunion.completada
-                }
-            };
-        });
-
-        // Combinar todos los eventos
-        const todosLosEventos = [
-            ...eventosTareas,
-            ...eventosProyectos,
-            ...eventosReuniones
-        ];
-
-        // Inicializar el calendario
-        const calendarEl = document.getElementById('calendario');
-        const calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'dayGridMonth',
-            headerToolbar: {
-                left: 'prev,next today',
-                center: 'title',
-                right: 'dayGridMonth,timeGridWeek,listWeek'
-            },
-            locale: 'es',
-            events: todosLosEventos,
-            eventTimeFormat: { // Personalizar formato de hora
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false // Formato 24 horas
-            },
-            eventClick: function(info) {
-                const evento = info.event;
-                const tipo = evento.extendedProps.tipo;
-                const id = evento.extendedProps.id;
-
-                // Redireccionar según el tipo de evento
-                if (tipo === 'tarea') {
-                    window.location.href = '/tareas/ver';
-                } else if (tipo === 'proyecto') {
-                    window.location.href = '/proyectos/ver';
-                } else if (tipo === 'reunion') {
-                    window.location.href = '/reuniones/ver';
-                }
-            }
-        });
-
-        calendar.render();
-
-        // Implementar filtros
-        document.getElementById('mostrarTareas').addEventListener('change', function() {
-            filtrarEventos();
-        });
-
-        document.getElementById('mostrarProyectos').addEventListener('change', function() {
-            filtrarEventos();
-        });
-
-        document.getElementById('mostrarReuniones').addEventListener('change', function() {
-            filtrarEventos();
-        });
-
-        function filtrarEventos() {
-            const mostrarTareas = document.getElementById('mostrarTareas').checked;
-            const mostrarProyectos = document.getElementById('mostrarProyectos').checked;
-            const mostrarReuniones = document.getElementById('mostrarReuniones').checked;
-
-            // Filtrar eventos según las opciones seleccionadas
-            let eventosFiltrados = [];
-
-            if (mostrarTareas) {
-                eventosFiltrados = eventosFiltrados.concat(eventosTareas);
-            }
-
-            if (mostrarProyectos) {
-                eventosFiltrados = eventosFiltrados.concat(eventosProyectos);
-            }
-
-            if (mostrarReuniones) {
-                eventosFiltrados = eventosFiltrados.concat(eventosReuniones);
-            }
-
-            // Actualizar eventos en el calendario
-            calendar.removeAllEvents();
-            calendar.addEventSource(eventosFiltrados);
-        }
-    });
+    window.calendarioData = {
+        tareas: /*[[${tareas}]]*/ [],
+        proyectos: /*[[${proyectos}]]*/ [],
+        reuniones: /*[[${reuniones}]]*/ []
+    };
 </script>
 </body>
 </html>

@@ -1,227 +1,135 @@
-/* Estilos específicos para el dashboard que combinan con el login */
-
-/* Variables globales - Paleta de colores actualizada para combinar con el login */
-:root {
-    /* Colores primarios - Azules que combinan con el login */
-    --primary-color: #345676;
-    --primary-light: #4a6b8a;
-    --primary-dark: #284258;
-
-    /* Colores de acento */
-    --accent-color: #5b9bd5;
-    --accent-light: #7fb1e0;
-    --accent-dark: #4785c2;
-
-    /* Colores para el efecto glassmorphism */
-    --glass-bg: rgba(255, 255, 255, 0.15);
-    --glass-border: rgba(255, 255, 255, 0.2);
-    --glass-shadow: rgba(0, 0, 0, 0.1);
-
-    /* Gradientes */
-    --gradient-primary: linear-gradient(135deg, #345676, #284258);
-    --gradient-accent: linear-gradient(135deg, #5b9bd5, #4785c2);
-    --gradient-background: linear-gradient(135deg, #345676, #5b9bd5);
+/* Sección de fecha en el header */
+.dashboard-date-icon {
+    display: inline-block;
+    padding: 0.75rem;
+    border-radius: 50%;
+    background-color: #f8f9fa;
+    color: #0d6efd;
 }
 
-/* Estilos generales del dashboard */
-.dashboard-body {
-    background: var(--gradient-background);
-    background-attachment: fixed;
-    color: #fff;
-    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    min-height: 100vh;
-    position: relative;
+.dashboard-date-info {
+    display: inline-block;
+    margin-left: 0.5rem;
 }
 
-/* Contenedor principal */
-.dashboard-container {
-    display: flex;
-    min-height: calc(100vh - 60px);
-    padding-top: 60px; /* Altura del header */
-}
-
-/* Contenido principal */
-.dashboard-content {
-    flex: 1;
-    padding: 2rem;
-    margin-left: 260px; /* Ancho del sidebar */
-    transition: margin 0.3s ease;
-}
-
-/* Efecto glassmorphism para tarjetas */
-.glass-card {
-    background: var(--glass-bg);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid var(--glass-border);
-    border-radius: 15px;
-    box-shadow: 0 8px 32px 0 var(--glass-shadow);
-    transition: all 0.3s ease;
-}
-
-.glass-card:hover {
-    transform: none;
-    box-shadow: 0 8px 32px 0 var(--glass-shadow);
-}
-
-/* Header del dashboard */
-.dashboard-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.5rem;
-    margin-bottom: 2rem;
-}
-
-.welcome-section {
-    flex: 1;
-}
-
-.dashboard-title {
-    font-size: 1.75rem;
-    font-weight: 700;
-    margin-bottom: 0.25rem;
-    color: #fff;
-}
-
-.welcome-message {
-    font-size: 1rem;
-    color: rgba(255, 255, 255, 0.8);
-    margin-bottom: 0.25rem;
-}
-
-.user-name {
-    font-weight: 600;
-    color: #fff;
-}
-
-.date-display {
-    font-size: 0.875rem;
-    color: rgba(255, 255, 255, 0.7);
-    margin-bottom: 0;
-}
-
-/* Sección de cabecera */
-.section-header {
+/* Header de secciones */
+.dashboard-section-header {
     display: flex;
     align-items: center;
-    padding: 1rem 1.5rem;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
 }
 
 /* Tarjetas del dashboard */
 .dashboard-card {
-    height: 100%;
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
     transition: all 0.3s ease;
-    overflow: hidden;
+    opacity: 0;
+    transform: translateY(20px);
 }
 
-.dashboard-card:hover {
-    transform: none;
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.05);
+.dashboard-card.fade-in {
+    opacity: 1;
+    transform: translateY(0);
 }
 
+/* Cuerpo de las tarjetas */
 .dashboard-card .card-body {
-    padding: 1.75rem;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+/* Iconos grandes de las tarjetas - centrados arriba */
+.dashboard-card .fa-2x {
+    display: block;
+    margin: 0 auto 1rem auto;
+    text-align: center;
+}
+
+/* Colores específicos de iconos */
+.dashboard-icon-tasks {
+    color: #3498db;
+}
+
+.dashboard-icon-meetings {
+    color: #9b59b6;
+}
+
+.dashboard-icon-projects {
+    color: #2ecc71;
+}
+
+.dashboard-icon-time {
+    color: #e67e22;
+}
+
+.dashboard-icon-completed {
+    color: #34495e;
+}
+
+.dashboard-icon-calendar {
+    color: #2980b9;
+}
+
+.dashboard-icon-budget {
+    color: #f1c40f;
+}
+
+.dashboard-icon-reports {
+    color: #3498db;
+}
+
+/* Títulos de las tarjetas */
+.dashboard-card .card-title {
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+/* Texto descriptivo */
+.dashboard-card .card-text {
+    margin-bottom: 1.5rem;
+    color: #6c757d;
+}
+
+/* Grupo de botones en las tarjetas */
+.button-group {
     display: flex;
     flex-direction: column;
-    height: 100%;
+    gap: 0.5rem;
 }
 
-.dashboard-card .card-title {
-    font-size: 1.25rem;
-    font-weight: 600;
-    margin-bottom: 0.75rem;
-    color: #fff;
-}
-
-.dashboard-card .card-text {
-    color: rgba(255, 255, 255, 0.8);
-    margin-bottom: 1.5rem;
-    flex-grow: 1;
-}
-
-.card-icon {
-    color: rgba(255, 255, 255, 0.9);
-    margin-bottom: 1rem;
-}
-
-/* Botones */
-.btn-primary {
-    background: var(--gradient-primary);
-    border: none;
-    color: #fff;
-    font-weight: 500;
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-}
-
-.btn-primary:hover {
-    background: var(--gradient-accent);
-    transform: none;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-}
-
-.btn-outline-primary {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    color: #fff;
-    font-weight: 500;
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-}
-
-.btn-outline-primary:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: none;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-}
-
+/* Botones con iconos */
 .btn-icon {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    margin-top: 0.5rem;
+    padding: 0.5rem 1rem;
 }
 
-/* Animaciones */
+/* Espaciado entre filas de tarjetas */
+.row.mt-4 {
+    margin-top: 1.5rem !important;
+}
+
+/* Espaciado entre columnas */
+.row.g-4 > * {
+    padding: 0.75rem;
+}
+
+/* Animación fade-in */
 .fade-in {
-    animation: fadeIn 0.5s ease forwards;
+    opacity: 1;
+    animation: fadeInUp 0.6s ease-out;
 }
 
-@keyframes fadeIn {
+@keyframes fadeInUp {
     from {
         opacity: 0;
-        transform: translateY(10px);
+        transform: translateY(20px);
     }
     to {
         opacity: 1;
         transform: translateY(0);
-    }
-}
-
-/* Responsive */
-@media (max-width: 991.98px) {
-    .dashboard-content {
-        margin-left: 0;
-    }
-
-    .dashboard-header {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .quick-actions {
-        margin-top: 1rem;
-        width: 100%;
-    }
-}
-
-@media (max-width: 767.98px) {
-    .dashboard-content {
-        padding: 1rem;
     }
 }

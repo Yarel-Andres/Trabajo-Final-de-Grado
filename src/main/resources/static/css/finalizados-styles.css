@@ -1,0 +1,26 @@
+.page-title {
+    margin-bottom: 2rem;
+    color: #2c4f6e;
+    font-weight: 600;
+}
+
+.section-title {
+    font-size: 1.25rem;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    color: #495057;
+    font-weight: 500;
+}
+
+.back-btn {
+    background-color: #345676;
+    border-color: #345676;
+    transition: all 0.2s ease;
+}
+
+.back-btn:hover {
+    background-color: #2a4560;
+    border-color: #2a4560;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(52, 86, 118, 0.2);
+}

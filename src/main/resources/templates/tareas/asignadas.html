@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head th:replace="fragments/layout :: head('Tareas Asignadas')">
 </head>
 <body>
@@ -68,14 +68,14 @@
                                         <span th:text="${tarea.empleadoNombre}">Empleado</span>
                                     </td>
                                     <td>
+                                       <span class="badge bg-light text-dark">
+                                           <i class="far fa-calendar-alt me-1"></i>
+                                           <span th:text="${#temporals.format(tarea.fechaVencimiento, 'dd/MM/yyyy')}">Fecha</span>
+                                       </span>
                                         <span class="badge bg-light text-dark">
-                                            <i class="far fa-calendar-alt me-1"></i>
-                                            <span th:text="${#temporals.format(tarea.fechaVencimiento, 'dd/MM/yyyy')}">Fecha</span>
-                                        </span>
-                                        <span class="badge bg-light text-dark">
-                                            <i class="far fa-clock me-1"></i>
-                                            <span th:text="${#temporals.format(tarea.fechaVencimiento, 'HH:mm')}">Hora</span>
-                                        </span>
+                                           <i class="far fa-clock me-1"></i>
+                                           <span th:text="${#temporals.format(tarea.fechaVencimiento, 'HH:mm')}">Hora</span>
+                                       </span>
                                     </td>
                                     <td>
                                         <span th:if="${tarea.prioridad == 'ALTA'}" class="badge badge-soft-danger">Alta</span>
@@ -114,162 +114,10 @@
 
 <div th:replace="fragments/layout :: footer"></div>
 
-<!-- Script para manejar la eliminación de tareas sin recargar la página -->
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('Script de tareas asignadas cargado');
+<!-- JS -->
+<script th:src="@{/scripts/tareas.js}"></script>
 
-        // Capturar todos los formularios de eliminación
-        var forms = document.querySelectorAll('.form-eliminar');
-        console.log('Formularios encontrados:', forms.length);
-
-        forms.forEach(function(form) {
-            form.addEventListener('submit', function(e) {
-                e.preventDefault(); // Prevenir el envío normal del formulario
-
-                var formData = new FormData(form);
-                var tareaId = formData.get('tareaId');
-                var row = document.getElementById('tarea-' + tareaId);
-                console.log('Finalizando tarea:', tareaId);
-
-                // Enviar la solicitud mediante fetch API
-                fetch(form.action, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                })
-                    .then(function(response) {
-                        if (response.ok) {
-                            console.log('Respuesta exitosa');
-                            // Si la respuesta es exitosa, eliminar la fila
-                            if (row) {
-                                row.style.opacity = '0';
-                                row.style.transform = 'translateY(-20px)';
-                                row.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
-
-                                setTimeout(function() {
-                                    row.remove();
-
-                                    // Verificar si quedan filas en la tabla
-                                    var tableBody = form.closest('tbody');
-                                    if (tableBody && tableBody.querySelectorAll('tr').length === 0) {
-                                        // Si no quedan filas, mostrar un mensaje
-                                        var cardBody = tableBody.closest('.card-body');
-                                        var tableResponsive = tableBody.closest('.table-responsive');
-
-                                        if (cardBody && tableResponsive) {
-                                            var noTareasMsg = document.createElement('div');
-                                            noTareasMsg.className = 'alert alert-info d-flex align-items-center';
-                                            noTareasMsg.innerHTML = '<i class="fas fa-info-circle me-3 fa-lg"></i><div><h5 class="alert-heading mb-1">No hay tareas en este proyecto</h5><p class="mb-0">Todas las tareas han sido finalizadas.</p></div>';
-
-                                            cardBody.replaceChild(noTareasMsg, tableResponsive);
-                                        }
-                                    }
-
-                                    // Mostrar mensaje de éxito
-                                    showMessage('Tarea finalizada correctamente', 'success');
-                                }, 300);
-                            }
-                        } else {
-                            console.log('Error en la respuesta');
-                            // Si hay un error, mostrar mensaje de error
-                            showMessage('Error al finalizar la tarea', 'danger');
-                        }
-                    })
-                    .catch(function(error) {
-                        console.error('Error:', error);
-                        showMessage('Error al finalizar la tarea: ' + error.message, 'danger');
-                    });
-            });
-        });
-
-        function showMessage(message, type) {
-            // Crear elemento de alerta
-            var alertDiv = document.createElement('div');
-            alertDiv.className = 'alert alert-' + type + ' alert-dismissible fade show';
-            alertDiv.role = 'alert';
-
-            var icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
-            alertDiv.innerHTML =
-                '<div class="d-flex align-items-center">' +
-                '<i class="fas ' + icon + ' me-2"></i>' +
-                '<span>' + message + '</span>' +
-                '</div>' +
-                '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
-
-            // Insertar la alerta al principio del contenedor de mensajes
-            var messagesContainer = document.querySelector('.container > div:first-child');
-            messagesContainer.appendChild(alertDiv);
-
-            // Eliminar automáticamente después de 5 segundos
-            setTimeout(function() {
-                alertDiv.classList.remove('show');
-                setTimeout(function() {
-                    alertDiv.remove();
-                }, 150);
-            }, 5000);
-        }
-    });
-</script>
-
-<style>
-    .btn-primary {
-        background-color: #345676 !important;
-        border-color: #345676 !important;
-        transition: all 0.2s ease !important;
-    }
-
-    .btn-primary:hover {
-        background-color: #2d4a66 !important;
-        border-color: #2d4a66 !important;
-        transform: translateY(-2px) !important;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
-    }
-
-    .btn-primary:focus,
-    .btn-primary:active {
-        background-color: #345676 !important;
-        border-color: #345676 !important;
-        box-shadow: none !important;
-        transform: none !important;
-    }
-
-    /* Asegurar que las badges de prioridad y estado sean siempre visibles */
-    .badge-soft-danger, .badge-soft-warning, .badge-soft-info,
-    .badge-soft-success, .badge-soft-primary {
-        display: inline-block !important;
-        opacity: 1 !important;
-        visibility: visible !important;
-    }
-
-    /* Estilos para las badges */
-    .badge-soft-danger {
-        background-color: #ffebee !important;
-        color: #d32f2f !important;
-    }
-
-    .badge-soft-warning {
-        background-color: #fff8e1 !important;
-        color: #f57c00 !important;
-    }
-
-    .badge-soft-info {
-        background-color: #e3f2fd !important;
-        color: #1976d2 !important;
-    }
-
-    .badge-soft-success {
-        background-color: #e8f5e9 !important;
-        color: #388e3c !important;
-    }
-
-    .badge-soft-primary {
-        background-color: #fff3cd !important;
-        color: #856404 !important;
-        border: 1px solid #ffeaa7 !important;
-    }
-</style>
+<!-- CSS -->
+<link rel="stylesheet" th:href="@{/css/tareas-styles.css}">
 </body>
 </html>

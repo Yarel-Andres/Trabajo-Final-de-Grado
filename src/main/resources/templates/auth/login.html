@@ -15,13 +15,11 @@
     <link rel="stylesheet" th:href="@{/css/login-styles.css}">
 </head>
 <body>
-<!-- Fondo creativo con ondas -->
+<!-- Fondo creativo -->
 <div class="creative-background">
     <div class="wave wave-1"></div>
     <div class="wave wave-2"></div>
     <div class="wave wave-3"></div>
-
-    <!-- Partículas flotantes -->
     <div class="particles" id="particles"></div>
 </div>
 
@@ -36,11 +34,9 @@
         <!-- Sección de bienvenida -->
         <div class="login-welcome">
             <div class="login-welcome-text">
-                <div style="margin: 0; padding: 0;">
-                    <h2 style="margin: 0 0 1.5rem 0; padding: 0;">Gestify</h2>
-                    <h1 style="margin: 0 0 1rem 0; padding: 0;">Bienvenido a tu plataforma de gestión empresarial</h1>
-                    <p>Optimiza tus procesos, gestiona proyectos y equipos, y lleva tu empresa al siguiente nivel con nuestras herramientas intuitivas.</p>
-                </div>
+                <h2 class="brand-title">Gestify</h2>
+                <h1 class="welcome-title">Bienvenido a tu plataforma de gestión empresarial</h1>
+                <p class="welcome-description">Optimiza tus procesos, gestiona proyectos y equipos, y lleva tu empresa al siguiente nivel con nuestras herramientas intuitivas.</p>
             </div>
         </div>
 
@@ -51,6 +47,7 @@
                 <p>Ingresa tus credenciales para acceder al sistema</p>
             </div>
 
+            <!-- Alertas -->
             <div th:if="${param.error}" class="alert alert-danger" role="alert">
                 <i class="fas fa-exclamation-circle"></i>
                 <span>Credenciales incorrectas. Por favor, inténtalo de nuevo.</span>
@@ -61,8 +58,8 @@
                 <span>Sesión cerrada correctamente. ¡Hasta pronto!</span>
             </div>
 
+            <!-- Formulario -->
             <form method="post" action="/login">
-                <!-- CSRF token - Nombre fijo para evitar problemas con la evaluación de expresiones -->
                 <input type="hidden" name="_csrf" th:value="${_csrf != null ? _csrf.token : ''}"/>
 
                 <div class="form-group">
@@ -93,412 +90,8 @@
     </div>
 </div>
 
-<!-- Bootstrap Bundle with Popper -->
+<!-- Scripts -->
 <script th:src="@{/webjars/bootstrap/5.3.2/js/bootstrap.bundle.min.js}"></script>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Efecto de focus en los campos con iconos
-        const inputs = document.querySelectorAll('.input-icon input');
-        inputs.forEach(input => {
-            input.addEventListener('focus', function() {
-                this.parentElement.querySelector('i').style.color = 'white';
-            });
-            input.addEventListener('blur', function() {
-                if (!this.value) {
-                    this.parentElement.querySelector('i').style.color = 'rgba(255, 255, 255, 0.6)';
-                }
-            });
-        });
-
-        // Animación para el botón de login
-        const loginButton = document.querySelector('.btn-login');
-        if (loginButton) {
-            loginButton.addEventListener('mouseenter', function() {
-                const icon = this.querySelector('i');
-                if (icon) {
-                    icon.classList.add('fa-spin');
-                    setTimeout(() => {
-                        icon.classList.remove('fa-spin');
-                    }, 500);
-                }
-            });
-        }
-
-        // Crear partículas flotantes
-        const particlesContainer = document.getElementById('particles');
-        if (particlesContainer) {
-            const particleCount = 20;
-            for (let i = 0; i < particleCount; i++) {
-                createParticle(particlesContainer);
-            }
-        }
-
-        function createParticle(container) {
-            const particle = document.createElement('div');
-            particle.classList.add('particle');
-
-            // Tamaño aleatorio entre 2 y 4px
-            const size = Math.random() * 2 + 2;
-            particle.style.width = `${size}px`;
-            particle.style.height = `${size}px`;
-
-            // Posición aleatoria
-            const posX = Math.random() * 100;
-            const posY = Math.random() * 100;
-            particle.style.left = `${posX}%`;
-            particle.style.top = `${posY}%`;
-
-            // Opacidad aleatoria
-            particle.style.opacity = Math.random() * 0.3 + 0.1;
-
-            container.appendChild(particle);
-        }
-    });
-</script>
-
-<style>
-    body {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
-        min-height: 100vh;
-        padding: 1rem;
-        position: relative;
-        overflow: hidden;
-        font-family: 'Inter', sans-serif;
-    }
-
-    /* Fondo creativo con ondas */
-    .creative-background {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        opacity: 0.08;
-        z-index: 0;
-        overflow: hidden;
-    }
-
-    .wave {
-        position: absolute;
-        width: 200%;
-        height: 200%;
-        opacity: 0.4;
-    }
-
-    .wave-1 {
-        background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
-        top: -50%;
-        left: -50%;
-    }
-
-    .wave-2 {
-        background: radial-gradient(ellipse at 50% 50%, rgba(255, 255, 255, 0.2) 0%, transparent 60%);
-        top: -30%;
-        left: -30%;
-    }
-
-    .wave-3 {
-        background: radial-gradient(ellipse at 50% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
-        bottom: -30%;
-        right: -30%;
-    }
-
-    /* Partículas flotantes */
-    .particles {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-        z-index: 0;
-    }
-
-    .particle {
-        position: absolute;
-        border-radius: 50%;
-        background-color: rgba(255, 255, 255, 0.2);
-        pointer-events: none;
-    }
-
-    /* Burbujas flotantes */
-    .bubble {
-        position: absolute;
-        border-radius: 50%;
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(5px);
-        -webkit-backdrop-filter: blur(5px);
-    }
-
-    .bubble-1 {
-        width: 100px;
-        height: 100px;
-        top: 20%;
-        left: 15%;
-    }
-
-    .bubble-2 {
-        width: 150px;
-        height: 150px;
-        top: 50%;
-        right: 15%;
-    }
-
-    .bubble-3 {
-        width: 80px;
-        height: 80px;
-        bottom: 20%;
-        left: 25%;
-    }
-
-    /* Contenedor principal */
-    .login-container {
-        width: 100%;
-        max-width: 1000px;
-        background-color: rgba(255, 255, 255, 0.1);
-        border-radius: 10px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        position: relative;
-        z-index: 1;
-        overflow: hidden;
-        animation: fadeIn 0.6s ease forwards;
-    }
-
-    .login-content {
-        display: flex;
-        flex-direction: column;
-        padding: 2rem;
-    }
-
-    @media (min-width: 768px) {
-        .login-content {
-            flex-direction: row;
-        }
-    }
-
-    /* Sección de bienvenida */
-    .login-welcome {
-        color: white;
-        padding: 1.5rem;
-        flex: 1;
-    }
-
-    .login-welcome-text {
-        padding-left: 0;
-    }
-
-    .login-welcome-text h2 {
-        font-size: 1.75rem;
-        font-weight: 600;
-        margin-bottom: 1.5rem;
-        color: white;
-        padding-left: 0;
-    }
-
-    .login-welcome-text h1 {
-        font-size: 1.75rem;
-        font-weight: 700;
-        margin-bottom: 1rem;
-        color: white;
-        line-height: 1.2;
-        padding-left: 0;
-    }
-
-    .login-welcome-text p {
-        font-size: 1rem;
-        line-height: 1.5;
-        color: rgba(255, 255, 255, 0.8);
-        margin-bottom: 1.5rem;
-        padding-left: 0;
-    }
-
-    /* Sección de formulario */
-    .login-form-wrapper {
-        flex: 1;
-        padding: 1.5rem;
-        background-color: rgba(255, 255, 255, 0.15);
-        border-radius: 10px;
-    }
-
-    .login-form-header {
-        text-align: center;
-        margin-bottom: 1.5rem;
-        color: white;
-    }
-
-    .login-form-header h2 {
-        font-size: 1.75rem;
-        font-weight: 700;
-        margin-bottom: 0.5rem;
-    }
-
-    .login-form-header p {
-        color: rgba(255, 255, 255, 0.7);
-        font-size: 0.9rem;
-    }
-
-    .form-group {
-        margin-bottom: 1.25rem;
-    }
-
-    .form-group label {
-        display: block;
-        margin-bottom: 0.5rem;
-        font-weight: 500;
-        color: white;
-        font-size: 0.9rem;
-    }
-
-    .input-icon {
-        position: relative;
-        width: 100%; /* Asegura que el contenedor ocupe todo el ancho disponible */
-    }
-
-    .input-icon i {
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        left: 1rem;
-        color: rgba(255, 255, 255, 0.6);
-        transition: color 0.3s ease;
-    }
-
-    .input-icon input {
-        width: 100%; /* Asegura que el input ocupe todo el ancho del contenedor */
-        padding: 0.75rem 1rem 0.75rem 2.75rem;
-        font-size: 1rem;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 8px;
-        background-color: rgba(255, 255, 255, 0.1);
-        color: white;
-        transition: all 0.3s ease;
-        box-sizing: border-box; /* Incluye padding y border en el ancho total */
-    }
-
-    .input-icon input::placeholder {
-        color: rgba(255, 255, 255, 0.5);
-    }
-
-    .input-icon input:focus {
-        outline: none;
-        border-color: rgba(255, 255, 255, 0.5);
-        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
-        background-color: rgba(255, 255, 255, 0.15);
-    }
-
-    .input-icon input:focus + i {
-        color: white;
-    }
-
-    .btn-login {
-        width: 100%;
-        padding: 0.75rem;
-        font-size: 1rem;
-        font-weight: 600;
-        background: linear-gradient(135deg, #2c3e50, #1a2530);
-        border: none;
-        border-radius: 8px;
-        color: white;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    .btn-login:hover {
-        background: linear-gradient(135deg, #1a2530, #2c3e50);
-        transform: translateY(-2px);
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-    }
-
-    .btn-login i {
-        margin-right: 0.5rem;
-    }
-
-    .login-footer {
-        text-align: center;
-        margin-top: 1.5rem;
-        margin-bottom: 1rem;
-        font-size: 0.8rem;
-        color: rgba(255, 255, 255, 0.6);
-    }
-
-    .alert {
-        padding: 0.75rem 1rem;
-        margin-bottom: 1.25rem;
-        border-radius: 8px;
-        font-size: 0.9rem;
-        display: flex;
-        align-items: center;
-        background-color: rgba(0, 0, 0, 0.2);
-        border: none;
-    }
-
-    .alert-danger {
-        color: #ff7675;
-        border-left: 4px solid #e74c3c;
-    }
-
-    .alert-success {
-        color: #55efc4;
-        border-left: 4px solid #27ae60;
-    }
-
-    .alert i {
-        margin-right: 0.75rem;
-        font-size: 1.1rem;
-    }
-
-    /* Animaciones */
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    /* Responsive */
-    @media (max-width: 767px) {
-        .login-container {
-            max-width: 450px;
-        }
-
-        .login-welcome {
-            padding-bottom: 0;
-        }
-
-        .login-form-wrapper {
-            margin-top: 1rem;
-        }
-    }
-
-    @media (max-width: 576px) {
-        .login-content {
-            padding: 1.5rem;
-        }
-
-        .login-welcome, .login-form-wrapper {
-            padding: 1rem;
-        }
-
-        .login-welcome-text h1 {
-            font-size: 1.5rem;
-        }
-    }
-</style>
+<script th:src="@{/scripts/login.js}"></script>
 </body>
 </html>

@@ -5,10 +5,10 @@
 </head>
 <body>
 <header th:replace="~{fragments/layout :: header(${#authentication.name})}"></header>
-
 <div class="container mt-4">
     <h2>Editar Presupuesto</h2>
 
+    <!-- Mensajes del sistema -->
     <div th:replace="~{fragments/layout :: messages}"></div>
 
     <div class="card shadow-sm">
@@ -17,13 +17,16 @@
                 <h3 class="card-title mb-0">Presupuesto <span th:text="${presupuesto.id}"></span></h3>
             </div>
 
+            <!-- Formulario de edición del presupuesto -->
             <form th:action="@{/rrhh/presupuestos/{id}/actualizar(id=${presupuesto.id})}" method="post" th:object="${presupuesto}">
+                <!-- Campos ocultos: Datos inmutables del presupuesto -->
                 <input type="hidden" th:field="*{id}" />
                 <input type="hidden" th:field="*{proyectoId}" />
                 <input type="hidden" th:field="*{proyectoNombre}" />
                 <input type="hidden" th:field="*{fechaCreacion}" />
                 <input type="hidden" th:field="*{estado}" />
 
+                <!-- Información del proyecto y cliente -->
                 <div class="row mb-4">
                     <div class="col-md-6">
                         <h5>Información del Proyecto</h5>
@@ -45,6 +48,7 @@
                     </div>
                 </div>
 
+                <!-- Descripción del presupuesto -->
                 <div class="row mb-4">
                     <div class="col-12">
                         <h5>Descripción</h5>
@@ -54,6 +58,7 @@
                     </div>
                 </div>
 
+                <!-- Información financiera -->
                 <div class="row mb-4">
                     <div class="col-md-4">
                         <h5>Información Financiera</h5>
@@ -72,6 +77,7 @@
                     </div>
                 </div>
 
+                <!-- Botones de acción -->
                 <div class="d-flex justify-content-end">
                     <a th:href="@{/rrhh/presupuestos/{id}(id=${presupuesto.id})}" class="btn btn-secondary me-2">Cancelar</a>
                     <button type="submit" class="btn btn-primary">Guardar Cambios</button>
@@ -81,29 +87,11 @@
     </div>
 </div>
 
-<!-- Bootstrap Bundle with Popper -->
+<!-- JS y CSS -->
+<link rel="stylesheet" th:href="@{/css/rrhh-presupuestos-styles.css}">
+<script th:src="@{/scripts/rrhh-presupuestos.js}"></script>
+
+<!-- Bootstrap Bundle -->
 <script th:src="@{/webjars/bootstrap/5.3.2/js/bootstrap.bundle.min.js}"></script>
-
-<!-- Script para calcular el costo total automáticamente -->
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const tarifaHoraInput = document.getElementById('tarifaHora');
-        const horasEstimadasInput = document.getElementById('horasEstimadas');
-        const costoTotalInput = document.getElementById('costoTotal');
-
-        function calcularCostoTotal() {
-            const tarifaHora = parseFloat(tarifaHoraInput.value) || 0;
-            const horasEstimadas = parseFloat(horasEstimadasInput.value) || 0;
-            const costoTotal = tarifaHora * horasEstimadas;
-            costoTotalInput.value = costoTotal.toFixed(2);
-        }
-
-        tarifaHoraInput.addEventListener('input', calcularCostoTotal);
-        horasEstimadasInput.addEventListener('input', calcularCostoTotal);
-
-        // Calcular al cargar la página
-        calcularCostoTotal();
-    });
-</script>
 </body>
 </html>

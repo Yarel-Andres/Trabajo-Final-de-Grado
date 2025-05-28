@@ -154,6 +154,10 @@ public class ProyectoViewController {
         // Filtrado por rol: Diferentes vistas según el tipo de usuario
         if (isJefe) {
             proyectos = proyectoService.findByJefeId(usuarioId);
+            // Jefes: Solo proyectos no completados
+            proyectos = proyectos.stream()
+                    .filter(proyecto -> !proyecto.isCompletado())
+                    .collect(Collectors.toList());
         } else {
             // Empleados: Solo proyectos asignados y no completados
             proyectos = proyectoService.findByEmpleadoId(usuarioId);

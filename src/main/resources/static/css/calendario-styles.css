@@ -1,0 +1,113 @@
+/* Estilos del calendario */
+
+/* Layout principal */
+.calendar-page {
+    max-width: 1200px;
+}
+
+.calendar-container {
+    height: 550px;
+}
+
+/* Filtros */
+.filter-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.badge-reunion {
+    background-color: #8540f5;
+    color: white;
+}
+
+/* Eventos del calendario */
+.fc-event {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.fc-daygrid-event,
+.fc-timegrid-event {
+    display: flex;
+    align-items: center;
+    background: transparent;
+    border: none;
+    white-space: nowrap;
+}
+
+/* Puntos de colores para eventos */
+.fc-daygrid-event::before,
+.fc-timegrid-event::before {
+    content: "";
+    display: inline-block;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+.fc-daygrid-event::before {
+    width: 10px;
+    height: 10px;
+}
+
+.fc-timegrid-event::before {
+    width: 8px;
+    height: 8px;
+    margin-right: 4px;
+}
+
+/* Colores por tipo */
+.evento-tarea::before {
+    background-color: #0d6efd;
+}
+
+.evento-proyecto::before {
+    background-color: #198754;
+}
+
+.evento-reunion::before {
+    background-color: #8540f5;
+}
+
+/* Ocultar elementos de FullCalendar */
+.fc-daygrid-event-dot {
+    display: none;
+}
+
+/* Texto de eventos */
+.fc-event-time {
+    font-size: 0.85em;
+    opacity: 0.8;
+    margin-right: 3px;
+}
+
+.fc-event-title {
+    font-weight: normal;
+    color: #3465a6;
+}
+
+/* Botón de navegación */
+.btn-back {
+    background-color: #345676;
+    border-color: #345676;
+    transition: all 0.2s ease;
+}
+
+.btn-back:hover {
+    background-color: #2a4560;
+    border-color: #2a4560;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .calendar-container {
+        height: 400px;
+    }
+
+    .filter-section {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}
