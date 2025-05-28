@@ -1,4 +1,3 @@
-/* Variables globales - Paleta de colores actualizada */
 :root {
     /* Colores primarios - Azul más sofisticado y menos saturado */
     --primary-color: #345676;
@@ -66,13 +65,15 @@ body {
 }
 
 body {
-    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    color: var(--text-color);
-    background-color: #f8f9fa;
-    overflow-x: hidden;
-    line-height: 1.5;
-    position: relative;
+    font-family: "Inter", sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
     min-height: 100vh;
+    padding: 1rem;
+    position: relative;
+    overflow: hidden;
 }
 
 a {
@@ -85,230 +86,10 @@ a:hover {
     color: var(--secondary-dark);
 }
 
-/* Estilos para la página de login */
-.login-page {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, #f5f7fa 0%, #d5e1ed 100%);
-    padding: 2rem 1rem;
-    overflow: hidden;
-}
-
-.login-container {
-    width: 100%;
-    max-width: 380px;
-    margin: 0 auto;
-}
-
-.login-card {
-    background-color: white;
-    border-radius: 10px;
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
-    overflow: hidden;
-    padding: 1.75rem;
-    animation: fadeIn 0.5s ease forwards;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.login-header {
-    text-align: center;
-    margin-bottom: 1.5rem;
-}
-
-.logo-circle {
-    width: 70px;
-    height: 70px;
-    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 1rem;
-    color: white;
-    font-size: 2rem;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-}
-
-.login-title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--primary-color);
-    margin-bottom: 0.25rem;
-}
-
-.login-subtitle {
-    color: var(--text-muted);
-    font-size: 0.9rem;
-    margin-bottom: 0;
-}
-
-.login-form {
-    margin-bottom: 1rem;
-}
-
-.form-group {
-    margin-bottom: 1rem;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 0.25rem;
-    font-weight: 500;
-    color: var(--primary-color);
-    font-size: 0.9rem;
-}
-
-.input-group {
-    position: relative;
-    display: flex;
-    border-radius: var(--border-radius);
-    transition: all 0.3s ease;
-    border: 1px solid var(--border-color);
-}
-
-.input-group:hover {
-    border-color: var(--secondary-color);
-}
-
-.input-group.input-focus {
-    border-color: var(--secondary-color);
-    box-shadow: 0 0 0 0.2rem rgba(91, 155, 213, 0.25);
-}
-
-.input-group-text {
-    display: flex;
-    align-items: center;
-    padding: 0.5rem 0.75rem;
-    background-color: var(--light-gray);
-    border: none;
-    border-radius: var(--border-radius) 0 0 var(--border-radius);
-    color: var(--dark-gray);
-}
-
-.form-control {
-    flex: 1;
-    padding: 0.5rem 0.75rem;
-    border: none;
-    border-radius: 0 var(--border-radius) var(--border-radius) 0;
-    font-size: 0.9rem;
-}
-
-.form-control:focus {
-    outline: none;
-    box-shadow: none;
-}
-
-.btn-login {
-    width: 100%;
-    padding: 0.5rem;
-    font-size: 0.95rem;
-    font-weight: 600;
-    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-    border: none;
-    border-radius: var(--border-radius);
-    color: white;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.btn-login:hover {
-    background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-}
-
-.btn-login:active {
-    transform: translateY(0);
-}
-
-.login-footer {
-    text-align: center;
-    color: var(--text-muted);
-    font-size: 0.75rem;
-}
-
-.alert {
-    padding: 0.75rem;
-    margin-bottom: 1rem;
-    border-radius: var(--border-radius);
-    display: flex;
-    align-items: center;
-    font-size: 0.85rem;
-}
-
-.alert-danger {
-    background-color: rgba(224, 108, 108, 0.1);
-    color: var(--danger-color);
-    border-left: 4px solid var(--danger-color);
-}
-
-.alert-success {
-    background-color: rgba(76, 175, 154, 0.1);
-    color: var(--success-color);
-    border-left: 4px solid var(--success-color);
-}
-
-.me-2 {
-    margin-right: 0.5rem;
-}
-
-/* Responsive */
-@media (max-height: 600px) {
-    .logo-circle {
-        width: 50px;
-        height: 50px;
-        font-size: 1.5rem;
-        margin-bottom: 0.5rem;
-    }
-
-    .login-title {
-        font-size: 1.25rem;
-    }
-
-    .login-subtitle {
-        font-size: 0.8rem;
-    }
-
-    .form-group {
-        margin-bottom: 0.75rem;
-    }
-
-    .form-group label {
-        margin-bottom: 0.15rem;
-    }
-
-    .input-group-text,
-    .form-control {
-        padding: 0.4rem 0.6rem;
-    }
-
-    .btn-login {
-        padding: 0.4rem;
-    }
-}
-
-/* Estilos específicos para la página de login con fondo creativo */
+/* Fondo creativo con ondas */
 .creative-background {
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0;
     opacity: 0.08;
     z-index: 0;
     overflow: hidden;
@@ -339,22 +120,10 @@ a:hover {
     right: -30%;
 }
 
-@keyframes wave-rotate {
-    0% {
-        transform: rotate(0deg);
-    }
-    100% {
-        transform: rotate(360deg);
-    }
-}
-
 /* Partículas flotantes */
 .particles {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    inset: 0;
     overflow: hidden;
     z-index: 0;
 }
@@ -381,50 +150,27 @@ a:hover {
     height: 100px;
     top: 20%;
     left: 15%;
-    animation-delay: 0s;
 }
-
 .bubble-2 {
     width: 150px;
     height: 150px;
     top: 50%;
     right: 15%;
-    animation-delay: 2s;
 }
-
 .bubble-3 {
     width: 80px;
     height: 80px;
     bottom: 20%;
     left: 25%;
-    animation-delay: 4s;
 }
 
-@keyframes float {
-    0% {
-        transform: translate(0, 0) rotate(0deg);
-    }
-    25% {
-        transform: translate(10px, -15px) rotate(5deg);
-    }
-    50% {
-        transform: translate(0, 0) rotate(0deg);
-    }
-    75% {
-        transform: translate(-10px, 15px) rotate(-5deg);
-    }
-    100% {
-        transform: translate(0, 0) rotate(0deg);
-    }
-}
-
-/* Contenedor principal para la página de login con diseño moderno */
-.login-container-modern {
+/* Contenedor principal */
+.login-container {
     width: 100%;
     max-width: 1000px;
     background-color: rgba(255, 255, 255, 0.1);
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow-lg);
+    border-radius: 10px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -453,38 +199,26 @@ a:hover {
     flex: 1;
 }
 
-.login-welcome-logo {
-    display: flex;
-    align-items: center;
-    margin-bottom: 1.5rem;
-}
-
-.login-welcome-logo i {
-    font-size: 2rem;
-    margin-right: 0.75rem;
-    color: var(--secondary-light);
-}
-
-.login-welcome-logo h2 {
-    font-size: 1.5rem;
+.brand-title {
+    font-size: 1.75rem;
     font-weight: 600;
-    margin: 0;
+    margin: 0 0 1.5rem 0;
     color: white;
 }
 
-.login-welcome-text h1 {
+.welcome-title {
     font-size: 1.75rem;
     font-weight: 700;
-    margin-bottom: 1rem;
+    margin: 0 0 1rem 0;
     color: white;
     line-height: 1.2;
 }
 
-.login-welcome-text p {
+.welcome-description {
     font-size: 1rem;
     line-height: 1.5;
     color: rgba(255, 255, 255, 0.8);
-    margin-bottom: 1.5rem;
+    margin: 0 0 1.5rem 0;
 }
 
 /* Sección de formulario */
@@ -492,7 +226,7 @@ a:hover {
     flex: 1;
     padding: 1.5rem;
     background-color: rgba(255, 255, 255, 0.15);
-    border-radius: var(--border-radius);
+    border-radius: 10px;
 }
 
 .login-form-header {
@@ -512,34 +246,24 @@ a:hover {
     font-size: 0.9rem;
 }
 
-/* Estilos específicos para el formulario de login moderno */
-.login-modern .form-control {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    font-size: 1rem;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: var(--border-radius);
-    background-color: rgba(255, 255, 255, 0.1);
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
     color: white;
-    transition: all 0.3s ease;
+    font-size: 0.9rem;
 }
 
-.login-modern .form-control::placeholder {
-    color: rgba(255, 255, 255, 0.5);
-}
-
-.login-modern .form-control:focus {
-    outline: none;
-    border-color: rgba(255, 255, 255, 0.5);
-    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
-    background-color: rgba(255, 255, 255, 0.15);
-}
-
-.login-modern .input-icon {
+.input-icon {
     position: relative;
+    width: 100%;
 }
 
-.login-modern .input-icon i {
+.input-icon i {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
@@ -548,57 +272,72 @@ a:hover {
     transition: color 0.3s ease;
 }
 
-.login-modern .input-icon input {
-    padding-left: 2.75rem;
+.input-icon input {
+    width: 100%;
+    padding: 0.75rem 1rem 0.75rem 2.75rem;
+    font-size: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
 }
 
-.login-modern .input-icon input:focus + i {
+.input-icon input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.input-icon input:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+.input-icon input:focus + i {
     color: white;
 }
 
-.login-modern .btn-login {
+.btn-login {
     width: 100%;
     padding: 0.75rem;
     font-size: 1rem;
     font-weight: 600;
-    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    background: linear-gradient(135deg, #2c3e50, #1a2530);
     border: none;
-    border-radius: var(--border-radius);
+    border-radius: 8px;
     color: white;
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: var(--box-shadow);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.login-modern .btn-login:hover {
-    background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
+.btn-login:hover {
+    background: linear-gradient(135deg, #1a2530, #2c3e50);
     transform: translateY(-2px);
-    box-shadow: var(--box-shadow-lg);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
-.login-modern .btn-login:active {
-    transform: translateY(0);
-}
-
-.login-modern .btn-login i {
+.btn-login i {
     margin-right: 0.5rem;
 }
 
-.login-modern .login-footer {
+.login-footer {
     text-align: center;
-    margin-top: 1.5rem;
-    margin-bottom: 1.5rem;
+    margin: 1.5rem 0 1rem;
     font-size: 0.8rem;
     color: rgba(255, 255, 255, 0.6);
 }
 
-.login-modern .alert {
+/* Alertas */
+.alert {
     padding: 0.75rem 1rem;
     margin-bottom: 1.25rem;
-    border-radius: var(--border-radius);
+    border-radius: 8px;
     font-size: 0.9rem;
     display: flex;
     align-items: center;
@@ -606,24 +345,36 @@ a:hover {
     border: none;
 }
 
-.login-modern .alert-danger {
+.alert-danger {
     color: #ff7675;
-    border-left: 4px solid var(--danger-color);
+    border-left: 4px solid #e74c3c;
 }
 
-.login-modern .alert-success {
+.alert-success {
     color: #55efc4;
-    border-left: 4px solid var(--success-color);
+    border-left: 4px solid #27ae60;
 }
 
-.login-modern .alert i {
+.alert i {
     margin-right: 0.75rem;
     font-size: 1.1rem;
 }
 
-/* Responsive para el diseño moderno */
+/* Animaciones */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive */
 @media (max-width: 767px) {
-    .login-container-modern {
+    .login-container {
         max-width: 450px;
     }
 
@@ -646,7 +397,7 @@ a:hover {
         padding: 1rem;
     }
 
-    .login-welcome-text h1 {
+    .welcome-title {
         font-size: 1.5rem;
     }
 }

@@ -1,10 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/layout :: head('Dashboard')">
-</head>
+<head th:replace="fragments/layout :: head('Dashboard')"></head>
 <body>
-<header th:replace="fragments/layout :: header(${username})">
-</header>
+<header th:replace="fragments/layout :: header(${username})"></header>
 
 <div class="container">
     <div th:replace="fragments/layout :: messages"></div>
@@ -112,7 +110,7 @@
         </div>
     </div>
 
-    <!--Opciones de empleado -->
+    <!-- Opciones de empleado -->
     <div th:if="${isEmpleado}" class="mt-4 fade-in">
         <div class="d-flex align-items-center mb-4">
             <i class="fas fa-user text-success me-3 fa-lg"></i>
@@ -192,7 +190,6 @@
                 </div>
             </div>
 
-            <!-- Tarjeta de Calendario solo para empleados -->
             <div class="col-md-4">
                 <div class="card dashboard-card h-100">
                     <div class="card-body">
@@ -208,7 +205,7 @@
         </div>
     </div>
 
-    <!--Opciones de RRHH -->
+    <!-- Opciones de RRHH -->
     <div th:if="${isRRHH}" class="mt-4 fade-in">
         <div class="d-flex align-items-center mb-4">
             <i class="fas fa-users-cog text-info me-3 fa-lg"></i>
@@ -259,22 +256,6 @@
 </div>
 
 <div th:replace="fragments/layout :: footer"></div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Mostrar fecha actual
-        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        const today = new Date();
-        document.getElementById('current-date').textContent = today.toLocaleDateString('es-ES', options);
-
-        // Animación para las tarjetas
-        const cards = document.querySelectorAll('.dashboard-card');
-        cards.forEach((card, index) => {
-            setTimeout(() => {
-                card.classList.add('fade-in');
-            }, 100 * index);
-        });
-    });
-</script>
+<script th:src="@{/scripts/dashboard.js}"></script>
 </body>
 </html>

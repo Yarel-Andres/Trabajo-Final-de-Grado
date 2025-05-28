@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="fragments/layout :: head('Proyecto Creado')">
+    <link rel="stylesheet" th:href="@{/css/proyectos-styles.css}">
 </head>
 <body>
 <header th:replace="fragments/layout :: header(${#authentication.name})">
@@ -28,5 +29,7 @@
         </div>
     </div>
 </div>
+
+<script th:src="@{/scripts/proyectos.js}"></script>
 </body>
 </html>

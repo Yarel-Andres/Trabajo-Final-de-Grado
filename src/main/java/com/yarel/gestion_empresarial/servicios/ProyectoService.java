@@ -106,7 +106,7 @@ public class ProyectoService {
         return proyectoMapper.toDtoList(proyectos);
     }
 
-    
+
     // Obtiene proyectos finalizados
     @Transactional
     public void finalizarProyecto(Long proyectoId) {
@@ -114,7 +114,7 @@ public class ProyectoService {
                 .orElseThrow(() -> new RuntimeException("Proyecto no encontrado con ID: " + proyectoId));
 
         proyecto.setCompletado(true);
-        proyecto.setEstado("FINALIZADO"); // Cambiar el estado a FINALIZADO
+        proyecto.setEstado("COMPLETADO"); // Cambiar el estado a COMPLETADO
         proyecto.setFechaFinReal(LocalDate.now());
 
         proyectoRepository.save(proyecto);

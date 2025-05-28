@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
           integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
           crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <link rel="stylesheet" th:href="@{/css/proyectos-styles.css}">
 </head>
 <body>
 <header th:replace="fragments/layout :: header(${#authentication.name})">
@@ -45,8 +46,6 @@
 
             <!-- Contenido cuando hay proyectos -->
             <div th:if="${proyectos != null && !proyectos.empty}">
-                <!-- Eliminado el campo de búsqueda -->
-
                 <div class="table-responsive">
                     <table class="table table-hover table-modern" id="tabla-proyectos">
                         <thead>
@@ -139,7 +138,7 @@
                                     <a th:href="@{/registros-tiempo/crear(proyectoId=${proyecto.id})}" class="btn btn-sm btn-outline-primary me-1">
                                         <i class="fas fa-clock me-1"></i>Registrar Tiempo
                                     </a>
-                                    <form th:action="@{/proyectos/finalizar}" method="post" class="form-finalizar" style="display: inline;">
+                                    <form th:action="@{/proyectos/finalizar}" method="post" class="form-finalizar">
                                         <input type="hidden" name="proyectoId" th:value="${proyecto.id}" />
                                         <button type="submit" class="btn btn-sm btn-outline-success">
                                             <i class="fas fa-flag-checkered me-1"></i>Finalizar
@@ -151,12 +150,13 @@
                         </tbody>
                     </table>
                 </div>
+            </div>
 
-                <div class="mt-4">
-                    <a th:href="@{/dashboard}" class="btn btn-primary">
-                        <i class="fas fa-arrow-left me-2"></i>Volver al Dashboard
-                    </a>
-                </div>
+            <!-- Botón Volver al Dashboard - SIEMPRE VISIBLE -->
+            <div class="mt-4">
+                <a th:href="@{/dashboard}" class="btn btn-primary">
+                    <i class="fas fa-arrow-left me-2"></i>Volver al Dashboard
+                </a>
             </div>
         </div>
     </div>
@@ -167,138 +167,6 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Inicializar todos los componentes collapse
-        var collapseElements = [].slice.call(document.querySelectorAll('.collapse'));
-        collapseElements.map(function(collapseEl) {
-            return new bootstrap.Collapse(collapseEl, {
-                toggle: false
-            });
-        });
-
-        // Resto del código existente...
-        console.log('Script de proyectos cargado');
-
-        // Manejo de formularios de finalización
-        const forms = document.querySelectorAll('.form-finalizar');
-        console.log('Formularios de finalización encontrados:', forms.length);
-
-        forms.forEach(function(form) {
-            form.addEventListener('submit', function(e) {
-                e.preventDefault(); // Prevenir el envío normal del formulario
-
-                var formData = new FormData(form);
-                var proyectoId = formData.get('proyectoId');
-                var row = document.getElementById('proyecto-' + proyectoId);
-                console.log('Finalizando proyecto:', proyectoId);
-
-                // Enviar la solicitud mediante fetch API
-                fetch(form.action, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                })
-                    .then(function(response) {
-                        if (response.ok) {
-                            console.log('Respuesta exitosa');
-                            // Si la respuesta es exitosa, eliminar la fila con animación
-                            if (row) {
-                                row.style.opacity = '0';
-                                row.style.transform = 'translateY(-20px)';
-                                row.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
-
-                                setTimeout(function() {
-                                    row.remove();
-
-                                    // Verificar si quedan filas en la tabla
-                                    var remainingRows = document.querySelectorAll('#tabla-proyectos tbody tr');
-                                    if (remainingRows.length === 0) {
-                                        // Si no quedan filas, mostrar el mensaje de "No hay proyectos"
-                                        var tableContainer = document.querySelector('.table-responsive');
-                                        var noProjectsAlert = document.createElement('div');
-                                        noProjectsAlert.className = 'alert alert-info d-flex align-items-center fade-in';
-                                        noProjectsAlert.innerHTML = `
-                                        <i class="fas fa-info-circle me-3 fa-lg"></i>
-                                        <div>
-                                            <h5 class="alert-heading mb-1">No hay proyectos disponibles</h5>
-                                            <p class="mb-0">Todos los proyectos han sido finalizados.</p>
-                                        </div>
-                                    `;
-
-                                        tableContainer.parentNode.replaceChild(noProjectsAlert, tableContainer);
-                                    }
-
-                                    // Mostrar mensaje de éxito
-                                    showMessage('Proyecto finalizado correctamente', 'success');
-                                }, 300);
-                            }
-                        } else {
-                            console.log('Error en la respuesta');
-                            // Si hay un error, mostrar mensaje de error
-                            showMessage('Error al finalizar el proyecto', 'danger');
-                        }
-                    })
-                    .catch(function(error) {
-                        console.error('Error:', error);
-                        showMessage('Error al finalizar el proyecto: ' + error.message, 'danger');
-                    });
-            });
-        });
-
-        function showMessage(message, type) {
-            // Crear elemento de alerta
-            var alertDiv = document.createElement('div');
-            alertDiv.className = 'alert alert-' + type + ' alert-dismissible fade show';
-            alertDiv.role = 'alert';
-
-            var icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
-            alertDiv.innerHTML =
-                '<div class="d-flex align-items-center">' +
-                '<i class="fas ' + icon + ' me-2"></i>' +
-                '<span>' + message + '</span>' +
-                '</div>' +
-                '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
-
-            // Insertar la alerta al principio del contenedor de mensajes
-            var messagesContainer = document.querySelector('.container > div:first-child');
-            messagesContainer.appendChild(alertDiv);
-
-            // Eliminar automáticamente después de 5 segundos
-            setTimeout(function() {
-                alertDiv.classList.remove('show');
-                setTimeout(function() {
-                    alertDiv.remove();
-                }, 150);
-            }, 5000);
-        }
-    });
-</script>
-
-<style>
-    .btn-primary {
-        background-color: #345676 !important;
-        border-color: #345676 !important;
-        transition: all 0.2s ease !important;
-    }
-
-    .btn-primary:hover {
-        background-color: #4a6b8a !important;
-        border-color: #4a6b8a !important;
-        transform: translateY(-2px) !important;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
-    }
-
-    .btn-primary:focus,
-    .btn-primary:active {
-        background-color: #345676 !important;
-        border-color: #345676 !important;
-        box-shadow: none !important;
-        transform: none !important;
-    }
-</style>
+<script th:src="@{/scripts/proyectos.js}"></script>
 </body>
 </html>

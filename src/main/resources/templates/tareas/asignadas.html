@@ -1,275 +1,180 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/layout :: head('Tareas Asignadas')">
+<head>
+    <meta charset="UTF-8">
+    <title>Tareas Asignadas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+          integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            margin-top: 20px;
+        }
+
+        h1 {
+            color: #343a40;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            border: none;
+            box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.075);
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            background-color: #fff;
+            border-bottom: 1px solid #dee2e6;
+            font-weight: bold;
+            color: #495057;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .task-title {
+            font-size: 1.25rem;
+            margin-bottom: 10px;
+            color: #212529;
+        }
+
+        .task-description {
+            color: #6c757d;
+        }
+
+        .task-meta {
+            font-size: 0.875rem;
+            color: #6c757d;
+            margin-top: 10px;
+        }
+
+        .badge-soft-primary {
+            color: #007bff;
+            background-color: rgba(0, 123, 255, 0.1);
+        }
+
+        /* Eliminar efecto de elevación específicamente en las tarjetas de tareas */
+        .card.mb-4.border-0.shadow-sm:hover {
+            transform: none !important;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+            transition: none !important;
+        }
+
+        /* También eliminar cualquier efecto de Bootstrap en las tarjetas */
+        .card:hover {
+            transform: none !important;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+        }
+    </style>
+    <style>
+        .btn-primary {
+            background-color: #345676 !important;
+            border-color: #345676 !important;
+            transition: all 0.2s ease !important;
+        }
+
+        .btn-primary:hover {
+            background-color: #2d4a66 !important;
+            border-color: #2d4a66 !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
+        }
+
+        .btn-primary:focus,
+        .btn-primary:active {
+            background-color: #345676 !important;
+            border-color: #345676 !important;
+            box-shadow: none !important;
+            transform: none !important;
+        }
+
+        /* Asegurar que las badges de prioridad y estado sean siempre visibles */
+        .badge-soft-danger, .badge-soft-warning, .badge-soft-info,
+        .badge-soft-success, .badge-soft-primary {
+            display: inline-block !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+
+        /* Estilos para las badges */
+        .badge-soft-danger {
+            background-color: #ffebee !important;
+            color: #d32f2f !important;
+        }
+
+        .badge-soft-warning {
+            background-color: #fff8e1 !important;
+            color: #f57c00 !important;
+        }
+
+        .badge-soft-info {
+            background-color: #e3f2fd !important;
+            color: #1976d2 !important;
+        }
+
+        .badge-soft-success {
+            background-color: #e8f5e9 !important;
+            color: #388e3c !important;
+        }
+
+        .badge-soft-primary {
+            background-color: #fff3cd !important;
+            color: #856404 !important;
+            border: 1px solid #ffeaa7 !important;
+        }
+
+        /* ELIMINAR COMPLETAMENTE efectos de elevación en tarjetas */
+        .card,
+        .card:hover,
+        .card.mb-4:hover,
+        .card.border-0:hover,
+        .card.shadow-sm:hover {
+            transform: none !important;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+            transition: none !important;
+        }
+    </style>
 </head>
 <body>
-<header th:replace="fragments/layout :: header(${#authentication.name})">
-</header>
-
 <div class="container">
-    <div th:replace="fragments/layout :: messages"></div>
+    <h1>Tareas Asignadas</h1>
 
-    <div class="card shadow-sm border-0 mb-4">
-        <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div class="d-flex align-items-center">
-                    <div class="section-icon me-3">
-                        <i class="fas fa-tasks fa-lg"></i>
-                    </div>
-                    <div>
-                        <h1 class="h3 mb-0 fw-bold">Tareas Asignadas</h1>
-                        <p class="text-muted mb-0">Gestiona las tareas que has asignado a tu equipo</p>
+    <div class="row">
+        <div class="col-md-4" th:each="tarea : ${tareas}">
+            <div class="card mb-4 border-0 shadow-sm">
+                <div class="card-header">
+                    <span th:text="${tarea.titulo}"></span>
+                    <span class="badge badge-soft-primary float-end" th:text="${tarea.estado}"></span>
+                </div>
+                <div class="card-body">
+                    <h5 class="task-title" th:text="${tarea.descripcion}"></h5>
+                    <p class="task-description">
+                        <!-- Descripción de la tarea -->
+                    </p>
+                    <div class="task-meta">
+                        <i class="far fa-calendar-alt"></i> Fecha de entrega: <span th:text="${#dates.format(tarea.fechaEntrega, 'dd-MM-yyyy')}"></span>
+                        <br>
+                        <i class="fas fa-user"></i> Asignado a: <span th:text="${tarea.usuarioAsignado}"></span>
                     </div>
                 </div>
-                <a th:href="@{/tareas/asignar}" class="btn btn-primary btn-icon">
-                    <i class="fas fa-plus-circle"></i> Asignar Nueva Tarea
-                </a>
-            </div>
-
-            <!-- Mensaje cuando no hay tareas -->
-            <div th:if="${tareasAgrupadas == null || tareasAgrupadas.isEmpty()}" class="alert alert-info d-flex align-items-center">
-                <i class="fas fa-info-circle me-3 fa-lg"></i>
-                <div>
-                    <h5 class="alert-heading mb-1">No has asignado tareas</h5>
-                    <p class="mb-0">Actualmente no tienes tareas asignadas a tu equipo. Puedes crear una nueva tarea usando el botón "Asignar Nueva Tarea".</p>
-                </div>
-            </div>
-
-            <!-- Contenido cuando hay tareas -->
-            <div th:if="${tareasAgrupadas != null && !tareasAgrupadas.isEmpty()}">
-                <div th:each="entry : ${tareasAgrupadas}" class="card mb-4 border-0 shadow-sm">
-                    <div class="card-header bg-light d-flex align-items-center">
-                        <i class="fas fa-project-diagram me-2 text-primary"></i>
-                        <h4 class="mb-0 fw-bold" th:text="${entry.key}">Nombre del Proyecto</h4>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover table-modern">
-                                <thead>
-                                <tr>
-                                    <th>Título</th>
-                                    <th>Descripción</th>
-                                    <th>Empleado</th>
-                                    <th>Fecha Vencimiento</th>
-                                    <th>Prioridad</th>
-                                    <th>Estado</th>
-                                    <th>Acciones</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr th:each="tarea : ${entry.value}" th:id="'tarea-' + ${tarea.id}">
-                                    <td>
-                                        <span class="fw-medium" th:text="${tarea.titulo}">Título</span>
-                                    </td>
-                                    <td>
-                                        <span th:text="${#strings.abbreviate(tarea.descripcion, 50)}">Descripción</span>
-                                    </td>
-                                    <td>
-                                        <span th:text="${tarea.empleadoNombre}">Empleado</span>
-                                    </td>
-                                    <td>
-                                        <span class="badge bg-light text-dark">
-                                            <i class="far fa-calendar-alt me-1"></i>
-                                            <span th:text="${#temporals.format(tarea.fechaVencimiento, 'dd/MM/yyyy')}">Fecha</span>
-                                        </span>
-                                        <span class="badge bg-light text-dark">
-                                            <i class="far fa-clock me-1"></i>
-                                            <span th:text="${#temporals.format(tarea.fechaVencimiento, 'HH:mm')}">Hora</span>
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <span th:if="${tarea.prioridad == 'ALTA'}" class="badge badge-soft-danger">Alta</span>
-                                        <span th:if="${tarea.prioridad == 'MEDIA'}" class="badge badge-soft-warning">Media</span>
-                                        <span th:if="${tarea.prioridad == 'BAJA'}" class="badge badge-soft-info">Baja</span>
-                                    </td>
-                                    <td>
-                                        <span th:if="${tarea.completada}" class="badge badge-soft-success">Completada</span>
-                                        <span th:unless="${tarea.completada}" class="badge badge-soft-primary">Pendiente</span>
-                                    </td>
-                                    <td>
-                                        <!-- Mostrar el botón solo si la tarea está completada -->
-                                        <form th:if="${tarea.completada}" th:action="@{/tareas/eliminar}" method="post" class="form-eliminar">
-                                            <input type="hidden" name="tareaId" th:value="${tarea.id}" />
-                                            <button type="submit" class="btn btn-sm btn-outline-success">
-                                                <i class="fas fa-flag-checkered me-1"></i>Finalizar
-                                            </button>
-                                        </form>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mt-4">
-                <a th:href="@{/dashboard}" class="btn btn-primary">
-                    <i class="fas fa-arrow-left me-2"></i>Volver al Dashboard
-                </a>
             </div>
         </div>
     </div>
 </div>
 
-<div th:replace="fragments/layout :: footer"></div>
-
-<!-- Script para manejar la eliminación de tareas sin recargar la página -->
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('Script de tareas asignadas cargado');
-
-        // Capturar todos los formularios de eliminación
-        var forms = document.querySelectorAll('.form-eliminar');
-        console.log('Formularios encontrados:', forms.length);
-
-        forms.forEach(function(form) {
-            form.addEventListener('submit', function(e) {
-                e.preventDefault(); // Prevenir el envío normal del formulario
-
-                var formData = new FormData(form);
-                var tareaId = formData.get('tareaId');
-                var row = document.getElementById('tarea-' + tareaId);
-                console.log('Finalizando tarea:', tareaId);
-
-                // Enviar la solicitud mediante fetch API
-                fetch(form.action, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                })
-                    .then(function(response) {
-                        if (response.ok) {
-                            console.log('Respuesta exitosa');
-                            // Si la respuesta es exitosa, eliminar la fila
-                            if (row) {
-                                row.style.opacity = '0';
-                                row.style.transform = 'translateY(-20px)';
-                                row.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
-
-                                setTimeout(function() {
-                                    row.remove();
-
-                                    // Verificar si quedan filas en la tabla
-                                    var tableBody = form.closest('tbody');
-                                    if (tableBody && tableBody.querySelectorAll('tr').length === 0) {
-                                        // Si no quedan filas, mostrar un mensaje
-                                        var cardBody = tableBody.closest('.card-body');
-                                        var tableResponsive = tableBody.closest('.table-responsive');
-
-                                        if (cardBody && tableResponsive) {
-                                            var noTareasMsg = document.createElement('div');
-                                            noTareasMsg.className = 'alert alert-info d-flex align-items-center';
-                                            noTareasMsg.innerHTML = '<i class="fas fa-info-circle me-3 fa-lg"></i><div><h5 class="alert-heading mb-1">No hay tareas en este proyecto</h5><p class="mb-0">Todas las tareas han sido finalizadas.</p></div>';
-
-                                            cardBody.replaceChild(noTareasMsg, tableResponsive);
-                                        }
-                                    }
-
-                                    // Mostrar mensaje de éxito
-                                    showMessage('Tarea finalizada correctamente', 'success');
-                                }, 300);
-                            }
-                        } else {
-                            console.log('Error en la respuesta');
-                            // Si hay un error, mostrar mensaje de error
-                            showMessage('Error al finalizar la tarea', 'danger');
-                        }
-                    })
-                    .catch(function(error) {
-                        console.error('Error:', error);
-                        showMessage('Error al finalizar la tarea: ' + error.message, 'danger');
-                    });
-            });
-        });
-
-        function showMessage(message, type) {
-            // Crear elemento de alerta
-            var alertDiv = document.createElement('div');
-            alertDiv.className = 'alert alert-' + type + ' alert-dismissible fade show';
-            alertDiv.role = 'alert';
-
-            var icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
-            alertDiv.innerHTML =
-                '<div class="d-flex align-items-center">' +
-                '<i class="fas ' + icon + ' me-2"></i>' +
-                '<span>' + message + '</span>' +
-                '</div>' +
-                '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
-
-            // Insertar la alerta al principio del contenedor de mensajes
-            var messagesContainer = document.querySelector('.container > div:first-child');
-            messagesContainer.appendChild(alertDiv);
-
-            // Eliminar automáticamente después de 5 segundos
-            setTimeout(function() {
-                alertDiv.classList.remove('show');
-                setTimeout(function() {
-                    alertDiv.remove();
-                }, 150);
-            }, 5000);
-        }
-    });
-</script>
-
-<style>
-    .btn-primary {
-        background-color: #345676 !important;
-        border-color: #345676 !important;
-        transition: all 0.2s ease !important;
-    }
-
-    .btn-primary:hover {
-        background-color: #2d4a66 !important;
-        border-color: #2d4a66 !important;
-        transform: translateY(-2px) !important;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
-    }
-
-    .btn-primary:focus,
-    .btn-primary:active {
-        background-color: #345676 !important;
-        border-color: #345676 !important;
-        box-shadow: none !important;
-        transform: none !important;
-    }
-
-    /* Asegurar que las badges de prioridad y estado sean siempre visibles */
-    .badge-soft-danger, .badge-soft-warning, .badge-soft-info,
-    .badge-soft-success, .badge-soft-primary {
-        display: inline-block !important;
-        opacity: 1 !important;
-        visibility: visible !important;
-    }
-
-    /* Estilos para las badges */
-    .badge-soft-danger {
-        background-color: #ffebee !important;
-        color: #d32f2f !important;
-    }
-
-    .badge-soft-warning {
-        background-color: #fff8e1 !important;
-        color: #f57c00 !important;
-    }
-
-    .badge-soft-info {
-        background-color: #e3f2fd !important;
-        color: #1976d2 !important;
-    }
-
-    .badge-soft-success {
-        background-color: #e8f5e9 !important;
-        color: #388e3c !important;
-    }
-
-    .badge-soft-primary {
-        background-color: #fff3cd !important;
-        color: #856404 !important;
-        border: 1px solid #ffeaa7 !important;
-    }
-</style>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
