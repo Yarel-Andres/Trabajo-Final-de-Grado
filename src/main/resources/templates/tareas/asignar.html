@@ -1,18 +1,25 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head th:replace="fragments/layout :: head('Asignar Tarea')">
+    <!-- Enlaces a archivos CSS externos -->
+    <link rel="stylesheet" th:href="@{/css/tareas-styles.css}">
 </head>
 <body>
 <header th:replace="fragments/layout :: header(${#authentication.name})">
 </header>
 
 <div class="container">
+    <!-- Contenedor para mensajes de alerta -->
     <div th:replace="fragments/layout :: messages"></div>
 
+    <!-- Tarjeta principal del formulario -->
     <div class="card shadow-sm">
         <div class="card-body">
-            <h2 class="card-title mb-4"><i class="fas fa-tasks me-2"></i>Asignar Nueva Tarea</h2>
+            <h2 class="card-title mb-4">
+                <i class="fas fa-tasks me-2"></i>Asignar Nueva Tarea
+            </h2>
 
+            <!-- Formulario de asignación de tarea -->
             <form th:action="@{/tareas/asignar}" th:object="${tarea}" method="post">
                 <div class="mb-3">
                     <label for="titulo" class="form-label">Título:</label>
@@ -44,13 +51,14 @@
                     </select>
                 </div>
 
-                <!-- Fecha de vencimiento con hora y minutos -->
                 <div class="mb-3">
                     <label for="fechaVencimientoDate" class="form-label">Fecha de vencimiento</label>
                     <div class="row">
+                        <!-- Fecha -->
                         <div class="col-md-6">
                             <input type="date" class="form-control" id="fechaVencimientoDate" name="fechaVencimientoDate" required>
                         </div>
+                        <!-- Hora -->
                         <div class="col-md-3">
                             <select class="form-select" id="horaVencimiento" name="horaVencimiento">
                                 <option value="0">00</option>
@@ -79,6 +87,7 @@
                                 <option value="23">23</option>
                             </select>
                         </div>
+                        <!-- Minutos -->
                         <div class="col-md-3">
                             <select class="form-select" id="minutosVencimiento" name="minutosVencimiento">
                                 <option value="0">00</option>
@@ -91,6 +100,7 @@
                     <small class="form-text text-muted">Seleccione la fecha, hora y minutos de vencimiento</small>
                 </div>
 
+                <!-- Prioridad de la tarea -->
                 <div class="mb-3">
                     <label for="prioridad" class="form-label">Prioridad:</label>
                     <select id="prioridad" th:field="*{prioridad}" class="form-select" required>
@@ -100,6 +110,7 @@
                     </select>
                 </div>
 
+                <!-- Botones de acción -->
                 <div class="d-flex mt-4">
                     <button type="submit" class="btn btn-primary me-2">
                         <i class="fas fa-save me-2"></i>Asignar Tarea
@@ -113,62 +124,10 @@
     </div>
 </div>
 
-<!-- Para establecer fecha actual por defecto y 09 como valor predeterminado para la hora-->
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Establecer la fecha actual como valor predeterminado para la fecha de vencimiento
-        const fechaVencimientoInput = document.getElementById('fechaVencimientoDate');
-        if (fechaVencimientoInput) {
-            const hoy = new Date();
-            const año = hoy.getFullYear();
-            const mes = String(hoy.getMonth() + 1).padStart(2, '0');
-            const dia = String(hoy.getDate()).padStart(2, '0');
-            const fechaActual = `${año}-${mes}-${dia}`;
-            fechaVencimientoInput.value = fechaActual;
-        }
+<!-- Footer -->
+<div th:replace="fragments/layout :: footer"></div>
 
-        // Establecer "09" como valor predeterminado para la hora
-        const horaVencimientoSelect = document.getElementById('horaVencimiento');
-        if (horaVencimientoSelect) {
-            horaVencimientoSelect.value = "9"; // Selecciona la opción con valor "9" (que muestra "09")
-        }
-    });
-</script>
-
-<style>
-    /* Eliminar el efecto de elevación para la tarjeta de asignar tarea */
-    .card {
-        transition: none !important;
-    }
-
-    .card:hover {
-        transform: none !important;
-        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.05) !important;
-    }
-
-    /* Estilo para el botón principal igual que en programar reunión */
-    .btn-primary {
-        background-color: #345676 !important;
-        border-color: #345676 !important;
-        transition: all 0.2s ease !important;
-    }
-
-    .btn-primary:hover {
-        background-color: #2d4a66 !important;
-        border-color: #2d4a66 !important;
-    }
-
-    /* Estilo para el botón secundario igual que en programar reunión */
-    .btn-secondary {
-        background-color: #6c757d !important;
-        border-color: #6c757d !important;
-        transition: all 0.2s ease !important;
-    }
-
-    .btn-secondary:hover {
-        background-color: #5a6268 !important;
-        border-color: #5a6268 !important;
-    }
-</style>
+<!-- JS -->
+<script th:src="@{/scripts/tareas.js}"></script>
 </body>
 </html>

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="fragments/layout :: head('Registrar Tiempo')">
+    <link th:href="@{/css/registros-tiempo-styles.css}" rel="stylesheet">
 </head>
 <body>
 <header th:replace="fragments/layout :: header(${#authentication.name})">
@@ -11,20 +12,23 @@
 
     <div class="card shadow-sm">
         <div class="card-body">
+            <!-- Título de la página -->
             <h2 class="card-title mb-4"><i class="fas fa-clock me-2"></i>Registrar Tiempo</h2>
 
+            <!-- Formulario principal para registrar tiempo -->
             <form th:action="@{/registros-tiempo/crear}" th:object="${registroTiempo}" method="post">
-                <!-- Eliminamos el campo fechaRegistro ya que usaremos la misma fecha para inicio y fin -->
 
-                <!-- Hora de inicio -->
+                <!-- Sección de hora de inicio -->
                 <div class="mb-4">
                     <h5>Hora de inicio</h5>
                     <div class="row">
+                        <!-- Campo de fecha de inicio -->
                         <div class="col-md-4 mb-3">
                             <label for="fechaInicioTemp" class="form-label">Fecha:</label>
                             <input type="date" id="fechaInicioTemp" th:field="*{fechaInicioTemp}" class="form-control"
                                    th:value="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}" required>
                         </div>
+                        <!-- Selector de hora de inicio -->
                         <div class="col-md-4 mb-3">
                             <label for="horaInicioTemp" class="form-label">Hora:</label>
                             <select id="horaInicioTemp" th:field="*{horaInicioTemp}" class="form-select" required>
@@ -33,6 +37,7 @@
                                         th:text="${hora < 10 ? '0' + hora : hora}">09</option>
                             </select>
                         </div>
+                        <!-- Selector de minutos de inicio -->
                         <div class="col-md-4 mb-3">
                             <label for="minutosInicioTemp" class="form-label">Minutos:</label>
                             <select id="minutosInicioTemp" th:field="*{minutosInicioTemp}" class="form-select" required>
@@ -45,15 +50,17 @@
                     </div>
                 </div>
 
-                <!-- Hora de fin -->
+                <!-- Sección de hora de fin -->
                 <div class="mb-4">
                     <h5>Hora de fin</h5>
                     <div class="row">
+                        <!-- Campo de fecha de fin -->
                         <div class="col-md-4 mb-3">
                             <label for="fechaFinTemp" class="form-label">Fecha:</label>
                             <input type="date" id="fechaFinTemp" th:field="*{fechaFinTemp}" class="form-control"
                                    th:value="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}" required>
                         </div>
+                        <!-- Selector de hora de fin -->
                         <div class="col-md-4 mb-3">
                             <label for="horaFinTemp" class="form-label">Hora:</label>
                             <select id="horaFinTemp" th:field="*{horaFinTemp}" class="form-select" required>
@@ -62,6 +69,7 @@
                                         th:text="${hora < 10 ? '0' + hora : hora}">18</option>
                             </select>
                         </div>
+                        <!-- Selector de minutos de fin -->
                         <div class="col-md-4 mb-3">
                             <label for="minutosFinTemp" class="form-label">Minutos:</label>
                             <select id="minutosFinTemp" th:field="*{minutosFinTemp}" class="form-select" required>
@@ -74,36 +82,42 @@
                     </div>
                 </div>
 
-                <!-- Tipo de actividad - Mostrar todas las opciones o solo una según el contexto -->
+                <!-- Selección de tipo de actividad - Mostrar todas las opciones -->
                 <div class="mb-3" th:if="${!mostrarSoloUnaOpcion}">
                     <label class="form-label">Tipo de actividad:</label>
+                    <!-- Radio button para Tarea -->
                     <div class="form-check">
                         <input class="form-check-input" type="radio" name="tipoActividad" id="tipoTarea" value="tarea" checked>
                         <label class="form-check-label" for="tipoTarea">Tarea</label>
                     </div>
+                    <!-- Radio button para Proyecto -->
                     <div class="form-check">
                         <input class="form-check-input" type="radio" name="tipoActividad" id="tipoProyecto" value="proyecto">
                         <label class="form-check-label" for="tipoProyecto">Proyecto</label>
                     </div>
+                    <!-- Radio button para Reunión -->
                     <div class="form-check">
                         <input class="form-check-input" type="radio" name="tipoActividad" id="tipoReunion" value="reunion">
                         <label class="form-check-label" for="tipoReunion">Reunión</label>
                     </div>
                 </div>
 
-                <!-- Tipo de actividad - Mostrar solo la opción seleccionada -->
+                <!-- Selección de tipo de actividad - Mostrar solo la opción preseleccionada -->
                 <div class="mb-3" th:if="${mostrarSoloUnaOpcion}">
                     <label class="form-label">Tipo de actividad:</label>
+                    <!-- Opción única para Tarea -->
                     <div class="form-check" th:if="${tipoActividadSeleccionada == 'tarea'}">
                         <input class="form-check-input" type="radio" name="tipoActividad" id="tipoTareaUnico" value="tarea" checked>
                         <label class="form-check-label" for="tipoTareaUnico">Tarea</label>
                         <input type="hidden" name="tipoActividad" value="tarea">
                     </div>
+                    <!-- Opción única para Proyecto -->
                     <div class="form-check" th:if="${tipoActividadSeleccionada == 'proyecto'}">
                         <input class="form-check-input" type="radio" name="tipoActividad" id="tipoProyectoUnico" value="proyecto" checked>
                         <label class="form-check-label" for="tipoProyectoUnico">Proyecto</label>
                         <input type="hidden" name="tipoActividad" value="proyecto">
                     </div>
+                    <!-- Opción única para Reunión -->
                     <div class="form-check" th:if="${tipoActividadSeleccionada == 'reunion'}">
                         <input class="form-check-input" type="radio" name="tipoActividad" id="tipoReunionUnico" value="reunion" checked>
                         <label class="form-check-label" for="tipoReunionUnico">Reunión</label>
@@ -111,7 +125,7 @@
                     </div>
                 </div>
 
-                <!-- Secciones de selección -->
+                <!-- Sección para seleccionar tarea específica -->
                 <div id="tareaSection" class="mb-3" th:classappend="${tipoActividadSeleccionada != 'tarea' && tipoActividadSeleccionada != null ? 'd-none' : ''}">
                     <label for="tareaId" class="form-label">Tarea:</label>
                     <select id="tareaId" th:field="*{tareaId}" class="form-select">
@@ -120,6 +134,7 @@
                     </select>
                 </div>
 
+                <!-- Sección para seleccionar proyecto específico -->
                 <div id="proyectoSection" class="mb-3" th:classappend="${tipoActividadSeleccionada != 'proyecto' && tipoActividadSeleccionada != null ? 'd-none' : ''}">
                     <label for="proyectoId" class="form-label">Proyecto:</label>
                     <select id="proyectoId" th:field="*{proyectoId}" class="form-select">
@@ -128,6 +143,7 @@
                     </select>
                 </div>
 
+                <!-- Sección para seleccionar reunión específica -->
                 <div id="reunionSection" class="mb-3" th:classappend="${tipoActividadSeleccionada != 'reunion' && tipoActividadSeleccionada != null ? 'd-none' : ''}">
                     <label for="reunionId" class="form-label">Reunión:</label>
                     <select id="reunionId" th:field="*{reunionId}" class="form-select">
@@ -136,39 +152,19 @@
                     </select>
                 </div>
 
+                <!-- Campo de comentario opcional -->
                 <div class="mb-3">
                     <label for="comentario" class="form-label">Comentario:</label>
                     <textarea id="comentario" th:field="*{comentario}" class="form-control" rows="3"></textarea>
                 </div>
 
-                <style>
-                    .btn-primary {
-                        background-color: #345676 !important;
-                        border-color: #345676 !important;
-                        transition: all 0.2s ease !important;
-                    }
-
-                    .btn-primary:hover {
-                        background-color: #2d4a66 !important;
-                        border-color: #2d4a66 !important;
-                    }
-
-                    .btn-secondary {
-                        background-color: #6c757d !important;
-                        border-color: #6c757d !important;
-                        transition: all 0.2s ease !important;
-                    }
-
-                    .btn-secondary:hover {
-                        background-color: #5a6268 !important;
-                        border-color: #5a6268 !important;
-                    }
-                </style>
-
+                <!-- Botones de acción del formulario -->
                 <div class="d-flex mt-4">
+                    <!-- Botón para enviar el formulario -->
                     <button type="submit" class="btn btn-primary me-2">
                         <i class="fas fa-save me-2"></i>Registrar Tiempo
                     </button>
+                    <!-- Botón para cancelar y volver al dashboard -->
                     <a th:href="@{/dashboard}" class="btn btn-secondary">
                         <i class="fas fa-arrow-left me-2"></i>Cancelar
                     </a>
@@ -178,102 +174,7 @@
     </div>
 </div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Solo configurar los radio buttons si están presentes (cuando no hay una opción preseleccionada)
-        const tipoTarea = document.getElementById('tipoTarea');
-        const tipoProyecto = document.getElementById('tipoProyecto');
-        const tipoReunion = document.getElementById('tipoReunion');
-
-        const tareaSection = document.getElementById('tareaSection');
-        const proyectoSection = document.getElementById('proyectoSection');
-        const reunionSection = document.getElementById('reunionSection');
-
-        const tareaId = document.getElementById('tareaId');
-        const proyectoId = document.getElementById('proyectoId');
-        const reunionId = document.getElementById('reunionId');
-
-        // Establecer la fecha actual en los campos de fecha usando JavaScript
-        const fechaInicioTemp = document.getElementById('fechaInicioTemp');
-        const fechaFinTemp = document.getElementById('fechaFinTemp');
-
-        if (fechaInicioTemp && !fechaInicioTemp.value) {
-            const hoy = new Date();
-            const año = hoy.getFullYear();
-            const mes = String(hoy.getMonth() + 1).padStart(2, '0');
-            const dia = String(hoy.getDate()).padStart(2, '0');
-            fechaInicioTemp.value = `${año}-${mes}-${dia}`;
-        }
-
-        if (fechaFinTemp && !fechaFinTemp.value) {
-            const hoy = new Date();
-            const año = hoy.getFullYear();
-            const mes = String(hoy.getMonth() + 1).padStart(2, '0');
-            const dia = String(hoy.getDate()).padStart(2, '0');
-            fechaFinTemp.value = `${año}-${mes}-${dia}`;
-        }
-
-        // Establecer valores predeterminados para los selectores de hora
-        document.getElementById('horaInicioTemp').value = "9"; // 9:00 AM
-        document.getElementById('minutosInicioTemp').value = "0"; // 00 minutos
-        document.getElementById('horaFinTemp').value = "17"; // 5:00 PM
-        document.getElementById('minutosFinTemp').value = "0"; // 00 minutos
-
-        // Solo configurar los event listeners si los elementos existen
-        if (tipoTarea && tipoProyecto && tipoReunion) {
-            function updateSections() {
-                if (tipoTarea.checked) {
-                    tareaSection.classList.remove('d-none');
-                    proyectoSection.classList.add('d-none');
-                    reunionSection.classList.add('d-none');
-
-                    proyectoId.value = '';
-                    reunionId.value = '';
-                } else if (tipoProyecto.checked) {
-                    tareaSection.classList.add('d-none');
-                    proyectoSection.classList.remove('d-none');
-                    reunionSection.classList.add('d-none');
-
-                    tareaId.value = '';
-                    reunionId.value = '';
-                } else if (tipoReunion.checked) {
-                    tareaSection.classList.add('d-none');
-                    proyectoSection.classList.add('d-none');
-                    reunionSection.classList.remove('d-none');
-
-                    tareaId.value = '';
-                    proyectoId.value = '';
-                }
-            }
-
-            tipoTarea.addEventListener('change', updateSections);
-            tipoProyecto.addEventListener('change', updateSections);
-            tipoReunion.addEventListener('change', updateSections);
-
-            // Inicializar
-            updateSections();
-        }
-
-        // Validación para asegurar que la hora de fin sea posterior a la hora de inicio
-        document.querySelector('form').addEventListener('submit', function(event) {
-            const fechaInicio = document.getElementById('fechaInicioTemp').value;
-            const horaInicio = document.getElementById('horaInicioTemp').value;
-            const minutosInicio = document.getElementById('minutosInicioTemp').value;
-
-            const fechaFin = document.getElementById('fechaFinTemp').value;
-            const horaFin = document.getElementById('horaFinTemp').value;
-            const minutosFin = document.getElementById('minutosFinTemp').value;
-
-            const inicio = new Date(`${fechaInicio}T${horaInicio.padStart(2, '0')}:${minutosInicio.padStart(2, '0')}:00`);
-            const fin = new Date(`${fechaFin}T${horaFin.padStart(2, '0')}:${minutosFin.padStart(2, '0')}:00`);
-
-            if (fin <= inicio) {
-                event.preventDefault();
-                alert('La hora de fin debe ser posterior a la hora de inicio');
-            }
-        });
-    });
-</script>
-
+<!-- JS y CSS -->
+<script th:src="@{/scripts/registros-tiempo.js}"></script>
 </body>
 </html>

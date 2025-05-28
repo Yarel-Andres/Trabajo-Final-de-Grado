@@ -7,35 +7,42 @@
 </header>
 
 <div class="container">
+    <!-- Contenedor para mensajes del sistema -->
     <div th:replace="fragments/layout :: messages"></div>
 
     <div class="card shadow-sm">
         <div class="card-body">
+            <!-- Encabezado con título del empleado y botón de retorno -->
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2 class="card-title mb-0">
                     <i class="fas fa-user-clock me-2"></i>Informe de Tiempo:
                     <span th:if="${empleado != null}" th:text="${empleado.nombreCompleto}" class="text-success"></span>
                 </h2>
+                <!-- Botón para volver a la página de informes -->
                 <a th:href="@{/registros-tiempo/informes}" class="btn btn-primary">
                     <i class="fas fa-arrow-left me-2"></i>Volver a Informes
                 </a>
             </div>
 
+            <!-- Mensaje cuando no hay registros -->
             <div th:if="${registros == null || registros.empty}" class="alert alert-info">
                 <i class="fas fa-info-circle me-2"></i>
                 <span>No hay registros de tiempo para este empleado.</span>
             </div>
 
+            <!-- Información detallada del empleado -->
             <div th:if="${empleado != null}" class="card mb-4">
                 <div class="card-header bg-light">
                     <h5 class="mb-0">Información del Empleado</h5>
                 </div>
                 <div class="card-body">
                     <div class="row">
+                        <!-- Columna izquierda con datos básicos -->
                         <div class="col-md-6">
                             <p><strong>Nombre:</strong> <span th:text="${empleado.nombreCompleto}"></span></p>
                             <p><strong>Puesto:</strong> <span th:text="${empleado.puesto}"></span></p>
                         </div>
+                        <!-- Columna derecha con datos adicionales -->
                         <div class="col-md-6">
                             <p><strong>Correo:</strong> <span th:text="${empleado.correo}"></span></p>
                             <p><strong>Fecha Contratación:</strong> <span th:text="${#temporals.format(empleado.fechaContratacion, 'dd/MM/yyyy')}"></span></p>
@@ -44,8 +51,10 @@
                 </div>
             </div>
 
+            <!-- Tabla de registros de tiempo -->
             <div th:if="${registros != null && !registros.empty}" class="table-responsive">
                 <table class="table table-hover">
+                    <!-- Encabezados de la tabla -->
                     <thead class="table-light">
                     <tr>
                         <th>Fecha</th>
@@ -56,36 +65,44 @@
                         <th>Comentario</th>
                     </tr>
                     </thead>
+                    <!-- Filas de datos -->
                     <tbody>
                     <tr th:each="registro : ${registros}">
+                        <!-- Fecha del registro -->
                         <td th:text="${#temporals.format(registro.fechaRegistro, 'dd/MM/yyyy')}">Fecha</td>
+                        <!-- Hora de inicio -->
                         <td th:text="${#temporals.format(registro.horaInicio, 'HH:mm')}">Hora Inicio</td>
+                        <!-- Hora de fin -->
                         <td th:text="${#temporals.format(registro.horaFin, 'HH:mm')}">Hora Fin</td>
+                        <!-- Total de horas trabajadas -->
                         <td th:text="${#numbers.formatDecimal(registro.horasTrabajadas, 1, 2)}">Horas</td>
+                        <!-- Badge con el tipo de actividad -->
                         <td>
                             <span th:if="${registro.tipoRegistro == 'Tarea'}" class="badge bg-primary">Tarea</span>
                             <span th:if="${registro.tipoRegistro == 'Proyecto'}" class="badge bg-success">Proyecto</span>
                             <span th:if="${registro.tipoRegistro == 'Reunión'}" class="badge bg-info">Reunión</span>
-                            <!-- Fallback por si el tipo no está establecido -->
+                            <!-- Fallback cuando el tipo no está establecido -->
                             <span th:if="${registro.tipoRegistro == null}">
                                 <span th:if="${registro.tareaId != null}" class="badge bg-primary">Tarea</span>
                                 <span th:if="${registro.proyectoId != null && registro.tareaId == null}" class="badge bg-success">Proyecto</span>
                                 <span th:if="${registro.reunionId != null}" class="badge bg-info">Reunión</span>
                             </span>
                         </td>
+                        <!-- Comentario del registro -->
                         <td th:text="${registro.comentario}">Comentario</td>
                     </tr>
                     </tbody>
                 </table>
             </div>
 
-            <!-- Resumen de horas -->
+            <!-- Resumen estadístico de horas -->
             <div th:if="${registros != null && !registros.empty}" class="card mt-4">
                 <div class="card-header bg-light">
                     <h5 class="mb-0">Resumen de Horas</h5>
                 </div>
                 <div class="card-body">
                     <div class="row">
+                        <!-- Tarjeta de total de horas -->
                         <div class="col-md-4">
                             <div class="card bg-primary text-white">
                                 <div class="card-body text-center">
@@ -94,6 +111,7 @@
                                 </div>
                             </div>
                         </div>
+                        <!-- Tarjeta de número de registros -->
                         <div class="col-md-4">
                             <div class="card bg-success text-white">
                                 <div class="card-body text-center">
@@ -102,6 +120,7 @@
                                 </div>
                             </div>
                         </div>
+                        <!-- Tarjeta de promedio de horas -->
                         <div class="col-md-4">
                             <div class="card bg-info text-white">
                                 <div class="card-body text-center">
@@ -114,10 +133,13 @@
                 </div>
             </div>
 
+            <!-- Botones de navegación -->
             <div class="mt-4">
+                <!-- Botón para volver a informes -->
                 <a th:href="@{/registros-tiempo/informes}" class="btn btn-primary">
                     <i class="fas fa-arrow-left me-2"></i>Volver a Informes
                 </a>
+                <!-- Botón para volver al dashboard -->
                 <a th:href="@{/dashboard}" class="btn btn-secondary">
                     <i class="fas fa-home me-2"></i>Volver al Dashboard
                 </a>
@@ -125,5 +147,9 @@
         </div>
     </div>
 </div>
+
+<!-- JS y CSS -->
+<link rel="stylesheet" th:href="@{/css/registros-tiempo-styles.css}">
+<script th:src="@{/scripts/registros-tiempo.js}"></script>
 </body>
 </html>

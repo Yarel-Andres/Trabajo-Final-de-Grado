@@ -13,23 +13,28 @@
         <div class="card-body">
             <h2 class="card-title mb-4"><i class="fas fa-calendar-plus me-2"></i>Programar Nueva Reunión</h2>
 
+            <!-- Formulario para crear una nueva reunión -->
             <form th:action="@{/reuniones/crear}" th:object="${reunion}" method="post">
+                <!-- Campo para el título de la reunión -->
                 <div class="mb-3">
                     <label for="titulo" class="form-label">Título:</label>
                     <input type="text" id="titulo" th:field="*{titulo}" class="form-control" required>
                 </div>
 
+                <!-- Campo para la descripción de la reunión -->
                 <div class="mb-3">
                     <label for="descripcion" class="form-label">Descripción:</label>
                     <textarea id="descripcion" th:field="*{descripcion}" class="form-control" rows="4"></textarea>
                 </div>
 
                 <div class="row mb-3">
+                    <!-- Selector de fecha -->
                     <div class="col-md-4">
                         <label for="fechaReunion" class="form-label">Fecha:</label>
                         <input type="date" id="fechaReunion" name="fechaReunionDate" class="form-control" required
                                th:attr="min=${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}">
                     </div>
+                    <!-- Selector de hora -->
                     <div class="col-md-4">
                         <label for="horaReunion" class="form-label">Hora:</label>
                         <select id="horaReunion" name="horaReunion" class="form-select" required>
@@ -37,6 +42,7 @@
                             <option th:each="hora : ${#numbers.sequence(8, 20)}" th:value="${hora}" th:text="${hora}"></option>
                         </select>
                     </div>
+                    <!-- Selector de minutos -->
                     <div class="col-md-4">
                         <label for="minutosReunion" class="form-label">Minutos:</label>
                         <select id="minutosReunion" name="minutosReunion" class="form-select" required>
@@ -49,10 +55,12 @@
                     </div>
                 </div>
 
+                <!-- Selector de sala -->
                 <div class="mb-3">
                     <label for="sala" class="form-label">Sala:</label>
                     <select id="sala" th:field="*{sala}" class="form-select" required>
                         <option value="">-- Seleccionar Sala --</option>
+                        <!-- Opciones de salas disponibles -->
                         <option value="Sala A">Sala A</option>
                         <option value="Sala B">Sala B</option>
                         <option value="Sala C">Sala C</option>
@@ -62,10 +70,12 @@
                     </select>
                 </div>
 
+                <!-- Sección para seleccionar participantes de la reunión -->
                 <div class="mb-3">
                     <label class="form-label">Participantes: <span class="text-danger">*</span></label>
                     <div class="card">
                         <div class="card-body" style="max-height: 200px; overflow-y: auto;">
+                            <!-- Checkbox para cada empleado -->
                             <div th:each="empleado : ${empleados}" class="form-check mb-2">
                                 <input type="checkbox" th:id="${'participante-' + empleado.id}"
                                        name="participantesIds" th:value="${empleado.id}" class="form-check-input participante-check">
@@ -74,11 +84,13 @@
                             </div>
                         </div>
                     </div>
+                    <!-- Mensaje de error si no se selecciona ningún participante -->
                     <div id="participantesError" class="text-danger mt-1" style="display: none;">
                         Debe seleccionar al menos un participante
                     </div>
                 </div>
 
+                <!-- Botones para guardar o cancelar la creación de la reunión -->
                 <div class="d-flex gap-2">
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-save me-2"></i>Programar Reunión
@@ -92,50 +104,7 @@
     </div>
 </div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Establecer la fecha actual como valor predeterminado para la fecha de reunión
-        const fechaReunionInput = document.getElementById('fechaReunion');
-        if (fechaReunionInput) {
-            const hoy = new Date();
-            const año = hoy.getFullYear();
-            const mes = String(hoy.getMonth() + 1).padStart(2, '0');
-            const dia = String(hoy.getDate()).padStart(2, '0');
-            const fechaActual = `${año}-${mes}-${dia}`;
-            fechaReunionInput.value = fechaActual;
-        }
-
-        const form = document.querySelector('form');
-        const participanteChecks = document.querySelectorAll('.participante-check');
-        const participantesError = document.getElementById('participantesError');
-
-        form.addEventListener('submit', function(event) {
-            // Verificar si al menos un participante está seleccionado
-            let participanteSeleccionado = false;
-            participanteChecks.forEach(function(check) {
-                if (check.checked) {
-                    participanteSeleccionado = true;
-                }
-            });
-
-            if (!participanteSeleccionado) {
-                event.preventDefault();
-                participantesError.style.display = 'block';
-                window.scrollTo(0, participantesError.offsetTop - 100);
-            } else {
-                participantesError.style.display = 'none';
-            }
-        });
-
-        // Ocultar mensaje de error cuando se selecciona un participante
-        participanteChecks.forEach(function(check) {
-            check.addEventListener('change', function() {
-                if (this.checked) {
-                    participantesError.style.display = 'none';
-                }
-            });
-        });
-    });
-</script>
+<!-- JS -->
+<script th:src="@{/scripts/reuniones.js}"></script>
 </body>
 </html>

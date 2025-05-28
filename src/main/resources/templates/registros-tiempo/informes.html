@@ -1,16 +1,19 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="fragments/layout :: head('Informes de Tiempo')">
+    <link th:href="@{/css/registros-tiempo-styles.css}" rel="stylesheet">
 </head>
 <body>
 <header th:replace="fragments/layout :: header(${#authentication.name})">
 </header>
 
 <div class="container">
+    <!-- Contenedor para mensajes del sistema -->
     <div th:replace="fragments/layout :: messages"></div>
 
     <div class="card shadow-sm border-0 mb-4">
         <div class="card-body">
+            <!-- Encabezado principal de la página -->
             <div class="d-flex align-items-center mb-4">
                 <div class="section-icon me-3">
                     <i class="fas fa-chart-bar fa-lg"></i>
@@ -21,7 +24,9 @@
                 </div>
             </div>
 
+            <!-- Sección de opciones de informes -->
             <div class="row mb-4">
+                <!-- Tarjeta para informes por empleado -->
                 <div class="col-md-6">
                     <div class="card border-0 shadow-sm h-100">
                         <div class="card-header bg-light d-flex align-items-center">
@@ -30,12 +35,14 @@
                         </div>
                         <div class="card-body">
                             <p class="text-muted mb-3">Selecciona un empleado para ver sus registros de tiempo:</p>
+                            <!-- Selector de empleado -->
                             <div class="mb-3">
                                 <select id="empleadoSelect" class="form-select">
                                     <option value="">-- Seleccionar Empleado --</option>
                                     <option th:each="empleado : ${empleados}" th:value="${empleado.id}" th:text="${empleado.nombreCompleto}"></option>
                                 </select>
                             </div>
+                            <!-- Botón para ver informe de empleado -->
                             <div class="d-grid">
                                 <button id="verEmpleadoBtn" class="btn btn-primary btn-icon">
                                     <i class="fas fa-search"></i> Ver Informe
@@ -44,6 +51,7 @@
                         </div>
                     </div>
                 </div>
+                <!-- Tarjeta para informes por proyecto -->
                 <div class="col-md-6">
                     <div class="card border-0 shadow-sm h-100">
                         <div class="card-header bg-light d-flex align-items-center">
@@ -52,12 +60,14 @@
                         </div>
                         <div class="card-body">
                             <p class="text-muted mb-3">Selecciona un proyecto para ver sus registros de tiempo:</p>
+                            <!-- Selector de proyecto -->
                             <div class="mb-3">
                                 <select id="proyectoSelect" class="form-select">
                                     <option value="">-- Seleccionar Proyecto --</option>
                                     <option th:each="proyecto : ${proyectos}" th:value="${proyecto.id}" th:text="${proyecto.nombre}"></option>
                                 </select>
                             </div>
+                            <!-- Botón para ver informe de proyecto -->
                             <div class="d-grid">
                                 <button id="verProyectoBtn" class="btn btn-primary btn-icon">
                                     <i class="fas fa-search"></i> Ver Informe
@@ -68,8 +78,7 @@
                 </div>
             </div>
 
-
-            <!-- Botón Volver al Dashboard -->
+            <!-- Botón para volver al dashboard -->
             <div class="text-start mt-4 ms-2">
                 <a th:href="@{/dashboard}" class="btn btn-primary">
                     <i class="fas fa-arrow-left me-2"></i> Volver al Dashboard
@@ -79,88 +88,7 @@
     </div>
 </div>
 
-<div th:replace="fragments/layout :: footer"></div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('Script de informes de tiempo cargado');
-
-        const empleadoSelect = document.getElementById('empleadoSelect');
-        const proyectoSelect = document.getElementById('proyectoSelect');
-        const verEmpleadoBtn = document.getElementById('verEmpleadoBtn');
-        const verProyectoBtn = document.getElementById('verProyectoBtn');
-
-        if (verEmpleadoBtn) {
-            verEmpleadoBtn.addEventListener('click', function() {
-                const empleadoId = empleadoSelect.value;
-                if (empleadoId) {
-                    window.location.href = `/registros-tiempo/informes/empleado/${empleadoId}`;
-                } else {
-                    showMessage('Por favor, selecciona un empleado', 'warning');
-                }
-            });
-        }
-
-        if (verProyectoBtn) {
-            verProyectoBtn.addEventListener('click', function() {
-                const proyectoId = proyectoSelect.value;
-                if (proyectoId) {
-                    window.location.href = `/registros-tiempo/informes/proyecto/${proyectoId}`;
-                } else {
-                    showMessage('Por favor, selecciona un proyecto', 'warning');
-                }
-            });
-        }
-
-        function showMessage(message, type) {
-            // Crear elemento de alerta
-            var alertDiv = document.createElement('div');
-            alertDiv.className = 'alert alert-' + type + ' alert-dismissible fade show';
-            alertDiv.role = 'alert';
-
-            var icon = type === 'success' ? 'fa-check-circle' :
-                type === 'warning' ? 'fa-exclamation-triangle' : 'fa-exclamation-circle';
-            alertDiv.innerHTML =
-                '<div class="d-flex align-items-center">' +
-                '<i class="fas ' + icon + ' me-2"></i>' +
-                '<span>' + message + '</span>' +
-                '</div>' +
-                '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
-
-            // Insertar la alerta al principio del contenedor de mensajes
-            var messagesContainer = document.querySelector('.container > div:first-child');
-            messagesContainer.appendChild(alertDiv);
-
-            // Eliminar automáticamente después de 5 segundos
-            setTimeout(function() {
-                alertDiv.classList.remove('show');
-                setTimeout(function() {
-                    alertDiv.remove();
-                }, 150);
-            }, 5000);
-        }
-    });
-</script>
-
-<style>
-    .btn-primary {
-        background-color: #345676 !important;
-        border-color: #345676 !important;
-        transition: all 0.2s ease !important;
-    }
-
-    .btn-primary:hover {
-        background-color: #2d4a66 !important;
-        border-color: #2d4a66 !important;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-
-    .section-icon {
-        display: flex;
-        align-items: flex-start;
-        padding-top: 0.5rem;
-    }
-</style>
+<!-- JS y CSS -->
+<script th:src="@{/scripts/registros-tiempo.js}"></script>
 </body>
 </html>

@@ -8,8 +8,10 @@
 
 <div class="container">
     <div class="card shadow-sm task-confirmation-card">
+        <!-- Estructura -->
         <div class="card-body text-center">
             <div class="confirmation-icon">
+                <!-- Ícono de éxito -->
                 <i class="fas fa-calendar-check"></i>
             </div>
             <h2 class="confirmation-title">Reunión Programada Correctamente</h2>
@@ -20,7 +22,7 @@
                 </div>
             </div>
 
-            <!-- Añadir esta sección si hay información de la reunión disponible -->
+            <!-- Si hay información de la reunión disponible -->
             <div class="confirmation-details" th:if="${reunion != null}">
                 <h5>Detalles de la reunión</h5>
                 <p><strong>Título:</strong> <span th:text="${reunion.titulo}">Título de la reunión</span></p>
@@ -29,6 +31,7 @@
             </div>
 
             <div class="confirmation-actions">
+                <!-- Botones disponibles para el usuario -->
                 <a th:href="@{/reuniones/crear}" class="btn btn-primary">
                     <i class="fas fa-plus me-2"></i>Programar Otra Reunión
                 </a>
@@ -39,5 +42,8 @@
         </div>
     </div>
 </div>
+
+<!-- JS y CSS -->
+<link rel="stylesheet" th:href="@{/css/reuniones-styles.css}">
 </body>
 </html>

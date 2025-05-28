@@ -9,20 +9,25 @@
 <div class="container mt-4">
     <h2>Horas registradas para el proyecto</h2>
 
+    <!-- Mensajes del sistema -->
     <div th:replace="~{fragments/layout :: messages}"></div>
 
+    <!-- Información detallada -->
     <div class="card mb-4">
         <div class="card-header">
             <h5 th:text="${proyecto.nombre}"></h5>
         </div>
         <div class="card-body">
+            <!-- Descripción -->
             <p th:text="${proyecto.descripcion}"></p>
             <div class="row">
                 <div class="col-md-6">
+                    <!-- Fechas -->
                     <p><strong>Fecha inicio:</strong> <span th:text="${#temporals.format(proyecto.fechaInicio, 'dd/MM/yyyy')}"></span></p>
                     <p><strong>Fecha fin estimada:</strong> <span th:text="${proyecto.fechaFinEstimada != null ? #temporals.format(proyecto.fechaFinEstimada, 'dd/MM/yyyy') : 'No definida'}"></span></p>
                 </div>
                 <div class="col-md-6">
+                    <!-- Estado y estadísticas -->
                     <p><strong>Estado:</strong> <span th:text="${proyecto.estado}"></span></p>
                     <p><strong>Total horas registradas:</strong> <span th:text="${totalHoras}"></span></p>
                 </div>
@@ -30,11 +35,14 @@
         </div>
     </div>
 
+    <!-- Sección de registros de tiempo -->
     <h3>Registros de tiempo</h3>
+    <!-- Mensaje cuando no hay registros -->
     <div class="alert alert-info" th:if="${registros.empty}">
         No hay registros de tiempo para este proyecto.
     </div>
 
+    <!-- Tabla de registros de tiempo -->
     <div class="table-responsive" th:if="${!registros.empty}">
         <table class="table table-striped">
             <thead>
@@ -56,13 +64,18 @@
         </table>
     </div>
 
+    <!-- Botones de acción -->
     <div class="mt-4">
         <a th:href="@{/templates/rrhh/proyectos}" class="btn btn-secondary">Volver a Proyectos</a>
         <a th:href="@{/rrhh/presupuestos/crear/{id}(id=${proyecto.id})}" class="btn btn-primary">Crear Presupuesto</a>
     </div>
 </div>
 
-<!-- Bootstrap Bundle with Popper -->
+<!-- JS y CSS -->
+<link rel="stylesheet" th:href="@{/css/rrhh-proyectos-styles.css}">
+<script th:src="@{/scripts/rrhh-proyectos.js}"></script>
+
+<!-- Bootstrap Bundle -->
 <script th:src="@{/webjars/bootstrap/5.3.2/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>

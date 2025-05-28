@@ -9,13 +9,16 @@
 <div class="container mt-4">
     <h2>Gestión de Presupuestos</h2>
 
+    <!-- Mensajes del sistema -->
     <div th:replace="~{fragments/layout :: messages}"></div>
 
+    <!-- Tarjeta principal -->
     <div class="card mb-4">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0">Presupuestos</h5>
         </div>
         <div class="card-body">
+            <!-- Tabla responsive: Lista todos los presupuestos -->
             <div class="table-responsive">
                 <table class="table table-striped table-hover">
                     <thead>
@@ -31,9 +34,11 @@
                     </tr>
                     </thead>
                     <tbody>
+                    <!-- Mensaje cuando no hay presupuestos -->
                     <tr th:if="${presupuestos.empty}">
                         <td colspan="8" class="text-center">No hay presupuestos registrados</td>
                     </tr>
+                    <!-- Fila por cada presupuesto -->
                     <tr th:each="presupuesto : ${presupuestos}">
                         <td th:text="${presupuesto.id}"></td>
                         <td th:text="${presupuesto.proyectoNombre}"></td>
@@ -42,19 +47,21 @@
                         <td th:text="${presupuesto.horasEstimadas}"></td>
                         <td th:text="${presupuesto.costoTotal} + ' €'"></td>
                         <td>
+                            <!-- Barra de estado -->
                             <span th:class="${presupuesto.estado == 'BORRADOR' ? 'badge bg-warning' :
                                             (presupuesto.estado == 'ENVIADO' ? 'badge bg-info' :
                                             (presupuesto.estado == 'APROBADO' ? 'badge bg-success' : 'badge bg-danger'))}"
                                   th:text="${presupuesto.estado}"></span>
                         </td>
                         <td>
+                            <!-- Botón para ver detalles del presupuesto -->
                             <a th:href="@{/rrhh/presupuestos/{id}(id=${presupuesto.id})}" class="btn btn-sm btn-info">Ver</a>
                         </td>
                     </tr>
                     </tbody>
                 </table>
             </div>
-            <!-- Botón Volver al Dashboard -->
+            <!-- Botón para volver al dashboard -->
             <div class="mt-4 ms-2 text-start">
                 <a th:href="@{/dashboard}" class="btn btn-primary">
                     <i class="fas fa-arrow-left me-2"></i>Volver al Dashboard
@@ -64,21 +71,11 @@
     </div>
 </div>
 
-<!-- Bootstrap Bundle with Popper -->
-<script th:src="@{/webjars/bootstrap/5.3.2/js/bootstrap.bundle.min.js}"></script>
-<style>
-    .btn-primary {
-        background-color: #345676;
-        border-color: #345676;
-        transition: all 0.2s ease;
-    }
+<!-- JS y CSS -->
+<link rel="stylesheet" th:href="@{/css/rrhh-presupuestos-styles.css}">
+<script th:src="@{/scripts/rrhh-presupuestos.js}"></script>
 
-    .btn-primary:hover {
-        background-color: #2a4560;
-        border-color: #2a4560;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-</style>
+<!-- Bootstrap Bundle -->
+<script th:src="@{/webjars/bootstrap/5.3.2/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>

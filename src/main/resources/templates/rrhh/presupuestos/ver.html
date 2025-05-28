@@ -9,17 +9,21 @@
 <div class="container mt-4">
     <h2>Detalle de Presupuesto</h2>
 
+    <!-- Mensajes del sistema -->
     <div th:replace="~{fragments/layout :: messages}"></div>
 
+    <!-- Tarjeta principal -->
     <div class="card shadow-sm mb-4">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0">Presupuesto <span th:text="${presupuesto.id}"></span></h5>
+            <!-- Barra de estado del presupuesto -->
             <span th:class="${presupuesto.estado == 'BORRADOR' ? 'badge bg-warning' :
                           (presupuesto.estado == 'ENVIADO' ? 'badge bg-info' :
                           (presupuesto.estado == 'APROBADO' ? 'badge bg-success' : 'badge bg-danger'))}"
                   th:text="${presupuesto.estado}"></span>
         </div>
         <div class="card-body">
+            <!-- Información del proyecto y cliente -->
             <div class="row mb-4">
                 <div class="col-md-6">
                     <h6 class="fw-bold">Información del Proyecto</h6>
@@ -33,6 +37,7 @@
                 </div>
             </div>
 
+            <!-- Descripción del presupuesto -->
             <div class="row mb-4">
                 <div class="col-md-12">
                     <h6 class="fw-bold">Descripción</h6>
@@ -40,6 +45,7 @@
                 </div>
             </div>
 
+            <!-- Información financiera -->
             <div class="row mb-4">
                 <div class="col-md-4">
                     <h6 class="fw-bold">Información Financiera</h6>
@@ -49,7 +55,7 @@
                 </div>
             </div>
 
-            <!-- Historial de cambios si existe -->
+            <!-- Historial de cambios (si existe) -->
             <div class="row mb-4" th:if="${historialCambios != null && !#lists.isEmpty(historialCambios)}">
                 <div class="col-md-12">
                     <h6 class="fw-bold">Historial de Cambios</h6>
@@ -76,9 +82,10 @@
                 </div>
             </div>
 
-            <!-- Botones de acción según el estado -->
+            <!-- Botones de acción según el estado del presupuesto -->
             <div class="d-flex justify-content-between mt-4">
                 <div>
+                    <!-- Botón para volver a la lista -->
                     <a th:href="@{/rrhh/presupuestos}" class="btn btn-secondary">Volver a Presupuestos</a>
                 </div>
 
@@ -131,7 +138,11 @@
     </div>
 </div>
 
-<!-- Bootstrap Bundle with Popper -->
+<!-- JS y CSS -->
+<link rel="stylesheet" th:href="@{/css/rrhh-presupuestos-styles.css}">
+<script th:src="@{/scripts/rrhh-presupuestos.js}"></script>
+
+<!-- Bootstrap Bundle -->
 <script th:src="@{/webjars/bootstrap/5.3.2/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>

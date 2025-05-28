@@ -1,42 +1,36 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="fragments/layout :: head('Mis Registros de Tiempo')">
-    <style>
-        .btn-primary {
-            background-color: #345676 !important;
-            border-color: #345676 !important;
-            transition: all 0.2s ease !important;
-        }
-
-        .btn-primary:hover {
-            background-color: #2d4a66 !important;
-            border-color: #2d4a66 !important;
-        }
-    </style>
 </head>
 <body>
 <header th:replace="fragments/layout :: header(${#authentication.name})">
 </header>
 
 <div class="container">
+    <!-- Contenedor para mensajes del sistema -->
     <div th:replace="fragments/layout :: messages"></div>
 
     <div class="card shadow-sm">
         <div class="card-body">
+            <!-- Encabezado con título y botón de nuevo registro -->
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2 class="card-title mb-0"><i class="fas fa-clock me-2"></i>Mis Registros de Tiempo</h2>
+                <!-- Botón para crear nuevo registro -->
                 <a th:href="@{/registros-tiempo/crear}" class="btn btn-primary">
                     <i class="fas fa-plus me-2"></i>Nuevo Registro
                 </a>
             </div>
 
+            <!-- Mensaje cuando no hay registros -->
             <div th:if="${registros == null || registros.empty}" class="alert alert-info">
                 <i class="fas fa-info-circle me-2"></i>
                 <span>No tienes registros de tiempo actualmente.</span>
             </div>
 
+            <!-- Tabla de registros cuando existen datos -->
             <div th:if="${registros != null && !registros.empty}" class="table-responsive">
                 <table class="table table-hover">
+                    <!-- Encabezados de la tabla -->
                     <thead class="table-light">
                     <tr>
                         <th>Fecha</th>
@@ -47,29 +41,37 @@
                         <th>Comentario</th>
                     </tr>
                     </thead>
+                    <!-- Filas de datos -->
                     <tbody>
                     <tr th:each="registro : ${registros}">
+                        <!-- Fecha del registro -->
                         <td th:text="${#temporals.format(registro.fechaRegistro, 'dd/MM/yyyy')}">Fecha</td>
+                        <!-- Hora de inicio -->
                         <td th:text="${#temporals.format(registro.horaInicio, 'HH:mm')}">Hora Inicio</td>
+                        <!-- Hora de fin -->
                         <td th:text="${#temporals.format(registro.horaFin, 'HH:mm')}">Hora Fin</td>
+                        <!-- Total de horas trabajadas -->
                         <td th:text="${#numbers.formatDecimal(registro.horasTrabajadas, 1, 2)}">Horas</td>
+                        <!-- Badge con el tipo de actividad -->
                         <td>
                             <span th:if="${registro.tipoRegistro == 'Tarea'}" class="badge bg-primary">Tarea</span>
                             <span th:if="${registro.tipoRegistro == 'Proyecto'}" class="badge bg-success">Proyecto</span>
                             <span th:if="${registro.tipoRegistro == 'Reunión'}" class="badge bg-info">Reunión</span>
-                            <!-- Fallback por si el tipo no está establecido -->
+                            <!-- Fallback cuando el tipo no está establecido -->
                             <span th:if="${registro.tipoRegistro == null}">
                                 <span th:if="${registro.tareaId != null}" class="badge bg-primary">Tarea</span>
                                 <span th:if="${registro.proyectoId != null && registro.tareaId == null}" class="badge bg-success">Proyecto</span>
                                 <span th:if="${registro.reunionId != null}" class="badge bg-info">Reunión</span>
                             </span>
                         </td>
+                        <!-- Comentario del registro -->
                         <td th:text="${registro.comentario}">Comentario</td>
                     </tr>
                     </tbody>
                 </table>
             </div>
 
+            <!-- Botón para volver al dashboard -->
             <div class="mt-4">
                 <a th:href="@{/dashboard}" class="btn btn-primary">
                     <i class="fas fa-arrow-left me-2"></i>Volver al Dashboard
@@ -78,5 +80,9 @@
         </div>
     </div>
 </div>
+
+<!-- JS y CSS -->
+<link rel="stylesheet" th:href="@{/css/registros-tiempo-styles.css}">
+<script th:src="@{/scripts/registros-tiempo.js}"></script>
 </body>
 </html>
