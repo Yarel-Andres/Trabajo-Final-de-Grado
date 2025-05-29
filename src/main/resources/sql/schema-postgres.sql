@@ -13,7 +13,7 @@ DROP TABLE IF EXISTS usuarios;
 
 -- Tabla de usuarios donde heredarán empleados, jefes y RRHH
 CREATE TABLE usuarios (
-                          id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                          id BIGSERIAL PRIMARY KEY,
                           nombre_usuario VARCHAR(50) NOT NULL UNIQUE,
                           contraseña VARCHAR(100) NOT NULL,
                           correo VARCHAR(100) NOT NULL UNIQUE,
@@ -43,7 +43,7 @@ CREATE TABLE empleados (
                            fecha_contratacion DATE,
                            puesto VARCHAR(100),
                            telefono VARCHAR(20),
-                           salario DOUBLE,
+                           salario DOUBLE PRECISION,
 
                            FOREIGN KEY (id) REFERENCES usuarios(id) ON DELETE CASCADE,
                            CONSTRAINT chk_salario CHECK (salario >= 0)
@@ -61,7 +61,7 @@ CREATE TABLE rrhh (
 
 -- Tabla proyectos gestionados por jefes
 CREATE TABLE proyectos (
-                           id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                           id BIGSERIAL PRIMARY KEY,
                            nombre VARCHAR(100) NOT NULL,
                            descripcion TEXT,
                            jefe_id BIGINT,
@@ -69,7 +69,7 @@ CREATE TABLE proyectos (
                            fecha_fin_estimada DATE,
                            fecha_fin_real DATE,
                            estado VARCHAR(50) DEFAULT 'PLANIFICACION',
-                           presupuesto DOUBLE,
+                           presupuesto DOUBLE PRECISION,
                            completado BOOLEAN DEFAULT FALSE,
 
                            FOREIGN KEY (jefe_id) REFERENCES jefes(id),
@@ -90,16 +90,16 @@ CREATE TABLE proyecto_empleados (
 
 -- Tabla tareas asignadas por jefes a empleados
 CREATE TABLE tareas (
-                        id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                        id BIGSERIAL PRIMARY KEY,
                         titulo VARCHAR(100) NOT NULL,
                         descripcion TEXT,
                         empleado_id BIGINT,
                         jefe_id BIGINT,
                         proyecto_id BIGINT,
-                        fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
-                        fecha_vencimiento DATETIME,
+                        fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        fecha_vencimiento TIMESTAMP,
                         completada BOOLEAN DEFAULT FALSE,
-                        fecha_completada DATETIME,
+                        fecha_completada TIMESTAMP,
                         prioridad VARCHAR(20) DEFAULT 'MEDIA',
 
                         FOREIGN KEY (empleado_id) REFERENCES empleados(id),
@@ -111,14 +111,14 @@ CREATE TABLE tareas (
 
 -- Tabla reuniones organizadas por jefes
 CREATE TABLE reuniones (
-                           id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                           id BIGSERIAL PRIMARY KEY,
                            titulo VARCHAR(100) NOT NULL,
                            descripcion TEXT,
-                           fecha_hora DATETIME,
+                           fecha_hora TIMESTAMP,
                            sala VARCHAR(50),
                            organizador_id BIGINT,
                            completada BOOLEAN DEFAULT FALSE,
-                           fecha_completada DATETIME,
+                           fecha_completada TIMESTAMP,
 
                            FOREIGN KEY (organizador_id) REFERENCES jefes(id)
 );
@@ -135,15 +135,15 @@ CREATE TABLE reunion_participantes (
 
 -- Tabla registros-tiempo para tracking de horas trabajadas
 CREATE TABLE registros_tiempo (
-                                  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                                  id BIGSERIAL PRIMARY KEY,
                                   usuario_id BIGINT,
                                   tarea_id BIGINT,
                                   proyecto_id BIGINT,
                                   reunion_id BIGINT,
-                                  fecha_registro DATE DEFAULT (CURRENT_DATE),
-                                  hora_inicio DATETIME,
-                                  hora_fin DATETIME,
-                                  horas_trabajadas DOUBLE,
+                                  fecha_registro DATE DEFAULT CURRENT_DATE,
+                                  hora_inicio TIMESTAMP,
+                                  hora_fin TIMESTAMP,
+                                  horas_trabajadas DOUBLE PRECISION,
                                   comentario TEXT,
 
                                   FOREIGN KEY (usuario_id) REFERENCES usuarios(id),
@@ -156,19 +156,19 @@ CREATE TABLE registros_tiempo (
 
 -- Tabla presupuestos creados por RRHH para proyectos
 CREATE TABLE presupuestos (
-                              id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                              id BIGSERIAL PRIMARY KEY,
                               nombre_cliente VARCHAR(100) NOT NULL,
                               proyecto_id BIGINT,
                               rrhh_id BIGINT,
-                              fecha_creacion DATE DEFAULT (CURRENT_DATE),
-                              tarifa_hora DOUBLE,
-                              horas_estimadas DOUBLE,
-                              costo_total DOUBLE,
+                              fecha_creacion DATE DEFAULT CURRENT_DATE,
+                              tarifa_hora DOUBLE PRECISION,
+                              horas_estimadas DOUBLE PRECISION,
+                              costo_total DOUBLE PRECISION,
                               descripcion TEXT,
                               estado VARCHAR(20) DEFAULT 'BORRADOR',
 
                               FOREIGN KEY (proyecto_id) REFERENCES proyectos(id),
-                              FOREIGN KEY (rrhh_id) REFERENCES usuarios(id),
+                              FOREIGN KEY (rrhh_id) REFERENCES usuarios(id), -- Asumiendo que rrhh_id es un usuario
                               CONSTRAINT chk_estado_presupuesto CHECK (estado IN ('BORRADOR', 'ENVIADO', 'APROBADO', 'RECHAZADO')),
                               CONSTRAINT chk_tarifa_hora CHECK (tarifa_hora >= 0),
                               CONSTRAINT chk_horas_estimadas CHECK (horas_estimadas >= 0),
