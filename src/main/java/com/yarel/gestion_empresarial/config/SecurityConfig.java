@@ -53,7 +53,6 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers(new AntPathRequestMatcher("/")).permitAll() // Permitir acceso a la página de login
-                        // Aquí van tus reglas de autorización específicas para roles
                         .requestMatchers(new AntPathRequestMatcher("/rrhh/**")).hasRole("RRHH")
                         .requestMatchers(new AntPathRequestMatcher("/rrhh/presupuestos/**")).hasRole("RRHH")
                         .requestMatchers(new AntPathRequestMatcher("/rrhh/proyectos/**")).hasRole("RRHH")
@@ -61,39 +60,35 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/reuniones/crear")).hasRole("JEFE")
                         .requestMatchers(new AntPathRequestMatcher("/tareas/**")).hasAnyRole("JEFE", "EMPLEADO", "RRHH")
                         .requestMatchers(new AntPathRequestMatcher("/reuniones/**")).hasAnyRole("JEFE", "EMPLEADO", "RRHH")
-                        .anyRequest().authenticated() // Todas las demás peticiones requieren autenticación
+                        .anyRequest().authenticated()
                 )
                 .formLogin(formLogin -> formLogin
-                        .loginPage("/") // Especifica tu página de login personalizada
-                        .loginProcessingUrl("/login") // URL a la que se envían las credenciales
-                        .defaultSuccessUrl("/dashboard", true) // Página a la que se redirige tras login exitoso
-                        .permitAll() // Permitir acceso a la página de login a todos
+                        .loginPage("/")
+                        .loginProcessingUrl("/login")
+                        .defaultSuccessUrl("/dashboard", true)
+                        .permitAll()
                 )
                 .logout(logout -> logout
-                        .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "POST")) // URL para logout, preferiblemente POST
-                        .logoutSuccessUrl("/") // Página a la que se redirige tras logout exitoso
+                        .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "POST"))
+                        .logoutSuccessUrl("/")
                         .invalidateHttpSession(true)
                         .clearAuthentication(true)
                         .deleteCookies("JSESSIONID")
                         .permitAll()
                 );
-        // CSRF está habilitado por defecto, lo cual es bueno.
-        // Si necesitas deshabilitarlo (no recomendado para producción): http.csrf(csrf -> csrf.disable());
-
         return http.build();
     }
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        // Configura Spring Security para ignorar las rutas a los recursos estáticos.
-        // Esto es más eficiente que pasar por toda la cadena de filtros.
         return (web) -> web.ignoring()
-                .requestMatchers(new AntPathRequestMatcher("/static/**")) // Carpeta 'static' general
-                .requestMatchers(new AntPathRequestMatcher("/css/**"))   // Para tus archivos CSS
-                .requestMatchers(new AntPathRequestMatcher("/js/**"))    // Para archivos JavaScript (si los pones en /static/js/)
-                .requestMatchers(new AntPathRequestMatcher("/scripts/**")) // Para tus archivos JavaScript en /static/scripts/
-                .requestMatchers(new AntPathRequestMatcher("/images/**")) // Para imágenes
-                .requestMatchers(new AntPathRequestMatcher("/webjars/**")) // Para WebJars como Bootstrap, FontAwesome
+                .requestMatchers(new AntPathRequestMatcher("/h2-console/**"))
+                .requestMatchers(new AntPathRequestMatcher("/static/**"))
+                .requestMatchers(new AntPathRequestMatcher("/css/**"))
+                .requestMatchers(new AntPathRequestMatcher("/js/**"))
+                .requestMatchers(new AntPathRequestMatcher("/scripts/**"))
+                .requestMatchers(new AntPathRequestMatcher("/images/**"))
+                .requestMatchers(new AntPathRequestMatcher("/webjars/**"))
                 .requestMatchers(new AntPathRequestMatcher("/favicon.ico"));
     }
 }
