@@ -1,9 +1,21 @@
 {
   "$schema": "https://railway.app/railway.schema.json",
   "build": {
-    "builder": "NIXPACKS"
+    "builder": "NIXPACKS",
+    "buildCommand": "chmod +x ./mvnw && ./mvnw clean package -DskipTests",
+    "nixpacksPlan": {
+      "phases": {
+        "setup": {
+          "nixPkgs": ["jdk21"]
+        }
+      }
+    }
   },
   "deploy": {
-    "startCommand": "java -jar target/*.jar"
+    "startCommand": "java -Xmx512m -jar target/*.jar",
+    "healthcheckPath": "/login",
+    "healthcheckTimeout": 300,
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 3
   }
 }
