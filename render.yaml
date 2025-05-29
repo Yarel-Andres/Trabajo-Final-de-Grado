@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: gestion-empresarial
+    env: java
+    buildCommand: ./mvnw clean package -DskipTests
+    startCommand: java -jar target/*.jar
+    envVars:
+      - key: SERVER_PORT
+        value: 8080
