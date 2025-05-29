@@ -15,6 +15,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 import java.util.Optional;
 
@@ -24,12 +26,35 @@ import java.util.Optional;
 public class SecurityConfig {
 
     // Injeccion de repositorio de usuario para la autenticación personalizada
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+    //@Autowired
+    //private UsuarioRepository usuarioRepository;
 
 
     // Autenticación personalizada: Permite login con nombre de usuario o nombre completo,
     // busca en la base de datos y valida credenciales
+    @Bean
+    public UserDetailsService userDetailsService() {
+        // Autenticación temporal en memoria para testing
+        return new InMemoryUserDetailsManager(
+                User.builder()
+                        .username("admin")
+                        .password(passwordEncoder().encode("admin123"))
+                        .roles("RRHH")
+                        .build(),
+                User.builder()
+                        .username("jefe")
+                        .password(passwordEncoder().encode("jefe123"))
+                        .roles("JEFE")
+                        .build(),
+                User.builder()
+                        .username("empleado")
+                        .password(passwordEncoder().encode("empleado123"))
+                        .roles("EMPLEADO")
+                        .build()
+        );
+    }
+
+    /*
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> {
@@ -52,6 +77,7 @@ public class SecurityConfig {
             }
         };
     }
+    */
 
 
     // Codificacion  de contraseñas con BCrypt
