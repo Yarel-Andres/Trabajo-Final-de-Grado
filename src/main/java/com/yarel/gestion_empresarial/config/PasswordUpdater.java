@@ -8,6 +8,7 @@ import com.yarel.gestion_empresarial.entidades.Usuario;
 import com.yarel.gestion_empresarial.repositorios.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,7 +18,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-@Component
+@Component // - COMENTADO TEMPORALMENTE PARA TESTING
+//@ConditionalOnProperty(name = "app.password-updater.enabled", havingValue = "true")
 public class PasswordUpdater implements CommandLineRunner {
 
     private static final Logger log = LoggerFactory.getLogger(PasswordUpdater.class);
