@@ -1,5 +1,3 @@
-// Configuración de seguridad de Spring Security para manejo de  autenticación, autorización y protección CSRF
-
 package com.yarel.gestion_empresarial.config;
 
 import com.yarel.gestion_empresarial.repositorios.UsuarioRepository;
@@ -9,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -18,54 +17,20 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import java.util.Optional;
 
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    // Injeccion de repositorio de usuario para la autenticación personalizada
     @Autowired
     private UsuarioRepository usuarioRepository;
-
-
-    // Autenticación personalizada: Permite login con nombre de usuario o nombre completo,
-    // busca en la base de datos y valida credenciales
-    /*
-    @Bean
-    public UserDetailsService userDetailsService() {
-        // Autenticación temporal en memoria para testing
-        return new InMemoryUserDetailsManager(
-            User.builder()
-                .username("admin")
-                .password(passwordEncoder().encode("admin123"))
-                .roles("RRHH")
-                .build(),
-            User.builder()
-                .username("jefe")
-                .password(passwordEncoder().encode("jefe123"))
-                .roles("JEFE")
-                .build(),
-            User.builder()
-                .username("empleado")
-                .password(passwordEncoder().encode("empleado123"))
-                .roles("EMPLEADO")
-                .build()
-        );
-    }
-    */
-
 
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> {
             Optional<Usuario> usuario = usuarioRepository.findByNombreUsuario(username);
-
             if (usuario.isEmpty()) {
                 usuario = usuarioRepository.findByNombreCompleto(username);
             }
-
-            // Construye el objeto User de Spring Security con los datos del usuario: nombre completo,
-            // contraseña encriptada con BCrypt y rol para su autorización
             if (usuario.isPresent()) {
                 return org.springframework.security.core.userdetails.User.builder()
                         .username(usuario.get().getNombreCompleto())
@@ -78,67 +43,57 @@ public class SecurityConfig {
         };
     }
 
-
-
-    // Codificacion  de contraseñas con BCrypt
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-
-    // Configuración principal de seguridad para reglas de autorización, autenticación y logout
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                // Protección mediante CSRF: Habilitada por defecto para prevenir ataques, está completamente habilitado
-
-                // Autorización: Control de acceso basado en roles
                 .authorizeHttpRequests(authz -> authz
-                        // Página de login y recursos estáticos accesibles sin autenticación
-                        .requestMatchers(new AntPathRequestMatcher("/")).permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/css/**")).permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/js/**")).permitAll()
-
-
-                        // RRHH: Acceso completo a la aplicacióm
+                        .requestMatchers(new AntPathRequestMatcher("/")).permitAll() // Permitir acceso a la página de login
+                        // Aquí van tus reglas de autorización específicas para roles
                         .requestMatchers(new AntPathRequestMatcher("/rrhh/**")).hasRole("RRHH")
                         .requestMatchers(new AntPathRequestMatcher("/rrhh/presupuestos/**")).hasRole("RRHH")
                         .requestMatchers(new AntPathRequestMatcher("/rrhh/proyectos/**")).hasRole("RRHH")
-
-                        // JEFE: Funciones de gestión y supervisión
                         .requestMatchers(new AntPathRequestMatcher("/tareas/asignar")).hasRole("JEFE")
                         .requestMatchers(new AntPathRequestMatcher("/reuniones/crear")).hasRole("JEFE")
-
-                        // Acceso múltiple: Funciones compartidas para varios roles
                         .requestMatchers(new AntPathRequestMatcher("/tareas/**")).hasAnyRole("JEFE", "EMPLEADO", "RRHH")
                         .requestMatchers(new AntPathRequestMatcher("/reuniones/**")).hasAnyRole("JEFE", "EMPLEADO", "RRHH")
-
-                        // Cualquier otra ruta requiere autenticación
-                        .anyRequest().authenticated()
+                        .anyRequest().authenticated() // Todas las demás peticiones requieren autenticación
                 )
-
-                // Configuración para login: Login personalizado, Url que procesa credenciales, redireccionaminento al
-                // al dashboard despues de un login con exito y acceso público al formulario para hacer login
                 .formLogin(formLogin -> formLogin
-                        .loginPage("/")
-                        .loginProcessingUrl("/login")
-                        .defaultSuccessUrl("/dashboard", true)
-                        .permitAll()
+                        .loginPage("/") // Especifica tu página de login personalizada
+                        .loginProcessingUrl("/login") // URL a la que se envían las credenciales
+                        .defaultSuccessUrl("/dashboard", true) // Página a la que se redirige tras login exitoso
+                        .permitAll() // Permitir acceso a la página de login a todos
                 )
-
-                // Configuración para logout: // Solo con POST por seguridad, redireccinamiento a la página de login
-                // despues de logout con éxito, invalidacion de sesion, limpia la autenticación, elimina las cookies
-                // de sesión y acceso público al boton de logout
                 .logout(logout -> logout
-                        .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "POST"))
-                        .logoutSuccessUrl("/")
+                        .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "POST")) // URL para logout, preferiblemente POST
+                        .logoutSuccessUrl("/") // Página a la que se redirige tras logout exitoso
                         .invalidateHttpSession(true)
                         .clearAuthentication(true)
                         .deleteCookies("JSESSIONID")
                         .permitAll()
                 );
+        // CSRF está habilitado por defecto, lo cual es bueno.
+        // Si necesitas deshabilitarlo (no recomendado para producción): http.csrf(csrf -> csrf.disable());
 
         return http.build();
+    }
+
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        // Configura Spring Security para ignorar las rutas a los recursos estáticos.
+        // Esto es más eficiente que pasar por toda la cadena de filtros.
+        return (web) -> web.ignoring()
+                .requestMatchers(new AntPathRequestMatcher("/static/**")) // Carpeta 'static' general
+                .requestMatchers(new AntPathRequestMatcher("/css/**"))   // Para tus archivos CSS
+                .requestMatchers(new AntPathRequestMatcher("/js/**"))    // Para archivos JavaScript (si los pones en /static/js/)
+                .requestMatchers(new AntPathRequestMatcher("/scripts/**")) // Para tus archivos JavaScript en /static/scripts/
+                .requestMatchers(new AntPathRequestMatcher("/images/**")) // Para imágenes
+                .requestMatchers(new AntPathRequestMatcher("/webjars/**")) // Para WebJars como Bootstrap, FontAwesome
+                .requestMatchers(new AntPathRequestMatcher("/favicon.ico"));
     }
 }
