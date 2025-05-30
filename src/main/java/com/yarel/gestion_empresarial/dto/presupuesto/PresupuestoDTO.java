@@ -10,7 +10,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PresupuestoDTO {
-    // Datos básicos del presupuesto
+    // Datos basicos del presupuesto
     private Long id;
     private String nombreCliente;
     private String descripcion;
@@ -19,11 +19,11 @@ public class PresupuestoDTO {
     // Fechas
     private LocalDate fechaCreacion;
 
-    // Relaciones - Proyecto
+    // Relaciones con proyecto
     private Long proyectoId;
     private String proyectoNombre;
 
-    // Relaciones - Creador (RRHH)
+    // Relaciones con RRHH para creas dichos presupuestos
     private Long creadorId;
     private String creadorNombre;
 

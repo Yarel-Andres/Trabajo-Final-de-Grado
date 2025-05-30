@@ -1,3 +1,4 @@
+// Entidad que representa un registro de tiempo asociado a usuarios, tareas, proyectos y reuniones
 package com.yarel.gestion_empresarial.entidades;
 
 import jakarta.persistence.*;
@@ -9,6 +10,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
+
 
 @Entity
 @Table(name = "registros_tiempo")
@@ -22,37 +24,43 @@ public class RegistroTiempo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // un usuario puede tener múltiples registros de tiempo
+    // Un usuario puede tener múltiples registros de tiempo
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
+    // Una tarea puede estar asociada a múltiples registros de tiempo
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "tarea_id")
     private Tarea tarea;
 
+    // Uun proyecto puede tener múltiples registros de tiempo
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "proyecto_id")
     private Proyecto proyecto;
 
+    // Una reunión puede tener múltiples registros de tiempo
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "reunion_id")
     private Reunion reunion;
 
-    // registra la fecha en que se creó el registro de tiempo.
-    // Se inicializa automáticamente con la fecha actual
+    // Fecha en que se creó el registro de tiempo
     @Column(name = "fecha_registro")
     private LocalDate fechaRegistro = LocalDate.now();
 
+    // Hora de inicio del registro de tiempo
     @Column(name = "hora_inicio")
     private LocalDateTime horaInicio;
 
+    // Hora de finalización del registro de tiempo
     @Column(name = "hora_fin")
     private LocalDateTime horaFin;
 
+    // Cantidad de horas trabajadas en el registro
     @Column(name = "horas_trabajadas")
     private Double horasTrabajadas;
 
+    // Comentario opcional sobre el registro de tiempo
     @Column
     private String comentario;
 
@@ -62,6 +70,7 @@ public class RegistroTiempo {
         return Objects.hash(id, fechaRegistro, horaInicio, horaFin);
     }
 
+    // Implementación de equals para comparar objetos de RegistroTiempo
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -73,3 +82,4 @@ public class RegistroTiempo {
                 Objects.equals(horaFin, registro.horaFin);
     }
 }
+

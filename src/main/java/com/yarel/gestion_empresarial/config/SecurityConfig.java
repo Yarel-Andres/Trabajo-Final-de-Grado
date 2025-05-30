@@ -1,3 +1,4 @@
+// Configuración de seguridad de la aplicación
 package com.yarel.gestion_empresarial.config;
 
 import com.yarel.gestion_empresarial.repositorios.UsuarioRepository;
@@ -17,13 +18,16 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import java.util.Optional;
 
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
+    // Repositorio de usuarios para autenticación
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    // Definición del servicio de autenticación basado en usuarios almacenados
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> {
@@ -43,11 +47,13 @@ public class SecurityConfig {
         };
     }
 
+    // Configuración del codificador de contraseñas (BCrypt)
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    // Configuración de reglas de seguridad y autorización de endpoints
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -79,6 +85,7 @@ public class SecurityConfig {
         return http.build();
     }
 
+    // Configuración de ignorar ciertos recursos estáticos y la consola H2
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring()

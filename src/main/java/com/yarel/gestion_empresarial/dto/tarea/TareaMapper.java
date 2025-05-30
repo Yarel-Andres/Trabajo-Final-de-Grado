@@ -12,6 +12,7 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface TareaMapper {
 
+    // Conversiones de entidad a DTO
     @Mapping(source = "empleado.id", target = "empleadoId")
     @Mapping(source = "jefe.id", target = "jefeId")
     @Mapping(source = "proyecto.id", target = "proyectoId")
@@ -20,6 +21,7 @@ public interface TareaMapper {
 
     List<TareaDTO> toDtoList(List<Tarea> tareas);
 
+    // Conversiones de DTO a entidad
     @Mapping(source = "empleadoId", target = "empleado.id")
     @Mapping(source = "jefeId", target = "jefe.id")
     @Mapping(source = "proyectoId", target = "proyecto.id")

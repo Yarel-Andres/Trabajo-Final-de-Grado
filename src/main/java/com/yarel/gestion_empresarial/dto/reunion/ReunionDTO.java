@@ -9,7 +9,7 @@ import java.util.HashSet;
 
 @Data
 public class ReunionDTO {
-    // Datos básicos de la reunión
+    // Datos basicos de la reunión
     private Long id;
 
     @NotBlank(message = "El título es obligatorio")
@@ -27,11 +27,11 @@ public class ReunionDTO {
     private boolean completada = false;
     private LocalDateTime fechaCompletada;
 
-    // Relaciones - Organizador
+    // Relaciones con jefes que las organizan
     private Long organizadorId;
     private String organizadorNombre; // Para mostrar en vistas
 
-    // Relaciones - Participantes
+    // Relaciones con los empleados participantes
     private Set<Long> participantesIds;
     private Set<String> participantesNombres = new HashSet<>(); // Para mostrar en vistas
 

@@ -1,6 +1,5 @@
 package com.yarel.gestion_empresarial.entidades;
 
-// Para gestionar la base de datos relacional
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,11 +13,7 @@ import java.util.Objects;
 
 // Especifica que el nombre de la clase en la base de datos se llama usuarios
 @Table(name = "usuarios")
-
-// Genera automáticamente varios métodos que normalmente se escribirian manualmente(getters y setters,
-// constructores, etc...)
 @Data
-
 @NoArgsConstructor
 @AllArgsConstructor
 
@@ -55,8 +50,6 @@ public class Usuario {
     @Column(nullable = false)
     private RolEnum rol;
 
-    // Al indicar si el usuario está activo o no podemos "eliminarlo" de sus accesos sin borrar su informacion
-    // de la base de datos
     @Column
     private boolean activo = true;
 

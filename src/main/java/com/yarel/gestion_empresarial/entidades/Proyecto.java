@@ -29,7 +29,7 @@ public class Proyecto {
     @Column(columnDefinition = "TEXT")
     private String descripcion;
 
-    // Jefe responsable del proyecto
+    // Jefe creador del proyecto
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "jefe_id")
     private Jefe jefe;

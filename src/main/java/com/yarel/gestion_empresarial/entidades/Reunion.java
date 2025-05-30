@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-// Entidad que representa una reunión en el sistema
 @Entity
 @Table(name = "reuniones")
 @Data
@@ -47,7 +46,7 @@ public class Reunion {
     @JoinColumn(name = "organizador_id")
     private Jefe organizador;
 
-    // Usuarios que participan en la reunión
+    // Empleados que participan en la reunión
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "reunion_participantes",

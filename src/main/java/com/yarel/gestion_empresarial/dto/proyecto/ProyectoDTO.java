@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 @Data
 public class ProyectoDTO {
-    // Datos básicos del proyecto
+    // Datos basicos del proyecto
     private Long id;
     private String nombre;
     private String descripcion;
@@ -21,11 +21,11 @@ public class ProyectoDTO {
     private LocalDate fechaFinEstimada;
     private LocalDate fechaFinReal;
 
-    // Relaciones - Jefe responsable
+    // Relaciones con el Jefe creador del proyecto
     private Long jefeId;
     private String jefeNombre;
 
-    // Relaciones - Empleados asignados
+    // Relaciones con los empleados asignados
     private Set<Long> empleadosIds = new HashSet<>();
     private List<String> empleadosNombres = new ArrayList<>();
 
@@ -35,7 +35,7 @@ public class ProyectoDTO {
     // Registros de tiempo asociados
     private Set<Long> registrosTiempoIds;
 
-    // Métodos para asegurar que las colecciones nunca sean null
+    // Metodos para asegurar que las colecciones nunca sean null
     public Set<Long> getEmpleadosIds() {
         if (empleadosIds == null) {
             empleadosIds = new HashSet<>();

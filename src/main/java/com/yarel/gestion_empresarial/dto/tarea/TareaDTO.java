@@ -6,14 +6,14 @@ import java.util.Set;
 
 @Data
 public class TareaDTO {
-    // Datos básicos de la tarea
+    // Datos basicos de la tarea
     private Long id;
     private String titulo;
     private String descripcion;
     private String prioridad;
     private boolean completada;
 
-    // Fechas importantes
+    // Fechas
     private LocalDateTime fechaCreacion;
     private LocalDateTime fechaVencimiento;
     private LocalDateTime fechaCompletada;

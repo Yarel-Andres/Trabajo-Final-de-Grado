@@ -1,5 +1,4 @@
 // Configuración para el manejo de fechas en formularios web
-
 package com.yarel.gestion_empresarial.config;
 
 import org.springframework.context.annotation.Configuration;

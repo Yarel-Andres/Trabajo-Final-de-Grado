@@ -29,7 +29,7 @@ public class Presupuesto {
     @JoinColumn(name = "proyecto_id")
     private Proyecto proyecto;
 
-    // Usuario RRHH que crea el presupuesto
+    // Personal de RRHH que crea el presupuesto
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "rrhh_id")
     private RRHH creador;
@@ -49,7 +49,7 @@ public class Presupuesto {
     @Column
     private String descripcion;
 
-    // Estados: BORRADOR, ENVIADO, ACEPTADO, RECHAZADO
+    // Estados= BORRADOR, ENVIADO, ACEPTADO, RECHAZADO
     @Column
     private String estado = "BORRADOR";
 

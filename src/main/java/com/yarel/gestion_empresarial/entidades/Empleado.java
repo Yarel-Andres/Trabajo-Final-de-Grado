@@ -32,11 +32,11 @@ public class Empleado extends Usuario {
     @Column
     private Double salario;
 
-    // Relación uno a muchos: un empleado puede tener muchas tareas
+    // Un empleado puede tener muchas tareas
     @OneToMany(mappedBy = "empleado", fetch = FetchType.LAZY)
     private Set<Tarea> tareas = new HashSet<>();
 
-    // Relación muchos a muchos: empleados pueden participar en múltiples proyectos
+    // Muchos empleados pueden participar en múltiples proyectos
     @ManyToMany(mappedBy = "empleados", fetch = FetchType.LAZY)
     private Set<Proyecto> proyectos = new HashSet<>();
 }

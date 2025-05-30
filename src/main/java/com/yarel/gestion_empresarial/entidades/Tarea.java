@@ -11,7 +11,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.Objects;
 
-// Entidad que representa una tarea en el sistema
 @Entity
 @Table(name = "tareas")
 @Data
@@ -31,7 +30,8 @@ public class Tarea {
     @Column(columnDefinition = "TEXT")
     private String descripcion;
 
-    // Relación con empleado asignado - EAGER para cargar inmediatamente
+    // Relación con empleado asignado
+    // EAGER para cargar inmediatamente
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "empleado_id")
     private Empleado empleado;
@@ -46,7 +46,7 @@ public class Tarea {
     @JoinColumn(name = "proyecto_id")
     private Proyecto proyecto;
 
-    // Fecha de creación automática
+    // Fecha de creación
     @Column(name = "fecha_creacion")
     private LocalDateTime fechaCreacion = LocalDateTime.now();
 
@@ -63,7 +63,8 @@ public class Tarea {
     @Column
     private String prioridad;
 
-    // Relación con registros de tiempo - LAZY para optimizar rendimiento
+    // Relación con registros de tiempo
+    // LAZY para optimizar rendimiento
     @OneToMany(mappedBy = "tarea", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     private Set<RegistroTiempo> registrosTiempo = new HashSet<>();
 

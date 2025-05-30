@@ -18,8 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-@Component // - COMENTADO TEMPORALMENTE PARA TESTING
-//@ConditionalOnProperty(name = "app.password-updater.enabled", havingValue = "true")
+@Component
 public class PasswordUpdater implements CommandLineRunner {
 
     private static final Logger log = LoggerFactory.getLogger(PasswordUpdater.class);
@@ -56,7 +55,7 @@ public class PasswordUpdater implements CommandLineRunner {
 
                 actualizados++;
 
-                // Registra qué usuario fue actualizado
+                // Registra que usuario fue actualizado
                 log.info("Actualizada contraseña para usuario: {}", usuario.getNombreUsuario());
             }
             // Si la contraseña ya empieza con $2a$, no hace nada

@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 @Data
 public class RegistroTiempoDTO {
-    // Datos básicos del registro
+    // Datos basicos del registro
     private Long id;
     private LocalDate fechaRegistro;
     private Double horasTrabajadas;
@@ -16,13 +16,13 @@ public class RegistroTiempoDTO {
     private LocalDateTime horaInicio;
     private LocalDateTime horaFin;
 
-    // Relaciones - IDs
+    // Relaciones con Ids
     private Long usuarioId;
     private Long tareaId;
     private Long proyectoId;
     private Long reunionId;
 
-    // Campos temporales para formularios web (no se mapean a BD)
+    // Campos temporales para formularios que no se mapean con la base de datos
     private transient String fechaInicioTemp;
     private transient Integer horaInicioTemp;
     private transient Integer minutosInicioTemp;
