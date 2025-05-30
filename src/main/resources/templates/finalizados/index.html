@@ -65,7 +65,7 @@
                 <td th:text="${tarea.titulo}">Título</td>
                 <td th:text="${tarea.nombreProyecto}">Proyecto</td>
                 <td th:text="${tarea.jefeNombre}">Jefe</td>
-                <td th:text="${#temporals.format(tarea.fechaCreacion, 'dd/MM/yyyy')}">Fecha Creación</td>
+                <td th:text="${tarea.fechaCreacion != null ? #temporals.format(tarea.fechaCreacion, 'dd/MM/yyyy') : 'No disponible'}">Fecha Creación</td>
                 <td th:text="${#temporals.format(tarea.fechaCompletada, 'dd/MM/yyyy')}">Fecha Completada</td>
                 <td>
                     <span th:if="${tarea.prioridad == 'ALTA'}" class="badge bg-danger">Alta</span>

@@ -15,26 +15,22 @@
 
             <!-- Formulario para crear una nueva reunión -->
             <form th:action="@{/reuniones/crear}" th:object="${reunion}" method="post">
-                <!-- Campo para el título de la reunión -->
                 <div class="mb-3">
                     <label for="titulo" class="form-label">Título:</label>
                     <input type="text" id="titulo" th:field="*{titulo}" class="form-control" required>
                 </div>
 
-                <!-- Campo para la descripción de la reunión -->
                 <div class="mb-3">
                     <label for="descripcion" class="form-label">Descripción:</label>
                     <textarea id="descripcion" th:field="*{descripcion}" class="form-control" rows="4"></textarea>
                 </div>
 
                 <div class="row mb-3">
-                    <!-- Selector de fecha -->
                     <div class="col-md-4">
                         <label for="fechaReunion" class="form-label">Fecha:</label>
                         <input type="date" id="fechaReunion" name="fechaReunionDate" class="form-control" required
                                th:attr="min=${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}">
                     </div>
-                    <!-- Selector de hora -->
                     <div class="col-md-4">
                         <label for="horaReunion" class="form-label">Hora:</label>
                         <select id="horaReunion" name="horaReunion" class="form-select" required>
@@ -42,7 +38,6 @@
                             <option th:each="hora : ${#numbers.sequence(8, 20)}" th:value="${hora}" th:text="${hora}"></option>
                         </select>
                     </div>
-                    <!-- Selector de minutos -->
                     <div class="col-md-4">
                         <label for="minutosReunion" class="form-label">Minutos:</label>
                         <select id="minutosReunion" name="minutosReunion" class="form-select" required>

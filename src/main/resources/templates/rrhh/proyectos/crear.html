@@ -59,7 +59,6 @@
                            th:value="${presupuesto != null ? presupuesto.tarifaHora : ''}" step="0.01" min="0" required>
                 </div>
 
-                <!-- Horas estimadas (basadas en registros del proyecto) -->
                 <div class="mb-3">
                     <label for="horasEstimadas" class="form-label">Horas Estimadas</label>
                     <input type="number" class="form-control" id="horasEstimadas" name="horasEstimadas"
@@ -67,7 +66,6 @@
                     <small class="form-text text-muted">Basado en las horas registradas en el proyecto</small>
                 </div>
 
-                <!-- Costo total calculado automáticamente -->
                 <div class="mb-3">
                     <label for="costoTotal" class="form-label">Costo Total (€)</label>
                     <input type="number" class="form-control" id="costoTotal" name="costoTotal"
@@ -75,7 +73,6 @@
                     <small class="form-text text-muted">Se calcula automáticamente al guardar si no se especifica</small>
                 </div>
 
-                <!-- Descripción del presupuesto -->
                 <div class="mb-3">
                     <label for="descripcion" class="form-label">Descripción</label>
                     <textarea class="form-control" id="descripcion" name="descripcion" rows="3"

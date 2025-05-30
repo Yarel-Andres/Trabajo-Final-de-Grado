@@ -69,7 +69,7 @@ class LayoutManager {
             }
         })
 
-        // Toggle icono
+        // Icono
         link.querySelector(".sidebar-dropdown-icon")?.classList.toggle("rotate")
     }
 

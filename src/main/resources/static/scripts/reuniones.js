@@ -200,7 +200,6 @@ function initVerReuniones() {
 
     function initializeCollapses() {
         console.log("Inicializando collapses...")
-        // Bootstrap 5 los inicializa automáticamente con los atributos data-bs-toggle="collapse"
     }
 }
 

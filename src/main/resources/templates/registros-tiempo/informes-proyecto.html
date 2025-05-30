@@ -74,19 +74,13 @@
                     <!-- Filas de datos -->
                     <tbody>
                     <tr th:each="registro : ${registros}">
-                        <!-- Nombre del empleado -->
                         <td>
                             <span th:text="${registro.usuarioNombre != null && !registro.usuarioNombre.isEmpty() ? registro.usuarioNombre : 'No asignado'}">Empleado</span>
                         </td>
-                        <!-- Fecha del registro -->
                         <td th:text="${#temporals.format(registro.fechaRegistro, 'dd/MM/yyyy')}">Fecha</td>
-                        <!-- Hora de inicio -->
                         <td th:text="${#temporals.format(registro.horaInicio, 'HH:mm')}">Hora Inicio</td>
-                        <!-- Hora de fin -->
                         <td th:text="${#temporals.format(registro.horaFin, 'HH:mm')}">Hora Fin</td>
-                        <!-- Total de horas trabajadas -->
                         <td th:text="${#numbers.formatDecimal(registro.horasTrabajadas, 1, 2)}">Horas</td>
-                        <!-- Comentario del registro -->
                         <td th:text="${registro.comentario}">Comentario</td>
                     </tr>
                     </tbody>
@@ -133,11 +127,9 @@
 
             <!-- Botones de navegación -->
             <div class="mt-4">
-                <!-- Botón para volver a informes -->
                 <a th:href="@{/registros-tiempo/informes}" class="btn btn-primary">
                     <i class="fas fa-arrow-left me-2"></i>Volver a Informes
                 </a>
-                <!-- Botón para volver al dashboard -->
                 <a th:href="@{/dashboard}" class="btn btn-secondary">
                     <i class="fas fa-home me-2"></i>Volver al Dashboard
                 </a>

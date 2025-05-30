@@ -12,17 +12,16 @@
 
     <div class="card shadow-sm">
         <div class="card-body">
-            <!-- Título de la página -->
             <h2 class="card-title mb-4"><i class="fas fa-clock me-2"></i>Registrar Tiempo</h2>
 
             <!-- Formulario principal para registrar tiempo -->
             <form th:action="@{/registros-tiempo/crear}" th:object="${registroTiempo}" method="post">
 
-                <!-- Sección de hora de inicio -->
+                <!-- Hora de inicio -->
                 <div class="mb-4">
                     <h5>Hora de inicio</h5>
                     <div class="row">
-                        <!-- Campo de fecha de inicio -->
+                        <!-- Fecha de inicio -->
                         <div class="col-md-4 mb-3">
                             <label for="fechaInicioTemp" class="form-label">Fecha:</label>
                             <input type="date" id="fechaInicioTemp" th:field="*{fechaInicioTemp}" class="form-control"
@@ -50,11 +49,11 @@
                     </div>
                 </div>
 
-                <!-- Sección de hora de fin -->
+                <!-- Hora de fin -->
                 <div class="mb-4">
                     <h5>Hora de fin</h5>
                     <div class="row">
-                        <!-- Campo de fecha de fin -->
+                        <!-- Fecha de fin -->
                         <div class="col-md-4 mb-3">
                             <label for="fechaFinTemp" class="form-label">Fecha:</label>
                             <input type="date" id="fechaFinTemp" th:field="*{fechaFinTemp}" class="form-control"
@@ -82,7 +81,7 @@
                     </div>
                 </div>
 
-                <!-- Selección de tipo de actividad - Mostrar todas las opciones -->
+                <!-- Selección de tipo de actividad  -->
                 <div class="mb-3" th:if="${!mostrarSoloUnaOpcion}">
                     <label class="form-label">Tipo de actividad:</label>
                     <!-- Radio button para Tarea -->
@@ -102,7 +101,7 @@
                     </div>
                 </div>
 
-                <!-- Selección de tipo de actividad - Mostrar solo la opción preseleccionada -->
+                <!-- Selección de tipo de actividad -->
                 <div class="mb-3" th:if="${mostrarSoloUnaOpcion}">
                     <label class="form-label">Tipo de actividad:</label>
                     <!-- Opción única para Tarea -->
@@ -152,7 +151,7 @@
                     </select>
                 </div>
 
-                <!-- Campo de comentario opcional -->
+                <!-- Comentario opcional -->
                 <div class="mb-3">
                     <label for="comentario" class="form-label">Comentario:</label>
                     <textarea id="comentario" th:field="*{comentario}" class="form-control" rows="3"></textarea>
@@ -160,11 +159,9 @@
 
                 <!-- Botones de acción del formulario -->
                 <div class="d-flex mt-4">
-                    <!-- Botón para enviar el formulario -->
                     <button type="submit" class="btn btn-primary me-2">
                         <i class="fas fa-save me-2"></i>Registrar Tiempo
                     </button>
-                    <!-- Botón para cancelar y volver al dashboard -->
                     <a th:href="@{/dashboard}" class="btn btn-secondary">
                         <i class="fas fa-arrow-left me-2"></i>Cancelar
                     </a>

@@ -142,7 +142,4 @@ INSERT INTO registros_tiempo (usuario_id, tarea_id, proyecto_id, reunion_id, fec
     (11, 5, 4, NULL, CURRENT_DATE, NOW() - INTERVAL '8 hours', NOW() - INTERVAL '4 hours', 4.0, 'Pruebas de integración realizadas');
 
 
--- Presupuestos (Asumiendo que los proyectos tienen IDs 1-5 y RRHH IDs 12-14)
-INSERT INTO presupuestos (nombre_cliente, proyecto_id, rrhh_id, fecha_creacion, tarifa_hora, horas_estimadas, costo_total, descripcion, estado) VALUES
-    ('Cliente Siemens', 2, 13, CURRENT_DATE - INTERVAL '5 days', 80.0, 150.0, 12000.0, 'Presupuesto para desarrollo de App Móvil', 'ENVIADO'),
-    ('Cliente Telefonica', 3, 14, CURRENT_DATE - INTERVAL '2 days', 70.0, 100.0, 7000.0, 'Presupuesto para rediseño de Portal Web', 'BORRADOR');
+

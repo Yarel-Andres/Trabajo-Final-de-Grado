@@ -27,7 +27,7 @@
     transition: none !important;
 }
 
-/* Asegurar que NO se aplique a botones - mantener efectos en botones */
+/* Asegurar que la eliminacion de efectos se aplique a botones  */
 .btn:hover,
 .btn-primary:hover,
 .btn-outline-primary:hover,
@@ -40,7 +40,7 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
 }
 
-/* Mantener efectos específicos para botones de login */
+/* Mantener efectos para botones de login */
 .btn-login:hover {
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);

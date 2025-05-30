@@ -1,15 +1,15 @@
 :root {
-    /* Colores primarios - Azul más sofisticado y menos saturado */
+    /* Colores primarios */
     --primary-color: #345676;
     --primary-light: #4a6b8a;
     --primary-dark: #284258;
 
-    /* Colores secundarios - Azul más suave */
+    /* Colores secundarios */
     --secondary-color: #5b9bd5;
     --secondary-light: #7fb1e0;
     --secondary-dark: #4785c2;
 
-    /* Colores de estado - Más suaves y profesionales */
+    /* Colores de estado */
     --success-color: #4caf9a;
     --success-light: #6fc0af;
     --success-dark: #3d8c7a;
@@ -26,21 +26,21 @@
     --info-light: #7fb1e0;
     --info-dark: #4785c2;
 
-    /* Colores neutros - Grises más cálidos */
+    /* Colores neutros */
     --light-color: #f9f9f7;
     --light-gray: #f0f0ee;
     --medium-gray: #c8ccd0;
     --dark-gray: #7d8790;
     --dark-color: #3c4650;
 
-    /* Colores de texto - Más suaves para mejor legibilidad */
+    /* Colores de texto  */
     --text-color: #3c4650;
     --text-muted: #7d8790;
 
-    /* Color de borde - Más suave */
+    /* Color de borde  */
     --border-color: #e5e8ec;
 
-    /* Acento adicional - Púrpura más suave */
+    /* Acento adicional */
     --purple-color: #8e7cc3;
     --purple-light: #a594d0;
     --purple-dark: #7464a3;
@@ -86,7 +86,7 @@ a:hover {
     color: var(--secondary-dark);
 }
 
-/* Fondo creativo con ondas */
+/* Fondo con ondas, mejor creado que con imagenes */
 .creative-background {
     position: absolute;
     inset: 0;
