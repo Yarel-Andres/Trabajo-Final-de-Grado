@@ -17,7 +17,7 @@ public interface TareaRepository extends JpaRepository<Tarea, Long> {
     List<Tarea> findByJefe(Jefe jefe);
     List<Tarea> findByProyecto(Proyecto proyecto);
 
-    // Metodo para encontrar tareas por ID de jefe
+    // Consulta para encontrar tareas por ID de jefe
     @Query("SELECT t FROM Tarea t WHERE t.jefe.id = :jefeId")
     List<Tarea> findByJefeId(@Param("jefeId") Long jefeId);
 }

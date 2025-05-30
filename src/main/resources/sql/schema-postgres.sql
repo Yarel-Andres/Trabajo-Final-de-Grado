@@ -22,7 +22,7 @@ CREATE TABLE usuarios (
                           activo BOOLEAN DEFAULT TRUE,
                           tipo_usuario VARCHAR(20) NOT NULL,
 
-    -- Validaciones para asegurar datos correctos
+                          -- Validaciones para asegurar datos correctos
                           CONSTRAINT chk_rol CHECK (rol IN ('JEFE', 'EMPLEADO', 'RRHH')),
                           CONSTRAINT chk_tipo_usuario CHECK (tipo_usuario IN ('JEFE', 'EMPLEADO', 'RRHH'))
 );

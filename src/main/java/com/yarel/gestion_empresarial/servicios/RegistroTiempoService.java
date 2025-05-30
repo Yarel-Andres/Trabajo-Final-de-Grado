@@ -76,7 +76,7 @@ public class RegistroTiempoService {
         List<RegistroTiempo> registros = registroTiempoRepository.findByUsuario(usuario);
         List<RegistroTiempoDTO> registrosDTO = registroTiempoMapper.toDtoList(registros);
 
-        // Enriquecer DTOs con información adicional
+        // Completa DTOs con información adicional
         for (int i = 0; i < registros.size(); i++) {
             RegistroTiempoDTO dto = registrosDTO.get(i);
             RegistroTiempo registro = registros.get(i);
@@ -123,7 +123,7 @@ public class RegistroTiempoService {
         List<RegistroTiempo> registros = registroTiempoRepository.findByTarea(tarea);
         List<RegistroTiempoDTO> registrosDTO = registroTiempoMapper.toDtoList(registros);
 
-        // Enriquecer DTOs con información del usuario y tarea
+        // Completa DTOs con información del usuario y tarea
         for (int i = 0; i < registros.size(); i++) {
             RegistroTiempoDTO dto = registrosDTO.get(i);
             RegistroTiempo registro = registros.get(i);
@@ -151,7 +151,7 @@ public class RegistroTiempoService {
         List<RegistroTiempo> registros = registroTiempoRepository.findByProyecto(proyecto);
         List<RegistroTiempoDTO> registrosDTO = registroTiempoMapper.toDtoList(registros);
 
-        // Enriquecer DTOs con información del usuario y clasificar por tipo
+        // Completa DTOs con información del usuario y clasificar por tipo
         for (int i = 0; i < registros.size(); i++) {
             RegistroTiempo registro = registros.get(i);
             RegistroTiempoDTO dto = registrosDTO.get(i);
@@ -190,7 +190,7 @@ public class RegistroTiempoService {
         List<RegistroTiempo> registros = registroTiempoRepository.findByReunionId(reunionId);
         List<RegistroTiempoDTO> registrosDTO = registroTiempoMapper.toDtoList(registros);
 
-        // Enriquecer DTOs con información del usuario
+        // Completa DTOs con información del usuario
         for (int i = 0; i < registros.size(); i++) {
             RegistroTiempo registro = registros.get(i);
             RegistroTiempoDTO dto = registrosDTO.get(i);
@@ -233,7 +233,7 @@ public class RegistroTiempoService {
                 registroTiempoDTO.setProyectoId(tarea.getProyecto().getId());
             }
 
-            // Preservar información histórica en comentario
+            // Guardar información histórica en comentario
             if (tarea.getTitulo() != null) {
                 String comentarioExistente = registroTiempo.getComentario();
                 String comentarioTarea = "Tarea: " + tarea.getTitulo();

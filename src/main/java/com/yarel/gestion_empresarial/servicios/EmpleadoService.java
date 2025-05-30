@@ -1,9 +1,7 @@
-// Servicio para gestionar empleados, maneja operaciones CRUD y conversiones DTO
 package com.yarel.gestion_empresarial.servicios;
 
 import com.yarel.gestion_empresarial.dto.empleado.EmpleadoDTO;
 import com.yarel.gestion_empresarial.dto.empleado.EmpleadoMapper;
-import com.yarel.gestion_empresarial.entidades.Empleado;
 import com.yarel.gestion_empresarial.repositorios.EmpleadoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

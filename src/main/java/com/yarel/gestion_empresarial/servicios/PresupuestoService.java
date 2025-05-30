@@ -11,8 +11,6 @@ import com.yarel.gestion_empresarial.repositorios.PresupuestoRepository;
 import com.yarel.gestion_empresarial.repositorios.ProyectoRepository;
 import com.yarel.gestion_empresarial.repositorios.RRHHRepository;
 import com.yarel.gestion_empresarial.repositorios.UsuarioRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,7 +41,7 @@ public class PresupuestoService {
         this.presupuestoMapper = presupuestoMapper;
     }
 
-    // Obtiene todos los presupuestos del sistema
+    // Obtiene todos los presupuestos
     public List<PresupuestoDTO> findAll() {
         return presupuestoMapper.toDtoList(presupuestoRepository.findAll());
     }
@@ -54,7 +52,7 @@ public class PresupuestoService {
                 .map(presupuestoMapper::toDto);
     }
 
-    // Obtiene presupuestos asociados a un proyecto específico
+    // Obtiene presupuestos asociados a un proyecto
     public List<PresupuestoDTO> findByProyectoId(Long proyectoId) {
         Optional<Proyecto> proyecto = proyectoRepository.findById(proyectoId);
         if (proyecto.isPresent()) {
@@ -163,10 +161,6 @@ public class PresupuestoService {
 
         // Guardar el presupuesto actualizado
         Presupuesto presupuestoActualizado = presupuestoRepository.save(presupuesto);
-
-        // Registrar el cambio en el historial si existe esa funcionalidad
-        // historialService.registrarCambio(presupuesto.getId(), nombreUsuario, "CAMBIO_ESTADO",
-        //     "Estado cambiado a " + nuevoEstado);
 
         return presupuestoMapper.toDto(presupuestoActualizado);
     }

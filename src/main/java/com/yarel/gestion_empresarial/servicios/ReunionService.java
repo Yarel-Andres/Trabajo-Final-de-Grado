@@ -38,13 +38,13 @@ public class ReunionService {
         this.empleadoRepository = empleadoRepository;
     }
 
-    // Obtiene reuniones organizadas por un jefe específico
+    // Obtiene reuniones organizadas por un jefe
     public List<ReunionDTO> findByOrganizadorId(Long organizadorId) {
         List<Reunion> reuniones = reunionRepository.findByOrganizadorIdWithParticipantes(organizadorId);
         return reuniones.stream().map(reunionMapper::toDto).collect(Collectors.toList());
     }
 
-    // Obtiene reuniones donde participa un usuario específico
+    // Obtiene reuniones donde participa un empleado concreto
     public List<ReunionDTO> findByParticipanteId(Long participanteId) {
         List<Reunion> todasLasReuniones = reunionRepository.findAll();
         List<Reunion> reunionesDelParticipante = todasLasReuniones.stream()
@@ -56,7 +56,7 @@ public class ReunionService {
         return reunionesDelParticipante.stream().map(reunionMapper::toDto).collect(Collectors.toList());
     }
 
-    // Obtiene reuniones completadas donde participa un usuario específico
+    // Obtiene reuniones completadas donde participa un empleado concreto
     public List<ReunionDTO> findCompletadasByParticipanteId(Long participanteId) {
         List<Reunion> todasLasReuniones = reunionRepository.findAll();
         List<Reunion> reunionesCompletadas = todasLasReuniones.stream()
