@@ -104,7 +104,7 @@ INSERT INTO reuniones (titulo, descripcion, fecha_hora, sala, organizador_id) VA
 
 -- Kickoff proyecto
 INSERT INTO reunion_participantes (reunion_id, usuario_id) VALUES
-(1, 1),  -- Yarel (Jefe)
+(1, 8),  -- Yarel (Jefe)
 (1, 6),  -- Edson (Empleado)
 (1, 7);  -- Jose (Empleado)
 
@@ -138,7 +138,7 @@ INSERT INTO registros_tiempo (usuario_id, tarea_id, proyecto_id, reunion_id, fec
     (6, 1, 4, NULL, CURRENT_DATE - INTERVAL '2 days', NOW() - INTERVAL '26 hours', NOW() - INTERVAL '22 hours', 4.0, 'Avance en la implementación de la API'),
     (7, 2, 2, NULL, CURRENT_DATE - INTERVAL '1 day', NOW() - INTERVAL '25 hours', NOW() - INTERVAL '21 hours', 4.0, 'Diseño de la interfaz principal'),
     (8, 3, 2, NULL, CURRENT_DATE - INTERVAL '3 days', NOW() - INTERVAL '30 hours', NOW() - INTERVAL '26 hours', 4.0, 'Análisis de requisitos completado'),
-    (9, 4, 3, NULL, CURRENT_DATE - INTERVAL '1 day', NOW() - INTERVAL '24 hours', NOW() - INTERVAL '20 hours', 4.0, 'Implementación de OAuth2'),
+    (9, 4, 3, NULL, CURRENT_DATE - INTERVAL '1 day', NOW() - INTERVAL '24 hours', NOW() - INTERVAL '20 hours', 4.0, 'Implementación de OAuth2');
 
 
 
