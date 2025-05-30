@@ -139,7 +139,7 @@ INSERT INTO registros_tiempo (usuario_id, tarea_id, proyecto_id, reunion_id, fec
     (7, 2, 2, NULL, CURRENT_DATE - INTERVAL '1 day', NOW() - INTERVAL '25 hours', NOW() - INTERVAL '21 hours', 4.0, 'Diseño de la interfaz principal'),
     (8, 3, 2, NULL, CURRENT_DATE - INTERVAL '3 days', NOW() - INTERVAL '30 hours', NOW() - INTERVAL '26 hours', 4.0, 'Análisis de requisitos completado'),
     (9, 4, 3, NULL, CURRENT_DATE - INTERVAL '1 day', NOW() - INTERVAL '24 hours', NOW() - INTERVAL '20 hours', 4.0, 'Implementación de OAuth2'),
-    (11, 5, 4, NULL, CURRENT_DATE, NOW() - INTERVAL '8 hours', NOW() - INTERVAL '4 hours', 4.0, 'Pruebas de integración realizadas');
+
 
 
 
